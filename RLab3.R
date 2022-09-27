@@ -1,35 +1,38 @@
-# Importing data to be used for lab 3 session
+# Regression and Correlation Exercise
 
-#importing tree data of plot 11 'trees1012rev2_plot11selection.txt'
-plot11trees <- read.table("C:/Users/aduol/Documents/SLU/RSust/SLU project/Data/trees1012rev2_plot11selection.txt",
+#importing plot 11 tree data - 'trees1012rev2_plot11selection.txt' and assigning to object plot11trees
+plot11trees <- read.table("C:/Users/aduol/Documents/SLU/RSust/SLU project/Data/Lab3/trees1012rev2_plot11selection.txt",
                      header = T, na.strings = "NA", dec = ".", sep = "\t", strip.white = TRUE)
 
-##The data above is incomplete
+##The data above is incomplete containing some missing data
 
-#Opening library for the session
 library(doBy)
 
+#Converting heights to meters named 'hm' and dbh to centimeter named 'dcm
 
-#Converting heights to meters named 'hm' and dbh to cm named 'dcm
-
-## dividing by 10 to convert from decimeter to meter
+## Converting decimeter to meter
 plot11trees$hm <- plot11trees$height/10
 
-##dividing by 10 to convert from millimeter to meter
+##Converting from millimeter to centimeter
 plot11trees$dcm <- plot11trees$dbh/10
 
-#selecting the sample trees, i.e trees with both height and diameter measurement
-sample_trees <- subset(plot11trees, hm > 0)
+#selecting the sample trees, i.e trees with both height above 0m
 
-#Estimating volume using vol function for Scots pine
-#scot pine function
+sample_trees <- subset(plot11trees, hm > 0)
+## subset function here returns subset of the vectors, matrices or data frame that meet its conditions.
+## here the function returns plot11trees with height(hm) more than 0 meter
+## The syntax is subset(x, condition)
+
+#Estimating volume using Sweden generated vol function for Scots pine
+
+#scot pine function:
 "vol function Volume=10^(-1.38903)*dbh^1.84493
 (dbh+20)^0.06563*height^2.02122*(height-1.3)^(-1.01095)"
 
 sample_trees$vol <- ((10^-1.38903) * (sample_trees$dcm^1.84493) *
   ((sample_trees$dcm + 20)^0.06563) * sample_trees$hm^2.02122*
   ((sample_trees$hm-1.3)^-1.01095))/1000
-View(sample_trees)
+
 
 ##Simple visualization of the newly generated volume
 plot(sample_trees$dcm, sample_trees$vol, pch = 13,
@@ -58,16 +61,16 @@ plot(sample_trees$logdcm, sample_trees$logvol, pch = 13,
           legend = c("Intercept = -7.734953",
                      " ",
                      "slope = 2-020352"),
-          col = "green"  )
+          col = "green")
 
 ## Extracting the coefficients
 coef(M.vol)
 
-## adding the coefficiecnt to plot11trees table
+## adding the coefficients to plot11trees table
 plot11trees$a <- coef(M.vol)[1]
 plot11trees$b <- coef(M.vol)[2]
 
-#estimatimng the volume
+#estimating the volume
 plot11trees$est_vol <- exp(plot11trees$a + 
                              plot11trees$b *
                              log(plot11trees$dcm))
@@ -92,7 +95,7 @@ plot(plot11trees$dcm,plot11trees$est_vol,
 
 ##Exercise
 "The tvol1012 is a data  consisting of revised data from 
-2 separate years, year 190 and 1987, with this data we will:
+2 separate years, year 1980 and 1987, with this data we will:
   
   - evaluate the volume growth for individual trees
   - estimate the periodic annual increment (PAI),
@@ -100,8 +103,8 @@ plot(plot11trees$dcm,plot11trees$est_vol,
   - estimate the plot and treatment volume growth"
 
 
-#importing year 1980 and year 1987 tree volume data 'tvol1012.txt
-tvol1012 <- read.table("C:/Users/aduol/Documents/SLU/RSust/SLU project/Data/tvol1012.txt",
+#importing year 1980 and year 1987 tree volume data 'tvol1012.txt'
+tvol1012 <- read.table("C:/Users/aduol/Documents/SLU/RSust/SLU project/Data/Lab3/tvol1012.txt",
                        header = TRUE, na.strings = "NA", sep = "\t", dec = ".", strip.white = TRUE)
 
 #Estimating the PAI
@@ -152,7 +155,49 @@ tapply(site1012$paiha,
        site1012$treatment,
        FUN = mean)
 
-#checking the effect of treatment on PAI
+# Estimating the percentage of stand seedlings have been removed
+##first we estimate the density after thinning which is provided in site1012
+density <- summaryBy(densha~treatment,
+          data = site1012,
+          FUN = mean)
+ 
+## densha.mean is the density after thinning, so we rename to 'after_thinning'
+names(density)[2] <- 'after_thinning'
+
+##now we estimate the density before thinning
+density$before_thinning <- 10000/(density$treatment^2)
+
+##percentage change in the stand can be estimated now.
+## percentage change = (old - new)/old *100
+density$percent_removed <- (density$before_thinning-
+                              density$after_thinning)/density$before_thinning * 100
+
+# Checking the effect of treatment on  stem density, quadratic mean diameter,
+# and Periodic Annual Increment (PAI)
+
+## Stem density and treatment(spacing) design effect
+barplot(tapply(site1012$densha,
+               site1012$treatment,
+               FUN = mean),
+        xlab = substitute(paste(bold('treatment(spacing)'))),
+        ylab = substitute(paste(bold(('stem density')))),
+        main = 'Treatment Effect on Stem Density',
+        col = c(5:9))
+### The space is having an effect on the diameter, the smaller the spacing,
+### the greater the stem/stand density
+
+## Treatment(spacing) effect on QMD
+barplot(tapply (site1012$qmd,
+                site1012$treatment,
+                FUN = mean),
+        xlab = substitute(paste(bold('treatment(spacing)'))),
+        ylab = substitute(paste(bold('mean diameter(qmd)'))),
+        main = 'treatment effect on QMD',
+        col = c(10:13))
+### Quadratic mean diameter increases with spacing effect according
+### to the bar plot, the effect might diminish if spacing increases
+
+## Treatment(spacing) effect on Periodic annual increment(PAI)
 barplot(tapply(site1012$paiha,
                site1012$treatment,
                FUN = mean),
@@ -160,3 +205,4 @@ barplot(tapply(site1012$paiha,
         ylab = substitute(paste(bold("PAI, m3/ha & year"))),
         col = c(2,13,15,20),
         main = "Effect of Spacing on PAI")
+
