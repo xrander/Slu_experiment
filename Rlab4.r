@@ -193,3 +193,164 @@ plot(spruce$age, spruce$mai,
          legend = c("MAI", "CAI"),
          pch = c(18, 20),
          col = c('red', 'green'))
+
+## Adjusting thinned Values.
+### Usually in the year of harvest, we are supposed to have two volumes
+### one is the volume before harvest and the volume harvest
+### we have the volume harvested alone and we need to estimate the volume before harvest
+### therefore we adjust the standing volume and we also change the age
+### to ensure that this is the age before harvest
+
+### Birch
+birch_thinned <- subset(birch, harv_vol>0)
+birch_thinned$stand_vol <- birch_thinned$stand_vol + birch_thinned$harv_vol
+birch_thinned$age <- birch_thinned$age  - 0.01
+
+### Spruce
+spruce_thinned <- subset(spruce, harv_vol >0)
+spruce_thinned$stand_vol <- spruce_thinned$stand_vol + spruce_thinned$harv_vol
+spruce_thinned$age <- spruce_thinned$age  - 0.01
+
+## The results are merge with the main data frame to give
+## a more complete data
+
+### Birch
+birch_new <- merge(birch, birch_thinned, all = T)
+
+### Spruce
+spruce_new <- merge(spruce, spruce_thinned, all = T)
+
+
+## Visualizing the new data frame
+### Birch_new
+#### Stand_vol total_vol comparison
+plot(birch_new$age, birch_new$stand_vol,
+     col = 'green',
+     xlab = substitute(paste(bold('Age'))),
+     ylab = substitute(paste(bold('Volume'))),
+     main = 'Birch Stand Development, Thinning age included',
+     pch = 19,
+     type = 'b',
+     xlim = c(0,140),
+     ylim = c(0,1000)) +
+  points (birch_new$age,birch_new$sumvol,
+          pch = 19,
+          col ='red') +
+  lines(birch_new$age, birch_new$sumvol,
+        col = 'red') +
+  legend ("topleft",
+          legend = c('standing volume', 'total_volume'),
+          pch = 19,
+          col =c('green', 'red'))
+ 
+#### MAI and CAI
+plot(birch_new$age, birch_new$mai,
+     type = 'b',
+     pch = 18,
+     col = 'red',
+     ylim = c(0,15),
+     xlim = c(0, 140),
+     main = 'MAI and CAI, Thinning age included',
+     ylab = substitute(paste(bold('Growth'))),
+     xlab = substitute(paste(bold('age')))) +
+  points(birch_new$age, birch_new$cai,
+         type = 'b',
+         pch = 20,
+         col = 'green') +
+  legend("topleft",
+         legend = c("MAI", "CAI"),
+         pch = c(18, 20),
+         col = c('red', 'green'))
+### Spruce_new
+#### Stand_vol total_vol comparison
+plot(spruce_new$age, spruce_new$stand_vol,
+     col = 'green',
+     type = 'l',
+     main = 'Spruce Stand Development',
+     xlab = substitute(paste(bold(Age))),
+     ylab = substitute(paste(bold(Volume)))) +
+  points(spruce_new$age,spruce_new$stand_vol,
+         col = 'green',
+         pch = 15)+
+  points(spruce_new$age,spruce_new$sumvol,
+         col ='red',
+         pch = 15) +
+  points(spruce_new$age, spruce_new$harv_vol,
+         col = 'purple',
+         pch = 15) +
+  points(spruce_new$age, spruce_new$mor_vol,
+         col = 'orange',
+         pch = 15)+
+  legend("topleft",
+         legend = c('standing volume', 'total_volume',
+                    'harvest_volume','Mortality volume'),
+         pch = 15,
+         col =c('green', 'red','purple','orange'))
+#### MAI and CAI with thinning age included
+plot(spruce_new$age, spruce_new$mai,
+     type = 'b',
+     pch = 18,
+     col = 'red',
+     ylim = c(0,18),
+     xlim = c(0, 140),
+     main = 'MAI and CAI, Thinning age include',
+     ylab = substitute(paste(bold('Growth'))),
+     xlab = substitute(paste(bold('age')))) +
+  points(spruce_new$age, spruce_new$cai,
+         type = 'b',
+         pch = 20,
+         col = 'green') +
+  legend("topleft",
+         legend = c("MAI", "CAI"),
+         pch = c(18, 20),
+         col = c('red','green'))
+
+
+# Some questions
+## 1- How many thinnings were made for the spruce and birch stands
+plot(spruce$age, spruce$stand_vol,
+     col = 'red',
+     type = 'b',
+     pch = 19,
+     main = 'Birch and Spruce stand development',
+     xlab = 'volume (m3/ha)',
+     ylab = 'Age(years)') + 
+  points(birch$age, birch$stand_vol,
+         type = 'b',
+         pch = 17,
+         col = 'blue') +
+  legend ("bottomright",
+          legend = c('Spruce', 'Birch'),
+          pch = c(19,17),
+          col = c('red', 'blue'))
+
+###  Answer: Birch was thinned once and Spruce was thinned twice.
+
+## 2- Were the thinnings heavy or not?
+
+### Answer: The first thinning is a heavy thinning, with more than 54% of the stand thinned out,
+### the second and third thinnings were light thinning compared to the first thinning.
+### The second and third thinnings have thinnings ranging from 35% to 40% of stands removed respectively.
+### The chart from the code below gives a better explanation of the changes
+
+plot(x = spruce_new$age, y = spruce_new$stdens/100,
+     col = 'green',
+     pch = 17,
+     type = 'b',
+     main = 'Thinning Intensity and Frequency',
+     xlab = substitute(paste(bold('Age'))),
+     ylab = substitute(paste(bold('Values')))) +
+     text(x = 104, y = 7,
+          labels = "stand_density is in the 100s and stand_vol is in m3",
+          cex = 0.7,
+          col = 'red') +
+  lines(x = spruce_new$age,y =spruce_new$stand_vol/50,
+         col = 'red',
+        type = 'b',
+        pch = 15)+
+  legend("topright",
+         legend = c('stand_density', 'standing volume(m3)'),
+         pch = c(17, 15),
+         col =c('green', 'red','purple','orange'))
+
+## 3- What happened to the CAI after the first thinning
