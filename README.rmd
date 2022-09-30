@@ -1,0 +1,25 @@
+---
+title: 'Readme'
+author: 'Olamide Adu'
+output: html_document
+params:
+  date: !r Sys.Date()
+---
+
+# Sverige LantbruksUniversitet (SLU) Permanent Forest Experiments
+
+## Brief Introduction
+
+This is an analysis done as part of the **Sustainable Forestry in Southern Sweden** course in the Euroforester program at the SLU campus at the south of Sweden in [Alnarp](https://www.slu.se/en/departments/southern-swedish-forest-research-centre/).
+
+The data used for this analysis were provided mainly by the research centre at Tonnersjoheden and have been [uploaded here](https://github.com/xrander/SLU-Plantation-Experimentation/tree/master/Data).
+
+## Data Exploration
+
+The first data used is the 'popdata'
+```{r eval= TRUE}
+pop <- read.table('C:/Users/aduol/Documents/SLU/RSust/SLU project/Data/Lab1/popdata.txt')
+head(pop)
+```
+**Data description**:
+- block: experimental block
