@@ -116,7 +116,7 @@ names(site1012)[4] <- 'ba_sum'
 ##getting the trees density per hectare assigned to densha
 site1012$densha <- round((site1012$trees_per_plot * (1/site1012$areaha)), 1)
 
------------------
+
 
 ##visualizing the relationship between treatment and density
 plot(site1012$treatment, site1012$densha, type = "p",

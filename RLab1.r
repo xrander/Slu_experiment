@@ -1,6 +1,6 @@
 #importing the dataframe from user directory and it is assigned to the pop
 
-pop <- read.table("C:/Users/aduol/Documents/Data Science/Data-Science/R/SLU/RSust/SLU project/Data/popdata.txt",
+pop <- read.table('C:/Users/aduol/Documents/Projects/SLU-Plantation-Experimentation/Data/Lab1/popdata.txt',
                   header = T, sep = "\t", na.strings = "NA", dec = ".", strip.white = T)
 
 #printing the first six and last five of the dataframe
@@ -70,10 +70,15 @@ pchdata <- c(15, 16)
 
 #plotting a simple graph of height vs diameter
 plot(pop$dia, pop$height,
-     text(x=01.2, y=500,labels = "Growth rate of fertilized and unfertilized seedlings",col = "red", cex = 0.9),
+     text(x=01.5, y=450,labels = "Growth rate of fertilized and unfertilized seedlings",col = "red", cex = 0.7),
      xlim = c(0,5.5), ylim = c(0, 600),xlab = 'diameter(mm)',
-     ylab = 'Height(mm)', main = "Olamide Adu",
-     pch = pchdata, col = plcol) +
-  legend("topright", legend = c("Control","Fertilized"), pch= pchdata, col = plcol)
+     ylab = 'Height(mm)', main = "Height vs Diameter",
+     pch = c(16,17), col = c('red', 'blue'))
+legend("topleft",
+       legend = c("Control","Fertilized"),
+       pch= c(16,17),
+       col = c('red','blue'))
 
+pop$height <- as.numeric(pop$height)
+pop$dia <- as.numeric(pop$dia)
      
