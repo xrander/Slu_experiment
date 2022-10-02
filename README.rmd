@@ -1,12 +1,14 @@
 ---
 title: 'Readme'
 author: 'Olamide Adu'
-output: github_document
-params:
-  date: !r Sys.Date()
+output: 
+  md_document: 
+    variant: markdown_github
 ---
 
 # Sverige LantbruksUniversitet (SLU) Permanent Forest Experiments
+
+![SLU](https://i0.wp.com/odlandestadsbasarer.se/wp-content/uploads/2017/09/SLU-2.jpg?ssl=1)
 
 ## Brief Introduction
 
@@ -14,12 +16,130 @@ This is an analysis done as part of the **Sustainable Forestry in Southern Swede
 
 The data used for this analysis were provided mainly by the research centre at Tonnersjoheden and have been [uploaded here](https://github.com/xrander/SLU-Plantation-Experimentation/tree/master/Data).
 
-## Data Exploration
+**Data Exploration**
+Package used is the doBy library
+To install the package run the command `install.packages('doBy')`
+````{r results='hide', message=FALSE, warning=FALSE}
+library(doBy)
+library(dplyr)
+````
 
-The first data used is the 'popdata'
+
+## Clone Performance Test
+The first data used is the 'popdata' which is accessible at [popdata.txt](https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/popdata.txt)
+
 ```{r eval= TRUE}
-pop <- read.table('C:/Users/aduol/Documents/SLU/RSust/SLU project/Data/Lab1/popdata.txt')
+pop <- read.table('https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/Lab1/popdata.txt', header = T)
 head(pop)
 ```
-**Data description**:
-- block: experimental block
+
+**Data description**
+
+-   block: experimental block
+
+-   cutw: cultivar width
+
+-   height: height of the plant
+
+-   dia = diameter
+
+-   clone: clone class
+
+-   fert: Fertilized or not(1 = fertilized and 3 = control)
+
+Creating a column to give name to the values of the fert
+
+```{r}
+pop$fert_value <- ifelse(pop$fert==1, 'fertilized', 'control')
+head(pop)
+```
+
+Height diameter relationship of the control and fertilized seedlings
+
+```{r}
+plot(pop$dia, pop$height,
+     text(x=01.5, y=450,labels = "Growth rate of fertilized and unfertilized seedlings",col = "red", cex = 0.7),
+     xlim = c(0,5.5), ylim = c(0, 600),xlab = 'diameter(mm)',
+     ylab = 'Height(mm)', main = "Height vs Diameter",
+     pch = c(16,17), col = c('red', 'blue'))
+legend("topleft",
+       legend = c("Control","Fertilized"),
+       pch= c(16,17),
+       col = c('red','blue'))
+
+```
+
+Deriving the height to diameter ratio
+
+```{r}
+pop$hd <- pop$height/pop$dia
+
+```
+
+
+The mean height and diameter of the control and fertilized of the different clones is given as
+````{r}
+pop_summary <- summaryBy(height + dia ~ fert + clone, data = pop, FUN=mean)
+pop_summary
+````
+The mean height to diameter of the different treatment  is given as
+
+````{r}
+pop_summary$h_d <- pop_summary$height.mean/pop_summary$dia.mean
+names(pop_summary)[5] <- 'height_dia_ratio'
+barplot(pop_summary$height_dia_ratio,
+        names.arg = pop_summary$clone,
+        col = pop_summary$fert,
+        xlab = 'clone',
+        ylab = 'height_diameter_ratio',
+        main = 'Seedling Clone Performance',
+        legend = TRUE)
+legend('topright',
+       legend = c('fertilized', b = 'control'),
+       col = c('black', 'green'),
+       pch = 18)
+````
+It is evident that the fertilized are performing than the control, with the B clone class being the highest performing either fertilized or not.
+
+## Spacing Effect on Growth on Scot Pine
+This is a long term experiment to test the effect of four different spacing treatments 1m, 1.5m, 2m, and 2.5m across eight plots. The experiment is designed such that two plots are assigned a treatment, in this case the plots. The plots are also of varying sizes.
+
+### The Design of the experiment using R
+````{r}
+plot = c(11:14, 21:24)
+## plot here denotes the plots number or names
+
+areaha = c(0.04, 0.0324, 0.0288, 0.0288, 0.04, 0.0324, 0.0288, 0.0288)
+## areaha is the area per hectare of each plots
+
+treatment = c(2.5, 2, 1.5 ,1)
+### **nb**: 2.5 implies 2.5*2.5 and 2 implies 2*2 and so on.
+
+### creating the data frame for the plots with their properties
+exp1012 <- data.frame(plot, areaha, treatment)
+
+### importing data
+dbh1012 <- read.table("https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/Lab2/dbhlist_exp1012.txt",
+           header = T, sep = "\t", na.strings = "NA", dec = ".", strip.white = TRUE)
+head(dbh1012)
+````
+
+The data used for this analysis can be obtained here [experiment_data](https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/Lab2/dbhlist_exp1012.txt).
+
+**Data Description**
+
+- plot: the plot number
+
+- nr: the tree number
+
+- d1: diameter at breast height 1
+
+- d2: diameter at breast height 2
+
+- dm: mean of both diameter
+
+- dd: diameter raise to power 2
+
+- ba: basal area
+
+
