@@ -128,6 +128,8 @@ legend('topright',
 evident that the fertilized are performing than the control, with the B
 clone class being the highest performing either fertilized or not.
 
+------------------------------------------------------------------------
+
 ## Spacing Effect on Growth on Scot Pine
 
 This is a long term experiment to test the effect of four different
@@ -171,14 +173,76 @@ The data used for this analysis can be obtained here
 
 -   plot: the plot number
 
--   nr: the tree number
+-   nr: the tree number measured
 
--   d1: diameter at breast height 1
+-   d1: cross caliper diameter measurement 1
 
--   d2: diameter at breast height 2
+-   d2: cross caliper diameter measurement 2, 90 degrees to measurement
+    1
+
+------------------------------------------------------------------------
+
+### Analyzing the data
+
+The data will be investigated to see if there’s anything strange with
+the data
+
+``` r
+plot(dbh1012$d1, dbh1012$d2,
+     xlab = 'd1',
+     ylab = 'd2',
+     col = c('purple', 'green'),
+     pch = c(10,21))
+legend('topleft',
+       legend = c('d1', 'd2'),
+       col = c('purple', 'green'),
+       pch = c(10,21))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-9-1.png) The data
+seems to be alright, we can now proceed with the analysis
+
+First we estimate the average of the two diameters, we also square the
+result to get values needed to estimate the quadratic mean then we
+calculate the basal area
+
+``` r
+## average of the two diameter
+dbh1012$dm <- (dbh1012$d1 + dbh1012$d2)/2
+
+## squared valued to be used for quadratic mean estimation
+dbh1012$dd <- dbh1012$dm^2
+
+## basal area estimation
+dbh1012$ba <- pi * ((dbh1012$dm^2/2)^2)
+```
 
 -   dm: mean of both diameter
 
--   dd: diameter raise to power 2
+-   dd: diameter raised to the power 2
 
 -   ba: basal area
+
+The values will be summarized to give a clear value for each plots then
+combined with the plot characteristics for further analysis
+
+``` r
+plot_ba <-summaryBy(ba~plot, data = dbh1012, FUN = sum)
+
+site1012 <- merge(exp1012, plot_ba, all = T)
+
+site1012
+```
+
+    ##   plot areaha treatment      ba.sum
+    ## 1   11 0.0400       2.5 23046044774
+    ## 2   12 0.0324       2.0 21173303890
+    ## 3   13 0.0288       1.5 17425557531
+    ## 4   14 0.0288       1.0 14825571265
+    ## 5   21 0.0400       2.5 25523624363
+    ## 6   22 0.0324       2.0 20460102641
+    ## 7   23 0.0288       1.5 18077494007
+    ## 8   24 0.0288       1.0 12361439129
+
+With this table we can estimate the basal area per hectare and the basal
+area per treatment
