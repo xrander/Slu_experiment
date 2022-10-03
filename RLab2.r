@@ -173,16 +173,17 @@ plot(x = site1012$treatment,
      pch = 21,
      col = "darkred",
      xlab = "Treatment",
-     ylab = "AMD and QMD(cm)") + 
-  points (x = site1012$treatment,
+     ylab = "AMD and QMD(cm)")
+points (x = site1012$treatment,
      y = site1012$qmd,
      type = "p",
      ylim = c(8, 16),
      pch = 19,
      col = "darkgreen",
      xlab = "Treatment",
-     ylab = "AMD and QMD(cm)") +
-  legend ("topleft",
+     ylab = "AMD and QMD(cm)")
+legend ("topleft",
           legend = c("AMD", "QMD"),
           pch = c(21, 19),
           col = c("darkred", "darkgreen"))
+

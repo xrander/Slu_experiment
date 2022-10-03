@@ -1,6 +1,6 @@
 # Sverige LantbruksUniversitet (SLU) Permanent Forest Experiments
 
-![SLU](https://i0.wp.com/odlandestadsbasarer.se/wp-content/uploads/2017/09/SLU-2.jpg?ssl=1)
+![](https://i0.wp.com/odlandestadsbasarer.se/wp-content/uploads/2017/09/SLU-2.jpg?ssl=1)
 
 ## Brief Introduction
 
@@ -130,7 +130,7 @@ clone class being the highest performing either fertilized or not.
 
 ------------------------------------------------------------------------
 
-## Spacing Effect on Growth on Scot Pine
+## Spacing Effect on Growth of Scot Pine
 
 This is a long term experiment to test the effect of four different
 spacing treatments 1m, 1.5m, 2m, and 2.5m across eight plots. The
@@ -227,9 +227,9 @@ The values will be summarized to give a clear value for each plots then
 combined with the plot characteristics for further analysis
 
 ``` r
-plot_ba <-summaryBy(ba~plot, data = dbh1012, FUN = sum)
+plotba <-summaryBy(ba~plot, data = dbh1012, FUN = sum)
 
-site1012 <- merge(exp1012, plot_ba, all = T)
+site1012 <- merge(exp1012, plotba, all = T)
 
 site1012
 ```
@@ -246,3 +246,70 @@ site1012
 
 With this table we can estimate the basal area per hectare and the basal
 area per treatment
+
+``` r
+## Estimating the basal area per hectare
+site1012$baha <- 1/site1012$areaha * site1012$ba.sum
+
+##converting to basal area per hectare from mm2 to m2
+site1012$baham2 <- round((site1012$baha/1000000), 2)
+
+## Estimating the basal area per treatment
+trtmean1012 <- round(summaryBy(baham2~treatment,
+                         data = site1012, FUN = mean), 1)
+site1012
+```
+
+    ##   plot areaha treatment      ba.sum         baha   baham2
+    ## 1   11 0.0400       2.5 23046044774 576151119349 576151.1
+    ## 2   12 0.0324       2.0 21173303890 653497033649 653497.0
+    ## 3   13 0.0288       1.5 17425557531 605054080930 605054.1
+    ## 4   14 0.0288       1.0 14825571265 514776780045 514776.8
+    ## 5   21 0.0400       2.5 25523624363 638090609077 638090.6
+    ## 6   22 0.0324       2.0 20460102641 631484649423 631484.7
+    ## 7   23 0.0288       1.5 18077494007 627690764122 627690.8
+    ## 8   24 0.0288       1.0 12361439129 429216636420 429216.6
+
+``` r
+barplot(site1012$baham2,
+        names.arg = site1012$plot,
+        ylim = c(0,40),
+        col = c(2,3,4,5),
+        ylab = 'm2/ha',
+        xlab = 'plot',
+        main = 'Basal area across sites')
+legend('right',
+       legend = c('11','12','13','14'),
+       pch = 18,
+       col = c(2,3,4,5))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-13-1.png)
+
+Given the figures, we need extra information to be able to estimate the
+density of the stand. To do that, we estimate the plot density then
+extrapolate to a hectare
+
+``` r
+## To derive the plot density
+plotdens <- summaryBy(nr~plot, data = dbh1012, FUN = length)
+
+
+## we merge the plot density to the site information
+site1012 <- merge (site1012, plotdens, all = T)
+
+##renaming plot density column 
+names(site1012)[7] <- 'trees_per_plot'
+
+## After this we can get the density per hectare
+site1012$dens_ha <- round((site1012$trees_per_plot * (1/site1012$areaha)), 1)
+
+barplot(site1012$dens_ha,
+        names.arg = site1012$treatment,
+        xlab = "density",
+        ylab = "treatment",
+        main = "Treatment and Density relationship",
+        col = c(2,3,4,5))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-14-1.png)

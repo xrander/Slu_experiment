@@ -8,7 +8,7 @@ output:
 
 # Sverige LantbruksUniversitet (SLU) Permanent Forest Experiments
 
-![SLU](https://i0.wp.com/odlandestadsbasarer.se/wp-content/uploads/2017/09/SLU-2.jpg?ssl=1)
+![](https://i0.wp.com/odlandestadsbasarer.se/wp-content/uploads/2017/09/SLU-2.jpg?ssl=1)
 
 ## Brief Introduction
 
@@ -103,7 +103,7 @@ It is evident that the fertilized are performing than the control, with the B cl
 
 * * * * * * *
 
-## Spacing Effect on Growth on Scot Pine
+## Spacing Effect on Growth of Scot Pine
 This is a long term experiment to test the effect of four different spacing treatments 1m, 1.5m, 2m, and 2.5m across eight plots. The experiment is designed such that two plots are assigned a treatment, in this case the plots. The plots are also of varying sizes.
 
 ### The Design of the experiment using R
@@ -177,10 +177,60 @@ dbh1012$ba <- pi * ((dbh1012$dm^2/2)^2)
 The values will be summarized to give a clear value for each plots then combined with the plot characteristics for further analysis
 
 ```` {r}
-plot_ba <-summaryBy(ba~plot, data = dbh1012, FUN = sum)
+plotba <-summaryBy(ba~plot, data = dbh1012, FUN = sum)
 
-site1012 <- merge(exp1012, plot_ba, all = T)
+site1012 <- merge(exp1012, plotba, all = T)
 
 site1012
 ````
 With this table we can estimate the basal area per hectare and the basal area per treatment
+````{r}
+## Estimating the basal area per hectare
+site1012$baha <- 1/site1012$areaha * site1012$ba.sum
+
+##converting to basal area per hectare from mm2 to m2
+site1012$baham2 <- round((site1012$baha/1000000), 2)
+
+## Estimating the basal area per treatment
+trtmean1012 <- round(summaryBy(baham2~treatment,
+                         data = site1012, FUN = mean), 1)
+site1012
+````
+````{r}
+barplot(site1012$baham2,
+        names.arg = site1012$plot,
+        ylim = c(0,40),
+        col = c(2,3,4,5),
+        ylab = 'm2/ha',
+        xlab = 'plot',
+        main = 'Basal area across sites')
+legend('right',
+       legend = c('11','12','13','14'),
+       pch = 18,
+       col = c(2,3,4,5))
+````
+
+Given the figures, we need extra information to be able to estimate the density of the stand.
+To do that, we estimate the plot density then extrapolate to a hectare
+````{r}
+## To derive the plot density
+plotdens <- summaryBy(nr~plot, data = dbh1012, FUN = length)
+
+
+## we merge the plot density to the site information
+site1012 <- merge (site1012, plotdens, all = T)
+
+##renaming plot density column 
+names(site1012)[7] <- 'trees_per_plot'
+
+## After this we can get the density per hectare
+site1012$dens_ha <- round((site1012$trees_per_plot * (1/site1012$areaha)), 1)
+
+barplot(site1012$dens_ha,
+        names.arg = site1012$treatment,
+        xlab = "density",
+        ylab = "treatment",
+        main = "Treatment and Density relationship",
+        col = c(2,3,4,5))
+
+````
