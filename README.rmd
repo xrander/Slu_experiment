@@ -191,10 +191,17 @@ site1012
 With this table we can estimate the basal area per hectare and the basal area per treatment
 ````{r}
 ## Estimating the basal area per hectare
+<<<<<<< HEAD
 site1012$baha <- (1/site1012$areaha) * site1012$ba.sum
 
 ##converting to basal area per hectare from mm2 to m2
 site1012$baham2 <- round((site1012$baha/1000000),2)
+=======
+site1012$baha <- 1/site1012$areaha * site1012$ba.sum
+
+##converting to basal area per hectare from mm2 to m2
+site1012$baham2 <- round((site1012$baha/1000000), 2)
+>>>>>>> 49653b069e39fe7089f7c89fde50bbe9af7762cf
 
 ## Estimating the basal area per treatment
 trtmean1012 <- round(summaryBy(baham2~treatment,
@@ -204,8 +211,14 @@ site1012
 ````{r}
 barplot(site1012$baham2,
         names.arg = site1012$plot,
+<<<<<<< HEAD
         col = c(2,3,4,5),
         ylab = 'Basal Aream2/ha',
+=======
+        ylim = c(0,40),
+        col = c(2,3,4,5),
+        ylab = 'm2/ha',
+>>>>>>> 49653b069e39fe7089f7c89fde50bbe9af7762cf
         xlab = 'plot',
         main = 'Basal area across sites')
 legend('right',
@@ -214,8 +227,11 @@ legend('right',
        col = c(2,3,4,5))
 ````
 
+<<<<<<< HEAD
 #### Stand Density Estimation
 
+=======
+>>>>>>> 49653b069e39fe7089f7c89fde50bbe9af7762cf
 Given the figures, we need extra information to be able to estimate the density of the stand.
 To do that, we estimate the plot density then extrapolate to a hectare
 ````{r}
@@ -226,9 +242,17 @@ plotdens <- summaryBy(nr~plot, data = dbh1012, FUN = length)
 ## we merge the plot density to the site information
 site1012 <- merge (site1012, plotdens, all = T)
 
+<<<<<<< HEAD
 
 ## After this we can get the density per hectare
 site1012$dens_ha <- round((site1012$nr.length * (1/site1012$areaha)), 1)
+=======
+##renaming plot density column 
+names(site1012)[7] <- 'trees_per_plot'
+
+## After this we can get the density per hectare
+site1012$dens_ha <- round((site1012$trees_per_plot * (1/site1012$areaha)), 1)
+>>>>>>> 49653b069e39fe7089f7c89fde50bbe9af7762cf
 
 barplot(site1012$dens_ha,
         names.arg = site1012$treatment,
@@ -238,6 +262,7 @@ barplot(site1012$dens_ha,
         col = c(2,3,4,5))
 
 ````
+<<<<<<< HEAD
 #### Deriving Arithmetic Mean Diameter(AMD) and Quadratic Mean Diameter(QMD)
 ````{r}
 plotdbh <- summaryBy(dm+dd~plot, data = dbh1012, FUN = c(mean, sum))
@@ -291,3 +316,5 @@ legend ("topleft",
           col = c("darkred", "darkgreen"))
 ````
 ### Regression and Correlation
+=======
+>>>>>>> 49653b069e39fe7089f7c89fde50bbe9af7762cf
