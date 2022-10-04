@@ -1,6 +1,6 @@
 # Sverige LantbruksUniversitet (SLU) Permanent Forest Experiments
 
-![SLU](https://i0.wp.com/odlandestadsbasarer.se/wp-content/uploads/2017/09/SLU-2.jpg?ssl=1)
+![](https://i0.wp.com/odlandestadsbasarer.se/wp-content/uploads/2017/09/SLU-2.jpg?ssl=1)
 
 ## Brief Introduction
 
@@ -13,18 +13,24 @@ The data used for this analysis were provided mainly by the research
 centre at Tonnersjoheden and have been [uploaded
 here](https://github.com/xrander/SLU-Plantation-Experimentation/tree/master/Data).
 
-**Data Exploration** Package used is the doBy library To install the
-package run the command `install.packages('doBy')`
+**Data Exploration** Package used is the doBy library doBy, dplyr,
+lattice, ggplot, TukeyC To install the package run the commandlike this
+`install.packages('doBy')` as an example.
 
 ``` r
 library(doBy)
 library(dplyr)
+library(lattice)
+library(ggplot2)
+library(TukeyC)
 ```
 
 ## Clone Performance Test
 
 The first data used is the ‘popdata’ which is accessible at
-[popdata.txt](https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/popdata.txt)
+[popdata.txt](https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/popdata.txt).
+It is an experiment to see the performance of clones. This is a part of
+a much larger experiment and only a part is used for the first analysis.
 
 ``` r
 pop <- read.table('https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/Lab1/popdata.txt', header = T)
@@ -130,7 +136,7 @@ clone class being the highest performing either fertilized or not.
 
 ------------------------------------------------------------------------
 
-## Spacing Effect on Growth on Scot Pine
+## Spacing Effect on Growth of Scot Pine
 
 This is a long term experiment to test the effect of four different
 spacing treatments 1m, 1.5m, 2m, and 2.5m across eight plots. The
@@ -202,6 +208,8 @@ legend('topleft',
 ![](Readme_files/figure-markdown_github/unnamed-chunk-9-1.png) The data
 seems to be alright, we can now proceed with the analysis
 
+#### Basal Area Estimation
+
 First we estimate the average of the two diameters, we also square the
 result to get values needed to estimate the quadratic mean then we
 calculate the basal area
@@ -214,7 +222,7 @@ dbh1012$dm <- (dbh1012$d1 + dbh1012$d2)/2
 dbh1012$dd <- dbh1012$dm^2
 
 ## basal area estimation
-dbh1012$ba <- pi * ((dbh1012$dm^2/2)^2)
+dbh1012$ba <- pi * ((dbh1012$dm/2)^2)
 ```
 
 -   dm: mean of both diameter
@@ -227,22 +235,154 @@ The values will be summarized to give a clear value for each plots then
 combined with the plot characteristics for further analysis
 
 ``` r
-plot_ba <-summaryBy(ba~plot, data = dbh1012, FUN = sum)
+plotba <-summaryBy(ba~plot, data = dbh1012, FUN = sum)
 
-site1012 <- merge(exp1012, plot_ba, all = T)
+site1012 <- merge(exp1012, plotba, all = T)
 
 site1012
 ```
 
-    ##   plot areaha treatment      ba.sum
-    ## 1   11 0.0400       2.5 23046044774
-    ## 2   12 0.0324       2.0 21173303890
-    ## 3   13 0.0288       1.5 17425557531
-    ## 4   14 0.0288       1.0 14825571265
-    ## 5   21 0.0400       2.5 25523624363
-    ## 6   22 0.0324       2.0 20460102641
-    ## 7   23 0.0288       1.5 18077494007
-    ## 8   24 0.0288       1.0 12361439129
+    ##   plot areaha treatment    ba.sum
+    ## 1   11 0.0400       2.5  993838.7
+    ## 2   12 0.0324       2.0 1025256.4
+    ## 3   13 0.0288       1.5  968972.4
+    ## 4   14 0.0288       1.0  963524.9
+    ## 5   21 0.0400       2.5 1043748.0
+    ## 6   22 0.0324       2.0 1045694.8
+    ## 7   23 0.0288       1.5  953649.5
+    ## 8   24 0.0288       1.0  903224.4
 
 With this table we can estimate the basal area per hectare and the basal
 area per treatment
+
+``` r
+## Estimating the basal area per hectare
+site1012$baha <- (1/site1012$areaha) * site1012$ba.sum
+
+##converting to basal area per hectare from mm2 to m2
+site1012$baham2 <- round((site1012$baha/1000000),2)
+
+## Estimating the basal area per treatment
+trtmean1012 <- round(summaryBy(baham2~treatment,
+                         data = site1012, FUN = mean), 1)
+site1012
+```
+
+    ##   plot areaha treatment    ba.sum     baha baham2
+    ## 1   11 0.0400       2.5  993838.7 24845968  24.85
+    ## 2   12 0.0324       2.0 1025256.4 31643716  31.64
+    ## 3   13 0.0288       1.5  968972.4 33644876  33.64
+    ## 4   14 0.0288       1.0  963524.9 33455726  33.46
+    ## 5   21 0.0400       2.5 1043748.0 26093700  26.09
+    ## 6   22 0.0324       2.0 1045694.8 32274532  32.27
+    ## 7   23 0.0288       1.5  953649.5 33112830  33.11
+    ## 8   24 0.0288       1.0  903224.4 31361958  31.36
+
+``` r
+barplot(site1012$baham2,
+        names.arg = site1012$plot,
+        col = c(2,3,4,5),
+        ylab = 'Basal Aream2/ha',
+        xlab = 'plot',
+        main = 'Basal area across sites')
+legend('right',
+       legend = c('11','12','13','14'),
+       pch = 18,
+       col = c(2,3,4,5))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-13-1.png)
+
+#### Stand Density Estimation
+
+Given the figures, we need extra information to be able to estimate the
+density of the stand. To do that, we estimate the plot density then
+extrapolate to a hectare
+
+``` r
+## To derive the plot density
+plotdens <- summaryBy(nr~plot, data = dbh1012, FUN = length)
+
+
+## we merge the plot density to the site information
+site1012 <- merge (site1012, plotdens, all = T)
+
+
+## After this we can get the density per hectare
+site1012$dens_ha <- round((site1012$nr.length * (1/site1012$areaha)), 1)
+
+barplot(site1012$dens_ha,
+        names.arg = site1012$treatment,
+        xlab = "density",
+        ylab = "treatment",
+        main = "Treatment and Density relationship",
+        col = c(2,3,4,5))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-14-1.png) \####
+Deriving Arithmetic Mean Diameter(AMD) and Quadratic Mean Diameter(QMD)
+
+``` r
+plotdbh <- summaryBy(dm+dd~plot, data = dbh1012, FUN = c(mean, sum))
+
+## Merging values to site1012
+site1012 <- merge(site1012, plotdbh, all = T)
+
+##Converting dm.mean and dm.sum from millimeters to centimeter
+site1012$dm.mean_cm <- site1012$dm.mean/10
+
+site1012$dm.sum_cm <- site1012$dm.sum/10
+
+## "site1012$dm.mean_cm" is synonymous to AMD therefore
+site1012$amd = site1012$dm.mean_cm
+
+#converting dd.mean and dd.sum from mm^2 to cm ^2
+site1012$dd.mean_cm <- site1012$dd.mean/100
+
+site1012$dd.sum_cm <- site1012$dd.sum/100
+
+#TO get QMD
+site1012$qmd <- sqrt(site1012$dd.sum/site1012$nr.length)/10
+```
+
+#### Basal area stand density relationship
+
+``` r
+site1012[,c("baham2", "dens_ha")]
+```
+
+    ##   baham2 dens_ha
+    ## 1  24.85  1600.0
+    ## 2  31.64  2222.2
+    ## 3  33.64  2847.2
+    ## 4  33.46  3750.0
+    ## 5  26.09  1550.0
+    ## 6  32.27  2469.1
+    ## 7  33.11  2604.2
+    ## 8  31.36  3784.7
+
+``` r
+plot(x = site1012$treatment,
+     y = site1012$amd,
+     main = 'AMD and QMD comparison',
+     ylim = c(8, 16),
+     pch = 21,
+     col = "darkred",
+     xlab = "Treatment",
+     ylab = "AMD and QMD(cm)")
+points (x = site1012$treatment,
+     y = site1012$qmd,
+     type = "p",
+     ylim = c(8, 16),
+     pch = 19,
+     col = "darkgreen",
+     xlab = "Treatment",
+     ylab = "AMD and QMD(cm)")
+legend ("topleft",
+          legend = c("AMD", "QMD"),
+          pch = c(21, 19),
+          col = c("darkred", "darkgreen"))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-17-1.png) \###
+Regression and Correlation

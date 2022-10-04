@@ -86,10 +86,10 @@ site1012 <- merge(exp1012, plotba, all = T)
 site1012$baha <- 1/site1012$areaha * site1012$ba.sum
 
 ##converting to basal area per hectare from mm2 to m2
-site1012$bahamil <- site1012$baha/1000000
+site1012$baham2 <- site1012$baha/1000000
 
 ##getting the mean basal area per treatment, treatments are 1, 1.5,2,2.5.
-trtmean1012 <- summaryBy(bahamil~treatment,
+trtmean1012 <- summaryBy(baham2~treatment,
                          data = site1012, FUN = mean)
 ##rounding up values
 trtmean1012 <- round(trtmean1012, 1)
@@ -110,16 +110,14 @@ site1012 <- merge (site1012, plotdens, all = T)
 
 ## renaming some column
 names(site1012)[7] <- "trees_per_plot"
-names(site1012)[6] <- 'basal_area_in_m2'
-names(site1012)[4] <- 'ba_sum'
 
 ##getting the trees density per hectare assigned to densha
-site1012$densha <- round((site1012$trees_per_plot * (1/site1012$areaha)), 1)
+site1012$dens_ha <- round((site1012$trees_per_plot * (1/site1012$areaha)), 1)
 
 
 
 ##visualizing the relationship between treatment and density
-plot(site1012$treatment, site1012$densha, type = "p",
+plot(site1012$treatment, site1012$dens_ha, type = "p",
      xlab = "density",
      ylab = "treatment", main = "Treatment and Density relationship",
      pch = 20, col = "red")
@@ -148,20 +146,20 @@ site1012$dd.mean_cm <- site1012$dd.mean/100
 site1012$dd.sum_cm <- site1012$dd.sum/100
 
 #TO get QMD
-site1012$qmd <- sqrt(site1012$dd.sum/site1012$trees_per_plot)/10
+site1012$qmd <- sqrt(site1012$dd.sum/site1012$nr.length)/10
 
 -------------
   
 # Visualizing result
 
 ## Basal area vs density relationship
-plot(site1012$basal_area_in_m2, site1012$densha,
+plot(site1012$dens_ha, site1012$baham2,
      main = "Basal area vs Density",
      xlab = "Basal Area",
      ylab = "Density",
      pch = 24,
-     col = site1012$plot) +
-  legend("topleft", legend = c(site1012$plot),
+     col = site1012$plot)
+legend("topleft", legend = c(site1012$plot),
          pch = 24,
          col = site1012$plot)
 
@@ -173,16 +171,17 @@ plot(x = site1012$treatment,
      pch = 21,
      col = "darkred",
      xlab = "Treatment",
-     ylab = "AMD and QMD(cm)") + 
-  points (x = site1012$treatment,
+     ylab = "AMD and QMD(cm)")
+points (x = site1012$treatment,
      y = site1012$qmd,
      type = "p",
      ylim = c(8, 16),
      pch = 19,
      col = "darkgreen",
      xlab = "Treatment",
-     ylab = "AMD and QMD(cm)") +
-  legend ("topleft",
+     ylab = "AMD and QMD(cm)")
+legend ("topleft",
           legend = c("AMD", "QMD"),
           pch = c(21, 19),
           col = c("darkred", "darkgreen"))
+
