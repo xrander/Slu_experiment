@@ -257,17 +257,10 @@ area per treatment
 
 ``` r
 ## Estimating the basal area per hectare
-<<<<<<< HEAD
 site1012$baha <- (1/site1012$areaha) * site1012$ba.sum
 
 ##converting to basal area per hectare from mm2 to m2
 site1012$baham2 <- round((site1012$baha/1000000),2)
-=======
-site1012$baha <- 1/site1012$areaha * site1012$ba.sum
-
-##converting to basal area per hectare from mm2 to m2
-site1012$baham2 <- round((site1012$baha/1000000), 2)
->>>>>>> 49653b069e39fe7089f7c89fde50bbe9af7762cf
 
 ## Estimating the basal area per treatment
 trtmean1012 <- round(summaryBy(baham2~treatment,
@@ -275,7 +268,6 @@ trtmean1012 <- round(summaryBy(baham2~treatment,
 site1012
 ```
 
-<<<<<<< HEAD
     ##   plot areaha treatment    ba.sum     baha baham2
     ## 1   11 0.0400       2.5  993838.7 24845968  24.85
     ## 2   12 0.0324       2.0 1025256.4 31643716  31.64
@@ -285,29 +277,12 @@ site1012
     ## 6   22 0.0324       2.0 1045694.8 32274532  32.27
     ## 7   23 0.0288       1.5  953649.5 33112830  33.11
     ## 8   24 0.0288       1.0  903224.4 31361958  31.36
-=======
-    ##   plot areaha treatment      ba.sum         baha   baham2
-    ## 1   11 0.0400       2.5 23046044774 576151119349 576151.1
-    ## 2   12 0.0324       2.0 21173303890 653497033649 653497.0
-    ## 3   13 0.0288       1.5 17425557531 605054080930 605054.1
-    ## 4   14 0.0288       1.0 14825571265 514776780045 514776.8
-    ## 5   21 0.0400       2.5 25523624363 638090609077 638090.6
-    ## 6   22 0.0324       2.0 20460102641 631484649423 631484.7
-    ## 7   23 0.0288       1.5 18077494007 627690764122 627690.8
-    ## 8   24 0.0288       1.0 12361439129 429216636420 429216.6
->>>>>>> 49653b069e39fe7089f7c89fde50bbe9af7762cf
 
 ``` r
 barplot(site1012$baham2,
         names.arg = site1012$plot,
-<<<<<<< HEAD
         col = c(2,3,4,5),
         ylab = 'Basal Aream2/ha',
-=======
-        ylim = c(0,40),
-        col = c(2,3,4,5),
-        ylab = 'm2/ha',
->>>>>>> 49653b069e39fe7089f7c89fde50bbe9af7762cf
         xlab = 'plot',
         main = 'Basal area across sites')
 legend('right',
@@ -318,11 +293,8 @@ legend('right',
 
 ![](Readme_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
-<<<<<<< HEAD
 #### Stand Density Estimation
 
-=======
->>>>>>> 49653b069e39fe7089f7c89fde50bbe9af7762cf
 Given the figures, we need extra information to be able to estimate the
 density of the stand. To do that, we estimate the plot density then
 extrapolate to a hectare
@@ -335,17 +307,9 @@ plotdens <- summaryBy(nr~plot, data = dbh1012, FUN = length)
 ## we merge the plot density to the site information
 site1012 <- merge (site1012, plotdens, all = T)
 
-<<<<<<< HEAD
 
 ## After this we can get the density per hectare
 site1012$dens_ha <- round((site1012$nr.length * (1/site1012$areaha)), 1)
-=======
-##renaming plot density column 
-names(site1012)[7] <- 'trees_per_plot'
-
-## After this we can get the density per hectare
-site1012$dens_ha <- round((site1012$trees_per_plot * (1/site1012$areaha)), 1)
->>>>>>> 49653b069e39fe7089f7c89fde50bbe9af7762cf
 
 barplot(site1012$dens_ha,
         names.arg = site1012$treatment,
@@ -355,7 +319,6 @@ barplot(site1012$dens_ha,
         col = c(2,3,4,5))
 ```
 
-<<<<<<< HEAD
 ![](Readme_files/figure-markdown_github/unnamed-chunk-14-1.png) \####
 Deriving Arithmetic Mean Diameter(AMD) and Quadratic Mean Diameter(QMD)
 
@@ -421,8 +384,21 @@ legend ("topleft",
           col = c("darkred", "darkgreen"))
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-17-1.png) \###
-Regression and Correlation
-=======
-![](Readme_files/figure-markdown_github/unnamed-chunk-14-1.png)
->>>>>>> 49653b069e39fe7089f7c89fde50bbe9af7762cf
+![](Readme_files/figure-markdown_github/unnamed-chunk-17-1.png)
+
+Next we try to:
+
+-   evaluate the volume growth for individual trees
+
+-   estimate the periodic annual increment (PAI),
+
+-   estimate the annual or yearly increment and
+
+-   estimate the plot and treatment volume growth”
+
+To do this we use the tvol1012 data which consists of a revised data
+from 2 separate years, year 1980 and 1987.
+
+### Regression and Correlation
+
+[Back to home page](https://xrander.github.io)
