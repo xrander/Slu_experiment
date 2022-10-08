@@ -1,0 +1,32 @@
+
+#lattice package
+#xyplot with some useful arguments
+#dataframe:df has 3 variables:
+#var1, var2, var3 and var4 is continuous. 
+#if you want to use variables as factors: factor()
+##remember to have the right number of()
+##remember , for every new argument
+
+
+xyplot(var2~var1|factor(var3), ##behind | makes the panels, if factor the name is visible
+	group=factor(var4),   ##group makes color or pointtype by group
+	data=df,
+       type=c("p","l","g"),                                 	##point,line, grid  
+       strip = strip.custom(bg = 'white'),                  	##if panel, background white
+       par.settings=simpleTheme(col=c(3,"darkgreen"),cex=2, 	##color and pointsize
+                                pch=c(1,16),                	##type of points
+                                lty=c(1,2),		    	##type of lines
+                                lwd=c(2,0.5)), 		    	##linewidth
+      auto.key = list(border="black", 		##legend according to par.settings
+			corner = c(0.02, 0.94), 		##legend in corner	
+			 (space="right),			##or legend outside
+                    	cex=1.5,points=T,lines=T,		## sixe of legend and if points or lines
+			text=c("legend1","legend2"),		##legendtext for levels 				
+	xlab=list(label="xvariabel",cex=1.5,col=3),         	 ## labels
+       	ylab=list(label="yvariabel", cex=1.5),
+       	ylim=c(0,11),xlim=c(0,21 ))			 	 ## limits of axes
+
+
+
+##For barcharts
+barchart(...., stack=T) ## groups added on top of each other
