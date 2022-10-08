@@ -272,8 +272,8 @@ plot(spruce_new$age, spruce_new$stand_vol,
      ylim = c(0,1350),
      main = 'Spruce Stand Development',
      pch = 15,
-     xlab = substitute(paste(bold(Age))),
-     ylab = substitute(paste(bold(Volume)))) +
+     xlab = substitute(paste(bold('Age (years)'))),
+     ylab = substitute(paste(bold('Volume (m3)')))) +
   points(spruce_new$age,spruce_new$sumvol,
          col ='red',
          pch = 15,
@@ -300,8 +300,8 @@ plot(spruce_new$age, spruce_new$mai,
      ylim = c(0,18),
      xlim = c(0, 140),
      main = 'MAI and CAI, Thinning age include',
-     ylab = substitute(paste(bold('Growth'))),
-     xlab = substitute(paste(bold('age')))) +
+     ylab = substitute(paste(bold('m3 ha-1 yr-1'))),
+     xlab = substitute(paste(bold('Age (years)')))) +
   points(spruce_new$age, spruce_new$cai,
          type = 'b',
          pch = 20,
@@ -322,10 +322,6 @@ plot(spruce$age, spruce$stand_vol,
      main = 'Birch and Spruce stand development',
      xlab = substitute(paste(bold('Age(years)'))),
      ylab = substitute(paste(bold('volume (m3/ha)')))) + 
-  text(x = 50, y = 550,
-       labels ='Stand volume development showing thinning intensity and frequency',
-       col = 'black',
-       cex = 0.8) +
   points(birch$age, birch$stand_vol,
          type = 'b',
          pch = 17,
@@ -338,25 +334,29 @@ plot(spruce$age, spruce$stand_vol,
 ###  Answer: Birch was thinned once and Spruce was thinned twice.
 
 
+par(mar=c(5, 4, 4, 6) + 0.1)
 
 ## 2- Were the thinnings heavy or not?
 
-plot(x = spruce_new$age, y = spruce_new$stdens/100,
+plot(x = spruce_new$age, y = spruce_new$stdens,
      col = 'green',
      pch = 17,
      type = 'b',
      main = 'Thinning Intensity and Frequency',
+     ylim = c(0, 2400),
      xlab = substitute(paste(bold('Age'))),
-     ylab = substitute(paste(bold('Values')))) +
-     text(x = 104, y = 7,
-          labels = "stand_density is in the 100s and stand_vol is in m3",
-          cex = 0.7,
-          col = 'red') +
-  lines(x = spruce_new$age,y =spruce_new$stand_vol/50,
-         col = 'red',
-        type = 'b',
-        pch = 15)+
-  legend("topright",
+     ylab = substitute(paste(bold('Stand Density'))))
+par(new = TRUE)
+plot(x = spruce_new$age,y =spruce_new$stand_vol,
+     col = 'red',
+     type = 'b',
+     pch = 15,
+     axes = FALSE,
+     ylab = " ",
+     xlab = " ")
+axis(side = 4, at = pretty(range(spruce_new$stand_vol)))
+mtext(substitute(paste(bold('Stand Volume (m3)'))),side = 4, line = 4)
+legend("right",
          legend = c('stand_density', 'standing volume(m3)'),
          pch = c(17, 15),
          col =c('green', 'red','purple','orange'))
@@ -366,28 +366,31 @@ plot(x = spruce_new$age, y = spruce_new$stdens/100,
 ### The second and third thinnings have thinnings ranging from 35% to 40% of stands removed respectively.
 ### The chart from the code above gives a better explanation of the changes
 
+## Included parameter to adjust chart margins
+par(mar=c(5, 4, 4, 6) + 0.1)
+
+## The cai is having NA, so this is changed to zero
+spruce_new$cai[is.na(spruce_new$cai)] <- 0
 
 ## 3- What happened to the CAI after the first thinning
-plot(spruce_new$age, spruce_new$stand_vol/10,
+plot(spruce_new$age, spruce_new$stand_vol,
      col = 'blue',
      type = 'b',
      pch = 18,
      main = 'Stand volume showing thinnings with CAI of Spruce',
-     xlab = substitute(paste(bold('Age'))),
-     ylab = substitute(paste(bold('value')))) +
-  text(x = 55, y = 50,
-       labels = substitute(paste(bold("stand_volume per 10m3"))),
-       col = 'orange',
-       cex = 0.8) +
-  points (spruce_new$age, spruce_new$cai,
-          col = 'red',
-          pch = 17,
-          type = 'b') +
-  text(x = 40, y = 10,
-       labels = substitute(paste(bold("CAI"))),
-       col = 'orange',
-       cex = 0.8) +
-  legend("topleft",
+     xlab = substitute(paste(bold('Age (years)'))),
+     ylab = substitute(paste(bold('Stand Volume(m3)'))))
+par(new = TRUE)
+plot (spruce_new$age, spruce_new$cai,
+        col = 'red',
+        pch = 17,
+        axes = FALSE, 
+        type = 'b',
+        xlab = "",
+        ylab = "")
+axis(side = 4, at = pretty(range(spruce_new$cai)))
+mtext(substitute(paste(bold('CAI (me ha-1 yr-1)'))), side =4, line = 3)
+legend("bottomright",
           legend = c('stand_volume(m3)', 'CAI'),
           pch = c(18, 17),
           col = c('blue', 'red'))
@@ -406,12 +409,12 @@ plot(spruce_new$age, spruce_new$stdens,
      pch = 18,
      main = 'Spruce and Birch Stand density ',
      xlab = substitute(paste(bold('Age'))),
-     ylab = substitute(paste(bold('No of Trees')))) +
-  points (birch_new$age, birch_new$stdens,
+     ylab = substitute(paste(bold('No of Trees'))))
+points (birch_new$age, birch_new$stdens,
           col = 'red',
           pch = 17,
-          type = 'b') +
-  legend("topright",
+          type = 'b')
+legend("topright",
          legend = c('Spruce', 'Birch'),
          pch = c(18, 17),
          col = c('blue', 'red'))
@@ -422,13 +425,13 @@ plot(spruce_new$age, spruce_new$mor_vol,
      type = 'b',
      pch = 18,
      main = 'Spruce and Birch mortality ',
-     xlab = substitute(paste(bold('Age'))),
-     ylab = substitute(paste(bold('Mortality Volume')))) +
-  points (birch_new$age, birch_new$mor_vol,
+     xlab = substitute(paste(bold('Age (years)'))),
+     ylab = substitute(paste(bold('Volume of dead trees (m3) '))))
+points (birch_new$age, birch_new$mor_vol,
           col = 'red',
           pch = 17,
-          type = 'b') +
-  legend("topright",
+          type = 'b')
+legend("topleft",
          legend = c('Spruce', 'Birch'),
          pch = c(18, 17),
          col = c('blue', 'red'))
@@ -439,13 +442,14 @@ plot(spruce_new$age, spruce_new$mai,
      type = 'b',
      pch = 18,
      main = 'Spruce and Birch Development overtime',
-     xlab = substitute(paste(bold('Age'))),
-     ylab = substitute(paste(bold('MAI (volha-1yr-1)')))) +
-  points (birch_new$age, birch_new$mai,
+     xlab = substitute(paste(bold('Age (years)'))),
+     ylab = substitute(paste(bold('MAI (m3 ha-1yr-1)'))))
+points (birch_new$age, birch_new$mai,
           col = 'red',
           pch = 17,
-          type = 'b') +
-  legend("topright",
+          type = 'b')
+legend("topright",
          legend = c('Spruce', 'Birch'),
          pch = c(18, 17),
          col = c('blue', 'red'))
+
