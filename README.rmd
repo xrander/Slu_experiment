@@ -4,6 +4,7 @@ author: 'Olamide Adu'
 output: 
   md_document: 
     variant: markdown_github
+theme: minima
 ---
 
 # Sverige LantbruksUniversitet (SLU) Permanent Forest Experiments
@@ -203,11 +204,15 @@ legend('topleft',
 
 The data seems to be alright, we can now proceed with the analysis
 
-* _ *
 
 ### Basal Area Estimation
+Basal area is the average amount of an area occupied by tree stems, defined as the cross-sectional area of all stems in a stand measured at breast height (dbh) and express as per unit of land area.The formula of dbh is 
+$$BA = \pi (DBH/2)^2$$
+Where:
+- BA = Basal area
 
-We estimate the average of the two diameters, we also square the result to get values needed to estimate the quadratic mean then we calculate the basal area
+- DBH = diameter at breast height (1.3m above ground)
+
 
 ```{r}
 ## average of the two diameter
@@ -222,11 +227,11 @@ dbh1012$ba <- pi * ((dbh1012$dm/2)^2)
 
 -   dm: mean of both diameter
 
--   dd: diameter raised to the power 2
+-   dd: dbh squared
 
 -   ba: basal area
 
-The values will be summarized to give a clear value for each plots then combined with the plot characteristics for further analysis
+The sum of basal area for each plots can be measured now using doBy's `summaryBy` function and the result merge with `site1012` to have a more robust dataset
 
 ```{r}
 plotba <-summaryBy(ba~plot, data = dbh1012, FUN = sum)
@@ -235,8 +240,7 @@ site1012 <- merge(exp1012, plotba, all = T)
 
 site1012
 ```
-
-With this table we can estimate the basal area per hectare and the basal area per treatment
+Now we can estimate the basal area per hectare and basal area of each treatments.
 
 ```{r}
 ## Estimating the basal area per hectare
@@ -255,16 +259,29 @@ site1012
 barplot(site1012$baham2,
         names.arg = site1012$plot,
         col = c(2,3,4,5),
-        ylab = 'Basal Aream2/ha',
-        xlab = 'plot',
+        ylab = substitute(paste(bold('Basal Aream2/ha'))),
+        xlab = substitute(paste(bold('plot'))),
         main = 'Basal area across sites')
 legend('right',
-       legend = c('11','12','13','14'),
+       legend = unique(site1012$treatment),
        pch = 18,
+       cex = 1.0,
        col = c(2,3,4,5))
 ```
 
 ### Stand Density Estimation
+Stand density is a quantitative measurement of a forest. It describes the number of individuals (trees) on a unit area in either absolute or relative terms. To read more on stand density click [here](https://www.sciencedirect.com/topics/agricultural-and-biological-sciences/stand-density#:~:text=Stand%20density%20is%20a%20quantitative,Avery%20and%20Burkhart%2C%201994).)
+
+**Estimating the stand density**
+To calculate the density we need some information.
+-   The size of the forest: This is usually expressed in ha or m2
+
+-   The size of sample plots: this is important to calculate the total number of plots in the stand.
+
+-   The number of trees in a sample plot
+
+
+
 
 Given the figures, we need extra information to be able to estimate the density of the stand. To do that, we estimate the plot density then extrapolate to a hectare
 
@@ -288,6 +305,7 @@ barplot(site1012$dens_ha,
         col = c(2,3,4,5))
 
 ```
+There's a marked difference 
 
 ### Deriving Arithmetic Mean Diameter(AMD) and Quadratic Mean Diameter(QMD)
 
