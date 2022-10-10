@@ -345,7 +345,7 @@ site1012
 barplot(site1012$baham2,
         names.arg = site1012$plot,
         col = c(2,3,4,5),
-        ylab = substitute(paste(bold('Basal Aream2/ha'))),
+        ylab = substitute(paste(bold('Basal Area (m2/ha)'))),
         xlab = substitute(paste(bold('plot'))),
         main = 'Basal area across sites')
 legend('right',
@@ -355,13 +355,11 @@ legend('right',
        col = c(2,3,4,5))
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-14-1.png)
-
-### Stand Density Estimation
-
-Stand density is a quantitative measurement of a forest. It describes
-the number of individuals (trees) on a unit area in either absolute or
-relative terms. To read more on stand density click
+![](Readme_files/figure-markdown_github/unnamed-chunk-14-1.png) \* \* \*
+\* \* \* \* \### Stand Density Estimation Stand density is a
+quantitative measurement of a forest. It describes the number of
+individuals (trees) on a unit area in either absolute or relative terms.
+To read more on stand density click
 [here](https://www.sciencedirect.com/topics/agricultural-and-biological-sciences/stand-density#:~:text=Stand%20density%20is%20a%20quantitative,Avery%20and%20Burkhart%2C%201994).)
 
 **Estimating the stand density** To calculate the density we need some
@@ -371,11 +369,7 @@ or m2
 -   The size of sample plots: this is important to calculate the total
     number of plots in the stand.
 
--   The number of trees in a sample plot
-
-Given the figures, we need extra information to be able to estimate the
-density of the stand. To do that, we estimate the plot density then
-extrapolate to a hectare
+-   The number of trees in a sample plot or the plot density
 
 ``` r
 ## To derive the plot density
@@ -390,17 +384,31 @@ site1012 <- merge (site1012, plotdens, all = T)
 site1012$dens_ha <- round((site1012$nr.length * (1/site1012$areaha)), 1)
 
 barplot(site1012$dens_ha,
-        names.arg = site1012$treatment,
-        xlab = "density",
-        ylab = "treatment",
+        names.arg = site1012$plot,
+        xlab = substitute(paste(bold("plot"))),
+        ylab = substitute(paste(bold("density"))),
         main = "Treatment and Density relationship",
         col = c(2,3,4,5))
+legend('right',
+       legend = unique(site1012$treatment),
+       pch = 18,
+       cex = 1.0,
+       col = c(2,3,4,5))
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-15-1.png) There’s
-a marked difference
+![](Readme_files/figure-markdown_github/unnamed-chunk-15-1.png) The
+chart shows there’s a marked difference across plots. Plots with the
+lowest treatment, i.e., spacing have the higher density
 
 ### Deriving Arithmetic Mean Diameter(AMD) and Quadratic Mean Diameter(QMD)
+
+The quadratic mean diameter symbolized as QMD is the square root of the
+summation of the dbh squared of trees divided by the number of trees.
+$$QMD = \sqrt{(\sum d_i^2)/n}$$
+QMD is considered more appropriate than AMD (Arithmetic Mean Diameter)
+for characterizing the group of trees which have been measured. QMD
+assigns greater weight to larger trees, read more
+[here](https://www.fs.usda.gov/pnw/olympia/silv/publications/opt/436_CurtisMarshall2000.pdf)
 
 ``` r
 plotdbh <- summaryBy(dm+dd~plot, data = dbh1012, FUN = c(mean, sum))
