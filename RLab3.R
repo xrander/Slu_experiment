@@ -56,8 +56,8 @@ plot(sample_trees$logdcm, sample_trees$logvol, pch = 13,
      col = "darkblue", main = "Diameter vs Volume",
      xlab= substitute(paste(bold("Diameter"))),
      ylab = substitute(paste(bold("Volume"))),
-     abline (M.vol, col = "red")) +
-  legend ("bottomright",
+     abline (M.vol, col = "red"))
+legend ("bottomright",
           legend = c("Intercept = -7.734953",
                      " ",
                      "slope = 2-020352"),
@@ -81,13 +81,13 @@ plot(plot11trees$dcm,plot11trees$est_vol,
      col = "red",
      xlab = substitute(paste(bold("diameter(cm)"))),
      ylab = substitute(paste(bold("Volume(m^3)"))),
-     main = "Estimated volume vs Calculated volume") + 
-  points(sample_trees$dcm, sample_trees$vol,
+     main = "Estimated volume vs Calculated volume")
+points(sample_trees$dcm, sample_trees$vol,
          pch = 19,
          col = "green",
          xlab = substitute(paste(bold("diameter(cm)"))),
-         ylab = substitute(paste(bold("Volume(m^3)")))) +
-  legend ("topleft",
+         ylab = substitute(paste(bold("Volume(m^3)")))) 
+legend ("topleft",
             legend = c("Estimated volume", "Calculated volume"),
             pch = c(20,19),
             col = c("red", "green"))
