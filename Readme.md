@@ -114,7 +114,7 @@ legend("topleft",
        col = c('red','blue'))
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-4-1.png) **Index
+![](Readme_files/figure-markdown_github/unnamed-chunk-4-1.png) **Index
 of Slenderness** The height diameter ratio or index of slenderness is an
 important measure as it can be used to evaluate a tree stability. To
 read more on height diameter relationship click
@@ -166,7 +166,7 @@ legend('topright',
        pch = 18)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 It is evident that the fertilized are performing than the control, with
 the B clone class being the highest performing either fertilized or not.
@@ -261,7 +261,7 @@ legend('topleft',
        pch = c(10,21))
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
 The data seems to be alright, we can now proceed with the analysis
 
@@ -355,7 +355,7 @@ legend('right',
        col = c(2,3,4,5))
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-14-1.png) \* \* \*
+![](Readme_files/figure-markdown_github/unnamed-chunk-14-1.png) \* \* \*
 \* \* \* \* \### Stand Density Estimation Stand density is a
 quantitative measurement of a forest. It describes the number of
 individuals (trees) on a unit area in either absolute or relative terms.
@@ -396,7 +396,7 @@ legend('right',
        col = c(2,3,4,5))
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-15-1.png) The
+![](Readme_files/figure-markdown_github/unnamed-chunk-15-1.png) The
 chart shows there’s a marked difference across plots. Plots with the
 lowest treatment, i.e., spacing have the higher density
 
@@ -472,7 +472,7 @@ legend ("topleft",
           col = c("darkred", "darkgreen"))
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 # Growth Measures
 
