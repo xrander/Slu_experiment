@@ -405,6 +405,8 @@ lowest treatment, i.e., spacing have the higher density
 The quadratic mean diameter symbolized as QMD is the square root of the
 summation of the dbh squared of trees divided by the number of trees.
 $$QMD = \sqrt{(\sum d_i^2)/n}$$
+Where d = diameter squared n = number of trees
+
 QMD is considered more appropriate than AMD (Arithmetic Mean Diameter)
 for characterizing the group of trees which have been measured. QMD
 assigns greater weight to larger trees, read more
@@ -429,7 +431,7 @@ site1012$dd.mean_cm <- site1012$dd.mean/100
 
 site1012$dd.sum_cm <- site1012$dd.sum/100
 
-#TO get QMD
+#Estimating the Quadratic Mean DIameter
 site1012$qmd <- sqrt(site1012$dd.sum/site1012$nr.length)/10
 ```
 
@@ -449,30 +451,45 @@ site1012[,c("baham2", "dens_ha")]
     ## 7  33.11  2604.2
     ## 8  31.36  3784.7
 
+we create a new table to hold the amd and qmd. We do this to compare the
+values using a barplot.
+
 ``` r
-plot(x = site1012$treatment,
-     y = site1012$amd,
-     main = 'AMD and QMD comparison',
-     ylim = c(8, 16),
-     pch = 21,
-     col = "darkred",
-     xlab = "Treatment",
-     ylab = "AMD and QMD(cm)")
-points (x = site1012$treatment,
-     y = site1012$qmd,
-     type = "p",
-     ylim = c(8, 16),
-     pch = 19,
-     col = "darkgreen",
-     xlab = "Treatment",
-     ylab = "AMD and QMD(cm)")
-legend ("topleft",
-          legend = c("AMD", "QMD"),
-          pch = c(21, 19),
-          col = c("darkred", "darkgreen"))
+amd_qmd <- data.frame(plot = rep(site1012$plot, times = 2),
+                      treatment = rep(site1012$treatment, times = 2),
+                      diameter = round(c(site1012$amd, site1012$qmd), 1),
+                      measures = rep(c('amd', 'qmd'),
+                                     each = 8))
+amd_qmd
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-18-1.png)
+    ##    plot treatment diameter measures
+    ## 1    11       2.5     13.7      amd
+    ## 2    12       2.0     13.2      amd
+    ## 3    13       1.5     12.0      amd
+    ## 4    14       1.0     10.1      amd
+    ## 5    21       2.5     14.4      amd
+    ## 6    22       2.0     12.6      amd
+    ## 7    23       1.5     12.4      amd
+    ## 8    24       1.0      9.9      amd
+    ## 9    11       2.5     14.1      qmd
+    ## 10   12       2.0     13.5      qmd
+    ## 11   13       1.5     12.3      qmd
+    ## 12   14       1.0     10.7      qmd
+    ## 13   21       2.5     14.6      qmd
+    ## 14   22       2.0     12.9      qmd
+    ## 15   23       1.5     12.7      qmd
+    ## 16   24       1.0     10.3      qmd
+
+``` r
+ggplot(data = amd_qmd, aes(x = as.character(plot), y = diameter, fill = measures)) + 
+  geom_bar (position = "dodge", stat = "identity") +
+  labs(title = "QMD and AMD comparison",
+       x = substitute(paste(bold('Plots'))),
+       y = substitute(paste(bold('Diameter (cm)'))))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
 # Growth Measures
 
