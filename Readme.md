@@ -89,10 +89,18 @@ head(pop)
     ## 5     2  2.0    116 1.4     A    3    control
     ## 6     2  4.9    123 3.2     A    3    control
 
+## Questions
+
+    -   Plot the height diameter relationship of different treatment of seedlings
+
+    - estimate the index of slenderness of the stand
+
+    -   Plot the performance of the seedlings and state which of the clones performing the best
+
+## Height diameter relationship of the control and fertilized seedlings
+
 The first step of the analysis is visualize the effect of treatment on
 diameter and height
-
-**Height diameter relationship of the control and fertilized seedlings**
 
 ``` r
 plot(pop$dia, pop$height,
@@ -114,10 +122,13 @@ legend("topleft",
        col = c('red','blue'))
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-4-1.png) **Index
-of Slenderness** The height diameter ratio or index of slenderness is an
-important measure as it can be used to evaluate a tree stability. To
-read more on height diameter relationship click
+![](Readme_files/figure-markdown_github/unnamed-chunk-4-1.png)
+
+## Index of Slenderness
+
+The height diameter ratio or index of slenderness is an important
+measure as it can be used to evaluate a tree stability. To read more on
+height diameter relationship click
 \[here\](<https://www.mdpi.com/1999-4907/10/1/70/htm#>:\~:text=Height%2Dto%2Ddiameter%20ratio%20(,of%20tree%20and%20stand%20stability.).
 The formula for HDr is given below
 
@@ -244,7 +255,7 @@ The data used for this analysis can be obtained
 
 ------------------------------------------------------------------------
 
-## Analyzing the data
+## Quick exploration
 
 The data will be investigated to see if there’s anything strange with
 the data
@@ -264,6 +275,18 @@ legend('topleft',
 ![](Readme_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
 The data seems to be alright, we can now proceed with the analysis
+
+## Questions
+
+We’ll be:
+
+    -   estimating the basal area
+
+    -   evaluating the stand density
+
+    -   evaluating the AMD and QMD
+
+    -   Plot the basal area vs the stand density
 
 ### Basal Area Estimation
 
@@ -295,7 +318,7 @@ dbh1012$ba <- pi * ((dbh1012$dm/2)^2)
 
 The sum of basal area for each plots can be measured now using doBy’s
 `summaryBy` function and the result merge with `site1012` to have a more
-robust dataset
+robust data set
 
 ``` r
 plotba <-summaryBy(ba~plot, data = dbh1012, FUN = sum)
@@ -355,11 +378,15 @@ legend('right',
        col = c(2,3,4,5))
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-14-1.png) \* \* \*
-\* \* \* \* \### Stand Density Estimation Stand density is a
-quantitative measurement of a forest. It describes the number of
-individuals (trees) on a unit area in either absolute or relative terms.
-To read more on stand density click
+![](Readme_files/figure-markdown_github/unnamed-chunk-14-1.png)
+
+------------------------------------------------------------------------
+
+### Stand Density Estimation
+
+Stand density is a quantitative measurement of a forest. It describes
+the number of individuals (trees) on a unit area in either absolute or
+relative terms. To read more on stand density click
 [here](https://www.sciencedirect.com/topics/agricultural-and-biological-sciences/stand-density#:~:text=Stand%20density%20is%20a%20quantitative,Avery%20and%20Burkhart%2C%201994).)
 
 **Estimating the stand density** To calculate the density we need some
@@ -396,8 +423,9 @@ legend('right',
        col = c(2,3,4,5))
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-15-1.png) The
-chart shows there’s a marked difference across plots. Plots with the
+![](Readme_files/figure-markdown_github/unnamed-chunk-15-1.png)
+
+The chart shows there’s a marked difference across plots. Plots with the
 lowest treatment, i.e., spacing have the higher density
 
 ### Deriving Arithmetic Mean Diameter(AMD) and Quadratic Mean Diameter(QMD)
@@ -535,6 +563,8 @@ increment.
 G = growth Y = Volume for year a a = year (2 is current and 1 is
 previous)
 
+## Questions
+
 We’ll try to:
 
     -   evaluate the volume growth for individual trees
@@ -650,9 +680,10 @@ legend("bottomright",
 text(x = pai, y = site1012$paiha, label = site1012$ai, pos = 3, cex = 0.8, col = 'red')
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-23-1.png) The plot
-shows the PAI of each plots for the different spacing treatment while
-showing the annual increment of each plots.
+![](Readme_files/figure-markdown_github/unnamed-chunk-23-1.png)
+
+The plot shows the PAI of each plots for the different spacing treatment
+while showing the annual increment of each plots.
 
 ``` r
 #Visualizing the density per hectare
@@ -671,9 +702,11 @@ legend("topleft",
 text (x = dens, y = site1012$dens_ha, label = site1012$dens_ha, pos = 3, cex = 0.7, col = 'Red')
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-24-1.png) \###
-Percentage of Thinnings Removed We can estimate the percentage of stand
-removed from thinning operation
+![](Readme_files/figure-markdown_github/unnamed-chunk-24-1.png)
+
+### Percentage of Thinnings Removed
+
+We can estimate the percentage of stand removed from thinning operation
 
 ``` r
 ##first we estimate the density after thinning which is provided in site1012
@@ -714,9 +747,10 @@ barplot(tapply(site1012$dens_ha,
         col = c(5:9))
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-26-1.png) The
-space is having an effect on the diameter, the smaller the spacing, the
-greater the stem/stand density
+![](Readme_files/figure-markdown_github/unnamed-chunk-26-1.png)
+
+The space is having an effect on the diameter, the smaller the spacing,
+the greater the stem/stand density
 
 #### Treatment(spacing) effect on QMD
 
@@ -808,8 +842,11 @@ str(lab4mai)
     ##  $ birch_dgv : num  0 0 0 0 0 0 0 0 0 0 ...
 
 This is important to do whenever we import data as some integer may be
-in character format. For this data we will do some exploration, we then
-find:
+in character format.
+
+## Questions
+
+For this data we will do some exploration, we then find:
 
     -   total volume
 
@@ -979,7 +1016,7 @@ spruce$cai <- (spruce$stand_vol + spruce$harv_vol +
 spruce$mai <- spruce$sumvol/spruce$age
 ```
 
-**Birch CAI and MAI **
+**Birch CAI and MAI**
 
 ``` r
 plot(birch$age, birch$mai,
@@ -990,7 +1027,7 @@ plot(birch$age, birch$mai,
      xlim = c(0, 140),
      main = 'MAI and CAI',
      ylab = substitute(paste(bold('Increment (m3 ha-1 yr-1)'))),
-     xlab = substitute(paste(bold('age'))))
+     xlab = substitute(paste(bold('age (years)'))))
 points(birch$age, birch$cai,
         type = 'b',
         pch = 20,
@@ -1001,8 +1038,9 @@ legend("topleft",
          col = c('red', 'green'))
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-38-1.png) **Spruce
-CAI and MAI**
+![](Readme_files/figure-markdown_github/unnamed-chunk-38-1.png)
+
+**Spruce CAI and MAI**
 
 ``` r
 plot(spruce$age, spruce$mai,
@@ -1013,7 +1051,7 @@ plot(spruce$age, spruce$mai,
      xlim = c(0, 140),
      main = 'MAI and CAI',
      ylab = substitute(paste(bold('Increment (m3 ha-1 yr-1)'))),
-     xlab = substitute(paste(bold('age'))))
+     xlab = substitute(paste(bold('age (years)'))))
 points(spruce$age, spruce$cai,
          type = 'b',
          pch = 20,
@@ -1025,5 +1063,147 @@ legend("topleft",
 ```
 
 ![](Readme_files/figure-markdown_github/unnamed-chunk-39-1.png)
+
+## Correcting Thinning Age
+
+Usually the year of harvest or thinning is usually having two volumes
+and time. The first is the volume before we harvest and the second is
+the volume we harvest. They are usually the same, but time of harvest
+differs by days, or months. Since forestry is a business that involves
+calculating stand volume on some yearly period. It is usually costly and
+unprofitable to carry out inventory every year, thus, we do it between
+certain periods, 5 to 10 years, while we still monitor the stand between
+such period. Now we adjust the year of thinning and standing volume to
+show the age before harvest.
+
+``` r
+# Birch
+birch_thinned <- subset(birch, harv_vol>0)
+birch_thinned$stand_vol <- birch_thinned$stand_vol + birch_thinned$harv_vol
+birch_thinned$age <- birch_thinned$age  - 0.01
+
+# Spruce
+spruce_thinned <- subset(spruce, harv_vol >0)
+spruce_thinned$stand_vol <- spruce_thinned$stand_vol + spruce_thinned$harv_vol
+spruce_thinned$age <- spruce_thinned$age  - 0.01
+
+head(birch_thinned)
+```
+
+    ##    site   age stdens      ba stand_vol harv_vol mor_vol spruce_dgv birch_dgv
+    ## 39    6 69.99 1465.7 40.6077     522.5 225.9165   10.85       7.01     20.72
+    ##    tot_vol sum_harv sum_mor sumvol last_vol  cai      mai
+    ## 39  533.35 225.9165   62.48 584.98    495.3 7.61 8.356857
+
+``` r
+head(spruce_thinned)
+```
+
+    ##    site   age stdens      ba stand_vol harv_vol mor_vol spruce_dgv birch_dgv
+    ## 7     1 34.99 1890.1 36.9272     286.2 140.2849    2.74      16.77      0.00
+    ## 10    1 49.99  816.2 38.4784     386.4 134.5849    3.31      25.87      0.00
+    ## 14    1 69.99  565.9 43.2437     509.9 181.8588    6.55      36.13      7.43
+    ##    tot_vol sum_harv sum_mor   sumvol last_vol    cai       mai
+    ## 7   288.94 140.2849    5.01 291.2100    201.2 17.548  8.320286
+    ## 10  389.71 274.8698   16.34 543.0249    302.2 17.502 10.860498
+    ## 14  516.45 456.7286   41.74 826.5098    449.3 13.430 11.807283
+
+Since this data is obtained, we can merge the table to the previous to
+have the corrected thinning age
+
+``` r
+# Birch
+birch_new <- merge(birch, birch_thinned, all = T)
+
+# Spruce
+spruce_new <- merge(spruce, spruce_thinned, all = T)
+```
+
+We can now visualize the new stand development
+
+``` r
+par (mar = c(5,4,4,4) + 0.2)
+
+plot(birch_new$age, birch_new$stand_vol,
+     col = 'red',
+     xlab = substitute(paste(bold('Age (years)'))),
+     ylab = substitute(paste(bold('Volume (m3)'))),
+     main = 'Stand Volume Development',
+     pch = 19,
+     type = 'b',
+     xlim = c(0,140),
+     ylim = c(0,1000),
+     cex = 0.5) 
+points (birch_new$age,birch_new$sumvol,
+          pch = 19,
+         col ='red',
+        type = 'b',
+        cex = 0.7) 
+par(new = TRUE)
+plot(spruce_new$age, spruce_new$sumvol,
+     col = 'green',
+     type = 'b',
+     axes = FALSE,
+     pch = 17,
+     xlab = "",
+     ylab = "",
+     cex = 0.7)
+points(spruce_new$age,spruce_new$stand_vol,
+       col ='green',
+       pch = 17,
+       type = 'b',
+       cex = 0.5) 
+axis (side = 4, 
+      at = pretty(range(spruce_new$sumvol)))
+mtext(substitute(paste(bold('Volume (m3)'))),
+                       side = 4,
+                       line = 3)
+legend("topleft", 
+       legend = c('birch', 'spruce'),
+       pch = c(19,17),
+       col = c('red', 'green'))
+legend ("bottomright",
+        legend = c('standing volume', 'total yield'),
+        pch = c(17),
+        cex = c(0.5, 1))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-42-1.png)
+
+## How many Thinnings
+
+From the figure above we can see that spruce was thinned 3 times while
+birch was thinned once.
+
+## Heavy or Light Thinning(s)?
+
+The definition of what is heavy or not is something that varies
+depending on the parameter used for thinning viz basal area or stand
+density, but for simplicity, stand density will be the parameter used to
+determine the thinning intensity. Based on the stand density or number
+of trees removed from the stand, thinning ≤ 25% is regarded as light
+thinning, 50% regarded as moderate, and \> 50% is regarded as heavy
+thinning (Gonçalves, 2021). Using thinning intensity or degree formula
+provided by Gonçalves 2021
+*R**N* = *N**r**e**m*/*N**t*
+Where Nrem = Number of trees removed Nt = Total number of trees
+
+**For spruce**
+
+| Age                   | Stand_density | Thinning intensity | Light or Heavy |
+|-----------------------|---------------|--------------------|----------------|
+| Between age 35 and 40 |               |                    |                |
+| Between 50 and 55     |               |                    |                |
+| Between 70 and 75     |               |                    |                |
+
+Thinning for Spruce
+
+\|Age\|Stand density\| Thinning intensity\|Light or Heavy\|
+
+\|—–\|—————–\|————-\|——\|
+
+\|Between age 35 and 40\|1890.1-842.8\|55.4%\|Heavy\| \|Between 50 and
+55\| 816.2 \| 36.6% \| Moderate \| \|Between 70 and 75 \| 565.9 - 340.9
+\| 39.8 \| Moderate\|
 
 [Back to home page](https://xrander.github.io)
