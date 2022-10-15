@@ -32,14 +32,11 @@ library(data.table)
 library(TukeyC)
 ```
 
-
-* * * * * * * *
+------------------------------------------------------------------------
 
 # Clone Performance Test - Exp I
 
-The first experiment will be a clone performance experiment. The data used is the 'popdata' which is accessible [here](https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/popdata.txt). This analysis will seek to answer the question:
-  - Is the treatment having an influence
-  - Which clone is performing best
+The first experiment will be a clone performance experiment. The data used is the 'popdata' which is accessible [here](https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/popdata.txt). This analysis will seek to answer the question: - Is the treatment having an influence - Which clone is performing best
 
 *Importing the data*
 
@@ -47,7 +44,6 @@ The first experiment will be a clone performance experiment. The data used is th
 pop <- read.table('https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/Lab1/popdata.txt', header = T)
 head(pop)
 ```
-
 
 **Data description**
 
@@ -72,9 +68,17 @@ pop$fert_value <- ifelse(pop$fert==1, 'fertilized', 'control')
 head(pop)
 ```
 
-The first step of the analysis is visualize the effect of treatment on diameter and height
+## Questions
 
-**Height diameter relationship of the control and fertilized seedlings**
+    -   Plot the height diameter relationship of different treatment of seedlings
+
+    - estimate the index of slenderness of the stand
+
+    -   Plot the performance of the seedlings and state which of the clones performing the best
+
+## Height diameter relationship of the control and fertilized seedlings
+
+The first step of the analysis is visualize the effect of treatment on diameter and height
 
 ```{r}
 plot(pop$dia, pop$height,
@@ -96,10 +100,10 @@ legend("topleft",
        col = c('red','blue'))
 
 ```
-**Index of Slenderness**
-The height diameter ratio or index of slenderness is an important measure as it can be used to evaluate a tree stability.
-To read more on height diameter relationship click [here](https://www.mdpi.com/1999-4907/10/1/70/htm#:~:text=Height%2Dto%2Ddiameter%20ratio%20(,of%20tree%20and%20stand%20stability.).
-The formula for HDr is given below
+
+## Index of Slenderness
+
+The height diameter ratio or index of slenderness is an important measure as it can be used to evaluate a tree stability. To read more on height diameter relationship click [here](<https://www.mdpi.com/1999-4907/10/1/70/htm#>:\~:text=Height%2Dto%2Ddiameter%20ratio%20(,of%20tree%20and%20stand%20stability.). The formula for HDr is given below
 
 $$HD_r = height/diameter$$ Where $$HD_r = height diameter ratio$$
 
@@ -137,8 +141,7 @@ legend('topright',
 
 It is evident that the fertilized are performing than the control, with the B clone class being the highest performing either fertilized or not.
 
-* * * * * * * *
-
+------------------------------------------------------------------------
 
 # Spacing Experiment of Scotch Pine - Exp II
 
@@ -164,7 +167,8 @@ head(exp1012)
 
 ```
 
-*importing the data* 
+*importing the data*
+
 ```{r}
 ### importing data
 dbh1012 <- read.table("https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/Lab2/dbhlist_exp1012.txt",
@@ -186,7 +190,7 @@ The data used for this analysis can be obtained [here](https://raw.githubusercon
 
 ------------------------------------------------------------------------
 
-## Analyzing the data
+## Quick exploration
 
 The data will be investigated to see if there's anything strange with the data
 
@@ -204,15 +208,23 @@ legend('topleft',
 
 The data seems to be alright, we can now proceed with the analysis
 
+## Questions
+
+We'll be:
+
+    -   estimating the basal area
+
+    -   evaluating the stand density
+
+    -   evaluating the AMD and QMD
+
+    -   Plot the basal area vs the stand density
 
 ### Basal Area Estimation
-Basal area is the average amount of an area occupied by tree stems, defined as the cross-sectional area of all stems in a stand measured at breast height (dbh) and express as per unit of land area.The formula of dbh is 
-$$BA = \pi (DBH/2)^2$$
-Where:
-- BA = Basal area
 
-- DBH = diameter at breast height (1.3m above ground)
+Basal area is the average amount of an area occupied by tree stems, defined as the cross-sectional area of all stems in a stand measured at breast height (dbh) and express as per unit of land area.The formula of dbh is $$BA = \pi (DBH/2)^2$$ Where: - BA = Basal area
 
+-   DBH = diameter at breast height (1.3m above ground)
 
 ```{r}
 ## average of the two diameter
@@ -231,7 +243,7 @@ dbh1012$ba <- pi * ((dbh1012$dm/2)^2)
 
 -   ba: basal area
 
-The sum of basal area for each plots can be measured now using doBy's `summaryBy` function and the result merge with `site1012` to have a more robust dataset
+The sum of basal area for each plots can be measured now using doBy's `summaryBy` function and the result merge with `site1012` to have a more robust data set
 
 ```{r}
 plotba <-summaryBy(ba~plot, data = dbh1012, FUN = sum)
@@ -240,6 +252,7 @@ site1012 <- merge(exp1012, plotba, all = T)
 
 site1012
 ```
+
 Now we can estimate the basal area per hectare and basal area of each treatments.
 
 ```{r}
@@ -268,18 +281,18 @@ legend('right',
        cex = 1.0,
        col = c(2,3,4,5))
 ```
-* * * * * * *
+
+------------------------------------------------------------------------
+
 ### Stand Density Estimation
+
 Stand density is a quantitative measurement of a forest. It describes the number of individuals (trees) on a unit area in either absolute or relative terms. To read more on stand density click [here](https://www.sciencedirect.com/topics/agricultural-and-biological-sciences/stand-density#:~:text=Stand%20density%20is%20a%20quantitative,Avery%20and%20Burkhart%2C%201994).)
 
-**Estimating the stand density**
-To calculate the density we need some information.
--   The size of the forest: This is usually expressed in ha or m2
+**Estimating the stand density** To calculate the density we need some information. - The size of the forest: This is usually expressed in ha or m2
 
 -   The size of sample plots: this is important to calculate the total number of plots in the stand.
 
 -   The number of trees in a sample plot or the plot density
-
 
 ```{r}
 ## To derive the plot density
@@ -305,13 +318,12 @@ legend('right',
        cex = 1.0,
        col = c(2,3,4,5))
 ```
+
 The chart shows there's a marked difference across plots. Plots with the lowest treatment, i.e., spacing have the higher density
 
 ### Deriving Arithmetic Mean Diameter(AMD) and Quadratic Mean Diameter(QMD)
-The quadratic mean diameter symbolized as QMD is the square root of the summation of the dbh squared of trees divided by the number of trees. 
-$$QMD = \sqrt{(\sum d_i^2)/n}$$
-Where d = diameter squared
-      n = number of trees
+
+The quadratic mean diameter symbolized as QMD is the square root of the summation of the dbh squared of trees divided by the number of trees. $$QMD = \sqrt{(\sum d_i^2)/n}$$ Where d = diameter squared n = number of trees
 
 QMD is considered more appropriate than AMD (Arithmetic Mean Diameter) for characterizing the group of trees which have been measured. QMD assigns greater weight to larger trees, read more [here](https://www.fs.usda.gov/pnw/olympia/silv/publications/opt/436_CurtisMarshall2000.pdf)
 
@@ -341,13 +353,13 @@ site1012$qmd <- sqrt(site1012$dd.sum/site1012$nr.length)/10
 
 ### Basal area stand density relationship
 
-
 ```{r}
 site1012[,c("baham2", "dens_ha")]
 ```
 
 we create a new table to hold the amd and qmd. We do this to compare the values using a barplot.
-````{r}
+
+```{r}
 
 amd_qmd <- data.frame(plot = rep(site1012$plot, times = 2),
                       treatment = rep(site1012$treatment, times = 2),
@@ -355,8 +367,7 @@ amd_qmd <- data.frame(plot = rep(site1012$plot, times = 2),
                       measures = rep(c('amd', 'qmd'),
                                      each = 8))
 amd_qmd
-````
-
+```
 
 ```{r}
 ggplot(data = amd_qmd, aes(x = as.character(plot), y = diameter, fill = measures)) + 
@@ -366,7 +377,7 @@ ggplot(data = amd_qmd, aes(x = as.character(plot), y = diameter, fill = measures
        y = substitute(paste(bold('Diameter (cm)'))))
 ```
 
-* * * * * * * * *
+------------------------------------------------------------------------
 
 # Growth Measures - Exp III
 
@@ -381,30 +392,30 @@ There are various characteristics of a stand that can affect the growth of the s
     -   stand density or stocking
 
     -   competition
-    
+
     -   silvicultural treatment
-    
+
     -   climatic conditions
 
 ## Increment
-Increment is the increase in growth, diameter, basal area, height, volume, quality or value of individual tree crops during a given period. There are some terminologies and measures associated with tree increment.
-    
-    -   Yield: this is the usable wood fiber per unit area at a particular age
-    
-    -   Annual increment
-    
-  $$G_a = Y_a - Y_{a-1}$$
-   
-    -   Periodic Annual Increment: This measures the average productivity of the stand over certain period. Can sometimes be referred to CAI if it's between increment between current year and  previous year.
-    
-  $$ PAI_{a1,a2} = Y_{a2} - Y_{a1} /a_2 -a_1 $$
-  
-    -   Mean Annual Increment: This measures the average productivity of the stand over its lifetime.
-  $$MAI_a = Y_a/a$$
-G = growth
-Y = Volume for year a
-a = year (2 is current and 1 is previous)
 
+Increment is the increase in growth, diameter, basal area, height, volume, quality or value of individual tree crops during a given period. There are some terminologies and measures associated with tree increment.
+
+    -   Yield: this is the usable wood fiber per unit area at a particular age
+
+    -   Annual increment
+
+$$G_a = Y_a - Y_{a-1}$$
+
+    -   Periodic Annual Increment: This measures the average productivity of the stand over certain period. Can sometimes be referred to CAI if it's between increment between current year and  previous year.
+
+$$ PAI_{a1,a2} = Y_{a2} - Y_{a1} /a_2 -a_1 $$
+
+    -   Mean Annual Increment: This measures the average productivity of the stand over its lifetime.
+
+$$MAI_a = Y_a/a$$ G = growth Y = Volume for year a a = year (2 is current and 1 is previous)
+
+## Questions
 
 We'll try to:
 
@@ -425,7 +436,9 @@ tvol1012 <- read.table('https://raw.githubusercontent.com/xrander/SLU-Plantation
 
 head(tvol1012)
 ```
+
 **Estimating the PAI**
+
 ```{r}
 tvol1012$pai <- (tvol1012$voldm3.1987 - tvol1012$voldm3.1980)/7  # we divide by 7 because that's the difference between 1987 and 1980
 
@@ -435,6 +448,7 @@ head(tvol1012)
 ```
 
 Next we sum pai, mean volume for 1980 and 1987 for each plots and merge it with the site information data (site1012)
+
 ```{r}
 #Estimating plot data for the trees
 plotvol <- summaryBy(voldm3.1980 +
@@ -471,8 +485,8 @@ legend("bottomright",
 text(x = pai, y = site1012$paiha, label = site1012$ai, pos = 3, cex = 0.8, col = 'red')
 
 ```
-The plot shows the PAI of each plots for the different spacing treatment while showing the annual increment of each plots.
 
+The plot shows the PAI of each plots for the different spacing treatment while showing the annual increment of each plots.
 
 ```{r}
 #Visualizing the density per hectare
@@ -490,7 +504,9 @@ legend("topleft",
          col = c(3,5,8,6))
 text (x = dens, y = site1012$dens_ha, label = site1012$dens_ha, pos = 3, cex = 0.7, col = 'Red')
 ```
+
 ### Percentage of Thinnings Removed
+
 We can estimate the percentage of stand removed from thinning operation
 
 ```{r}
@@ -512,8 +528,7 @@ density$percent_removed <- (density$before_thinning-
 head(density)
 ```
 
-
-### Effect of treatment on  stem density, quadratic mean diameter,and Periodic Annual Increment (PAI)
+### Effect of treatment on stem density, quadratic mean diameter,and Periodic Annual Increment (PAI)
 
 #### Stem density and treatment(spacing) design effect
 
@@ -526,9 +541,11 @@ barplot(tapply(site1012$dens_ha,
         main = 'Treatment Effect on Stem Density',
         col = c(5:9))
 ```
+
 The space is having an effect on the diameter, the smaller the spacing, the greater the stem/stand density
 
 #### Treatment(spacing) effect on QMD
+
 ```{r}
 barplot(tapply (site1012$qmd,
                 site1012$treatment,
@@ -543,6 +560,7 @@ barplot(tapply (site1012$qmd,
 QMD increases with spacing effect according to the bar plot, the effect might diminish if spacing increases
 
 #### Treatment(spacing) effect on Periodic annual increment(PAI)
+
 ```{r}
 barplot(tapply(site1012$paiha,
                site1012$treatment,
@@ -554,21 +572,21 @@ barplot(tapply(site1012$paiha,
         main = "Effect of Spacing on PAI")
 ```
 
-* * * * * *
+------------------------------------------------------------------------
 
 # Thinning Experiment of Birch and Scotch Pine - Exp IV
 
 Data used in this experiment are from different precommercial thinning treatments (PCT) which are thereafter simulated in Heureka (Swedish support decision system). The stand development was simulated with some thinning operations included. Data provided is from every 5 year period.
 
 **Data Description**
-  
+
 -   age: the age of the stand
-  
+
 -   site: the site number (1 for spruce and 6 birch)
 
 -   stdens: stem density (st/ha)
 
--   ba: basal area (m^2/ha)
+-   ba: basal area (m\^2/ha)
 
 -   spruce_dgv: quadratic mean dbh for spruce in cm
 
@@ -578,49 +596,58 @@ Data used in this experiment are from different precommercial thinning treatment
 
 -   harv_vol: harvested volume
 
--   mor_vol: mortality volume in m^3 at the age
+-   mor_vol: mortality volume in m\^3 at the age
 
 **importing data**
+
 ```{r}
 lab4mai <- read.table('https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/Lab%204/lab4mai%20(2).txt',
            header = T, sep = '\t',
            na.strings = 'NA', dec = '.',
            strip.white = T)
 ```
+
 We can inspect the data structure to investigate if the variables are in the data type we want.
 
 ```{r}
 str(lab4mai)
 ```
+
 This is important to do whenever we import data as some integer may be in character format.
+
+## Questions
+
 For this data we will do some exploration, we then find:
 
     -   total volume
-    
+
     -   total yield,
 
     -   CAI and MAI
-    
+
     -   correct the figure with thinning age
-    
+
     -   find how many thinnings were done for both species
-    
+
     -   decide if thinnings done were heavy or not.
 
 ## Total Volume Estimation
-Given the data we have, we can get the total volume produce by adding all the volumes:
-  $$tot_{vol} = stand_{vol} + harv_{vol} + mor_{vol}$$
+
+Given the data we have, we can get the total volume produce by adding all the volumes: $$tot_{vol} = stand_{vol} + harv_{vol} + mor_{vol}$$
+
 ```{r}
 lab4mai$tot_vol <-lab4mai$stand_vol + lab4mai$harv_vol + lab4mai$mor_vol
 ```
 
 We subset the data according to species
+
 ```{r}
 birch <- subset(lab4mai, site==6)
 spruce <- subset(lab4mai, site==1)
 ```
 
 **A little exploration**
+
 ```{r}
 par(mar = c(5, 4, 4, 4) + 0.5)
 
@@ -650,10 +677,10 @@ legend('topright', legend = c('birch', 'spruce'),
        col = c('blue', 'purple'))
 ```
 
-
 The plot above from our little exploration gives us an idea of the number of thinnings that have occurred for both species. Birch was thinned once while Spruce was thinned thrice.
 
 ## Total Yield Estimation
+
 To estimate the total yield, we evaluate the cumulative of all the volume removed from the forest then add it to the standing volume.
 
 ```{r}
@@ -674,7 +701,8 @@ spruce$sum_mor <- cumsum(spruce$mor_vol)
 spruce$sumvol <- spruce$sum_harv + spruce$sum_mor + spruce$stand_vol
 
 ```
-**Visualizing the result and comparing the respective standing volume between the two species)
+
+\*\*Visualizing the result and comparing the respective standing volume between the two species)
 
 ```{r}
 par (mar = c(5,4,4,4) + 0.3)
@@ -723,7 +751,9 @@ legend ("bottomright",
 ```
 
 ## CAI and MaI
+
 **birch**
+
 ```{r}
 birch$last_vol <- shift(birch$stand_vol) ## this brings the previous measurement forward to the current row
 
@@ -736,6 +766,7 @@ birch$mai <- birch$sumvol/birch$age
 ```
 
 **spruce**
+
 ```{r}
 spruce$last_vol <- shift(spruce$stand_vol) # Last measurement brought to the current row
 
@@ -747,7 +778,8 @@ spruce$cai <- (spruce$stand_vol + spruce$harv_vol +
 spruce$mai <- spruce$sumvol/spruce$age
 ```
 
-**Birch CAI and MAI **
+**Birch CAI and MAI**
+
 ```{r}
 plot(birch$age, birch$mai,
      type = 'b',
@@ -757,7 +789,7 @@ plot(birch$age, birch$mai,
      xlim = c(0, 140),
      main = 'MAI and CAI',
      ylab = substitute(paste(bold('Increment (m3 ha-1 yr-1)'))),
-     xlab = substitute(paste(bold('age'))))
+     xlab = substitute(paste(bold('age (years)'))))
 points(birch$age, birch$cai,
         type = 'b',
         pch = 20,
@@ -767,7 +799,9 @@ legend("topleft",
          pch = c(18, 20),
          col = c('red', 'green'))
 ```
+
 **Spruce CAI and MAI**
+
 ```{r}
 plot(spruce$age, spruce$mai,
      type = 'b',
@@ -777,7 +811,7 @@ plot(spruce$age, spruce$mai,
      xlim = c(0, 140),
      main = 'MAI and CAI',
      ylab = substitute(paste(bold('Increment (m3 ha-1 yr-1)'))),
-     xlab = substitute(paste(bold('age'))))
+     xlab = substitute(paste(bold('age (years)'))))
 points(spruce$age, spruce$cai,
          type = 'b',
          pch = 20,
@@ -787,5 +821,107 @@ legend("topleft",
          pch = c(18, 20),
          col = c('red', 'green'))
 ```
+
+## Correcting Thinning Age
+
+Usually the year of harvest or thinning is usually having two volumes and time. The first is the volume before we harvest and the second is the volume we harvest. They are usually the same, but time of harvest differs by days, or months. Since forestry is a business that involves calculating stand volume on some yearly period. It is usually costly and unprofitable to carry out inventory every year, thus, we do it between certain periods, 5 to 10 years, while we still monitor the stand between such period. Now we adjust the year of thinning and standing volume to show the age before harvest.
+
+```{r}
+# Birch
+birch_thinned <- subset(birch, harv_vol>0)
+birch_thinned$stand_vol <- birch_thinned$stand_vol + birch_thinned$harv_vol
+birch_thinned$age <- birch_thinned$age  - 0.01
+
+# Spruce
+spruce_thinned <- subset(spruce, harv_vol >0)
+spruce_thinned$stand_vol <- spruce_thinned$stand_vol + spruce_thinned$harv_vol
+spruce_thinned$age <- spruce_thinned$age  - 0.01
+
+head(birch_thinned)
+head(spruce_thinned)
+```
+
+Since this data is obtained, we can merge the table to the previous to have the corrected thinning age
+
+```{r}
+# Birch
+birch_new <- merge(birch, birch_thinned, all = T)
+
+# Spruce
+spruce_new <- merge(spruce, spruce_thinned, all = T)
+```
+
+We can now visualize the new stand development
+
+```{r}
+par (mar = c(5,4,4,4) + 0.2)
+
+plot(birch_new$age, birch_new$stand_vol,
+     col = 'red',
+     xlab = substitute(paste(bold('Age (years)'))),
+     ylab = substitute(paste(bold('Volume (m3)'))),
+     main = 'Stand Volume Development',
+     pch = 19,
+     type = 'b',
+     xlim = c(0,140),
+     ylim = c(0,1000),
+     cex = 0.5) 
+points (birch_new$age,birch_new$sumvol,
+          pch = 19,
+         col ='red',
+        type = 'b',
+        cex = 0.7) 
+par(new = TRUE)
+plot(spruce_new$age, spruce_new$sumvol,
+     col = 'green',
+     type = 'b',
+     axes = FALSE,
+     pch = 17,
+     xlab = "",
+     ylab = "",
+     cex = 0.7)
+points(spruce_new$age,spruce_new$stand_vol,
+       col ='green',
+       pch = 17,
+       type = 'b',
+       cex = 0.5) 
+axis (side = 4, 
+      at = pretty(range(spruce_new$sumvol)))
+mtext(substitute(paste(bold('Volume (m3)'))),
+                       side = 4,
+                       line = 3)
+legend("topleft", 
+       legend = c('birch', 'spruce'),
+       pch = c(19,17),
+       col = c('red', 'green'))
+legend ("bottomright",
+        legend = c('standing volume', 'total yield'),
+        pch = c(17),
+        cex = c(0.5, 1))
+```
+
+## How many Thinnings
+
+From the figure above we can see that spruce was thinned 3 times while birch was thinned once.
+
+## Heavy or Light Thinning(s)?
+
+The definition of what is heavy or not is something that varies depending on the parameter used for thinning viz basal area or stand density, but for simplicity, stand density will be the parameter used to determine the thinning intensity. Based on the stand density or number of trees removed from the stand, thinning ≤ 25% is regarded as light thinning, 50% regarded as moderate, and \> 50% is regarded as heavy thinning (Gonçalves, 2021). Using thinning intensity or degree formula provided by Gonçalves 2021 $$RN = Nrem/Nt $$ Where Nrem = Number of trees removed Nt = Total number of trees
+
+**For spruce**
+
+| Age | Stand_density | Thinning intensity | Light or Heavy |
+|-----|---------------|--------------------|----------------|
+|Between age 35 and 40 |               |                    |                |
+| Between 50 and 55 |               |                    |                |
+| Between 70 and 75 |               |                    |                |
+
+: Thinning for Spruce
+
+\|Age\|Stand density\| Thinning intensity\|Light or Heavy\|
+
+\|-----\|-----------------\|-------------\|------\|
+
+\|Between age 35 and 40\|1890.1-842.8\|55.4%\|Heavy\| \|Between 50 and 55\| 816.2 \| 36.6% \| Moderate \| \|Between 70 and 75 \| 565.9 - 340.9 \| 39.8 \| Moderate\|
 
 [Back to home page](https://xrander.github.io)
