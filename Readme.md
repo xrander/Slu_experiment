@@ -35,7 +35,7 @@ library(TukeyC)
 
 ------------------------------------------------------------------------
 
-# Clone Performance Test - EXP I
+# Clone Performance Test - Exp I
 
 The first experiment will be a clone performance experiment. The data
 used is the ‘popdata’ which is accessible
@@ -491,7 +491,9 @@ ggplot(data = amd_qmd, aes(x = as.character(plot), y = diameter, fill = measures
 
 ![](Readme_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
-# Growth Measures
+------------------------------------------------------------------------
+
+# Growth Measures - Exp III
 
 There are various characteristics of a stand that can affect the growth
 of the stand. Those characteristics include:
@@ -731,8 +733,8 @@ barplot(tapply (site1012$qmd,
 
 ![](Readme_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
-Quadratic mean diameter increases with spacing effect according to the
-bar plot, the effect might diminish if spacing increases
+QMD increases with spacing effect according to the bar plot, the effect
+might diminish if spacing increases
 
 #### Treatment(spacing) effect on Periodic annual increment(PAI)
 
@@ -748,5 +750,280 @@ barplot(tapply(site1012$paiha,
 ```
 
 ![](Readme_files/figure-markdown_github/unnamed-chunk-28-1.png)
+
+------------------------------------------------------------------------
+
+# Thinning Experiment of Birch and Scotch Pine - Exp IV
+
+Data used in this experiment are from different precommercial thinning
+treatments (PCT) which are thereafter simulated in Heureka (Swedish
+support decision system). The stand development was simulated with some
+thinning operations included. Data provided is from every 5 year period.
+
+**Data Description**
+
+-   age: the age of the stand
+
+-   site: the site number (1 for spruce and 6 birch)
+
+-   stdens: stem density (st/ha)
+
+-   ba: basal area (m^2/ha)
+
+-   spruce_dgv: quadratic mean dbh for spruce in cm
+
+-   birch_dgv: quadratic mean dbh for birch in cm
+
+-   stand_vol: standing volume
+
+-   harv_vol: harvested volume
+
+-   mor_vol: mortality volume in m^3 at the age
+
+**importing data**
+
+``` r
+lab4mai <- read.table('https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/Lab%204/lab4mai%20(2).txt',
+           header = T, sep = '\t',
+           na.strings = 'NA', dec = '.',
+           strip.white = T)
+```
+
+We can inspect the data structure to investigate if the variables are in
+the data type we want.
+
+``` r
+str(lab4mai)
+```
+
+    ## 'data.frame':    50 obs. of  9 variables:
+    ##  $ site      : int  1 1 1 1 1 1 1 1 1 1 ...
+    ##  $ age       : int  5 10 15 20 25 30 35 40 45 50 ...
+    ##  $ stdens    : num  2019 1999 1985 1970 1948 ...
+    ##  $ ba        : num  0.0834 1.7468 7.0915 14.9834 22.4206 ...
+    ##  $ stand_vol : num  0.6 4.5 22.5 66.8 126.6 ...
+    ##  $ harv_vol  : num  0 0 0 0 0 ...
+    ##  $ mor_vol   : num  0 0.01 0.03 0.15 0.64 1.44 2.74 4.25 3.77 3.31 ...
+    ##  $ spruce_dgv: num  1.35 3.8 7.18 10.32 12.73 ...
+    ##  $ birch_dgv : num  0 0 0 0 0 0 0 0 0 0 ...
+
+This is important to do whenever we import data as some integer may be
+in character format. For this data we will do some exploration, we then
+find:
+
+    -   total volume
+
+    -   total yield,
+
+    -   CAI and MAI
+
+    -   correct the figure with thinning age
+
+    -   find how many thinnings were done for both species
+
+    -   decide if thinnings done were heavy or not.
+
+## Total Volume Estimation
+
+Given the data we have, we can get the total volume produce by adding
+all the volumes:
+*t**o**t*<sub>*v**o**l*</sub> = *s**t**a**n**d*<sub>*v**o**l*</sub> + *h**a**r**v*<sub>*v**o**l*</sub> + *m**o**r*<sub>*v**o**l*</sub>
+
+``` r
+lab4mai$tot_vol <-lab4mai$stand_vol + lab4mai$harv_vol + lab4mai$mor_vol
+```
+
+We subset the data according to species
+
+``` r
+birch <- subset(lab4mai, site==6)
+spruce <- subset(lab4mai, site==1)
+```
+
+**A little exploration**
+
+``` r
+par(mar = c(5, 4, 4, 4) + 0.5)
+
+plot(birch$age, birch$stdens, type = "l",
+     ylim = c(0,2500),
+     col = 'red',
+     xlab = substitute(paste(bold('age'))),
+     ylab = substitute(paste(bold('Stand density'))),
+     main = 'Stand density and height relationship')
+points(birch$age, birch$stdens,
+         col = 'blue',
+       pch = 19)
+par(new = TRUE)
+plot(spruce$age, spruce$stdens, type = "l",
+     ylim = c(0,2500),
+     col = 'black',
+     axes = FALSE,
+     xlab = "",
+     ylab = "")
+points(spruce$age, spruce$stdens,
+         col = 'purple',
+       pch = 16)
+axis(side = 4, at = pretty(range(spruce$stdens)))
+mtext (substitute(paste(bold('Stand density'))), side = 4, line = 3)
+legend('topright', legend = c('birch', 'spruce'),
+       pch = c(19,16),
+       col = c('blue', 'purple'))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-33-1.png)
+
+The plot above from our little exploration gives us an idea of the
+number of thinnings that have occurred for both species. Birch was
+thinned once while Spruce was thinned thrice.
+
+## Total Yield Estimation
+
+To estimate the total yield, we evaluate the cumulative of all the
+volume removed from the forest then add it to the standing volume.
+
+``` r
+# cumulative of birch
+birch$sum_harv <- cumsum(birch$harv_vol)
+birch$sum_mor <- cumsum(birch$mor_vol)
+
+# total yield or volume for birch
+birch$sumvol <- birch$sum_harv + birch$sum_mor + birch$stand_vol
+
+# cumulative ofspruce
+spruce$sum_harv <- cumsum(spruce$harv_vol)
+spruce$sum_mor <- cumsum(spruce$mor_vol)
+
+
+
+# total yield or volume for spruce
+spruce$sumvol <- spruce$sum_harv + spruce$sum_mor + spruce$stand_vol
+```
+
+\*\*Visualizing the result and comparing the respective standing volume
+between the two species)
+
+``` r
+par (mar = c(5,4,4,4) + 0.3)
+plot(birch$age, birch$stand_vol,
+     col = 'red',
+     xlab = substitute(paste(bold('Age (years)'))),
+     ylab = substitute(paste(bold('Volume (m3)'))),
+     main = 'Stand Volume Development',
+     pch = 19,
+     cex = 0.5,
+     type = 'b',
+     xlim = c(0,140),
+     ylim = c(0,1000))
+points (birch$age,birch$sumvol,
+          pch = 19,
+         col ='red',
+        cex = 0.7,
+        type = 'b')
+par (new = TRUE)
+plot(spruce$age, spruce$sumvol,
+     col = 'purple',
+     type = 'b',
+     cex = 0.7,
+     pch = 16,
+     xlab = "",
+     ylab = "",
+     axes = FALSE)
+points(spruce$age,spruce$stand_vol,
+       col ='purple',
+       pch = 16,
+       cex = 0.5,
+       type = 'b')
+axis (side = 4,
+      at = pretty(range(spruce$sumvol)))
+mtext(substitute(paste(bold('Volume (m3)'))),
+      side = 4,
+      line = 3)
+legend("topleft", 
+       legend = c('birch', 'spruce'),
+       pch = c(19,16),
+       col = c('red', 'purple'))
+legend ("bottomright",
+        legend = c('standing volume', 'total yield'),
+        pch = c(19),
+        cex = c(0.5, 1))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-35-1.png)
+
+## CAI and MaI
+
+**birch**
+
+``` r
+birch$last_vol <- shift(birch$stand_vol) ## this brings the previous measurement forward to the current row
+
+## CAI
+birch$cai <- (birch$stand_vol + birch$harv_vol + 
+  birch$mor_vol - birch$last_vol)/5
+
+## MAI
+birch$mai <- birch$sumvol/birch$age
+```
+
+**spruce**
+
+``` r
+spruce$last_vol <- shift(spruce$stand_vol) # Last measurement brought to the current row
+
+## CAI
+spruce$cai <- (spruce$stand_vol + spruce$harv_vol + 
+                spruce$mor_vol - spruce$last_vol)/5
+
+## Spruce MAI
+spruce$mai <- spruce$sumvol/spruce$age
+```
+
+**Birch CAI and MAI **
+
+``` r
+plot(birch$age, birch$mai,
+     type = 'b',
+     pch = 18,
+     col = 'red',
+     ylim = c(0,15),
+     xlim = c(0, 140),
+     main = 'MAI and CAI',
+     ylab = substitute(paste(bold('Increment (m3 ha-1 yr-1)'))),
+     xlab = substitute(paste(bold('age'))))
+points(birch$age, birch$cai,
+        type = 'b',
+        pch = 20,
+        col = 'green')
+legend("topleft",
+         legend = c("MAI", "CAI"),
+         pch = c(18, 20),
+         col = c('red', 'green'))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-38-1.png) **Spruce
+CAI and MAI**
+
+``` r
+plot(spruce$age, spruce$mai,
+     type = 'b',
+     pch = 18,
+     col = 'red',
+     ylim = c(0,20),
+     xlim = c(0, 140),
+     main = 'MAI and CAI',
+     ylab = substitute(paste(bold('Increment (m3 ha-1 yr-1)'))),
+     xlab = substitute(paste(bold('age'))))
+points(spruce$age, spruce$cai,
+         type = 'b',
+         pch = 20,
+         col = 'green')
+legend("topleft",
+         legend = c("MAI", "CAI"),
+         pch = c(18, 20),
+         col = c('red', 'green'))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
 [Back to home page](https://xrander.github.io)
