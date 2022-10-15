@@ -1190,20 +1190,20 @@ Where Nrem = Number of trees removed Nt = Total number of trees
 
 **For spruce**
 
-| Age                   | Stand_density | Thinning intensity | Light or Heavy |
-|-----------------------|---------------|--------------------|----------------|
-| Between age 35 and 40 |               |                    |                |
-| Between 50 and 55     |               |                    |                |
-| Between 70 and 75     |               |                    |                |
+| Age       | Stand_density | Thinning intensity | Light or Heavy? |
+|-----------|---------------|--------------------|-----------------|
+| 35 and 40 | 1890.1-842.8  | 55.4%              | Heavy           |
+| 50 and 55 | 816.2/517.6   | 36.6%              | Moderate        |
+| 70 and 75 | 565.9 - 340.9 | 39.8%              | Moderate        |
 
 Thinning for Spruce
 
-\|Age\|Stand density\| Thinning intensity\|Light or Heavy\|
+**For Birch**
 
-\|—–\|—————–\|————-\|——\|
+| Age   | Stand_density  | Thinning intensity | Light or Heavy? |
+|-------|----------------|--------------------|-----------------|
+| 70-75 | 1465.7 - 785.5 | 46.4%              | Moderate        |
 
-\|Between age 35 and 40\|1890.1-842.8\|55.4%\|Heavy\| \|Between 50 and
-55\| 816.2 \| 36.6% \| Moderate \| \|Between 70 and 75 \| 565.9 - 340.9
-\| 39.8 \| Moderate\|
+Thinning for Birch
 
 [Back to home page](https://xrander.github.io)
