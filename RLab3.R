@@ -56,8 +56,8 @@ plot(sample_trees$logdcm, sample_trees$logvol, pch = 13,
      col = "darkblue", main = "Diameter vs Volume",
      xlab= substitute(paste(bold("Diameter"))),
      ylab = substitute(paste(bold("Volume"))),
-     abline (M.vol, col = "red")) +
-  legend ("bottomright",
+     abline (M.vol, col = "red"))
+legend ("topleft",
           legend = c("Intercept = -7.734953",
                      " ",
                      "slope = 2-020352"),
