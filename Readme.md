@@ -1206,4 +1206,122 @@ Thinning for Spruce
 
 Thinning for Birch
 
+# Poplar Cutting Experiment - Exp V
+
+# Fertilizer Regime Experiment - Exp VI
+
+In this experiment, a young Norway Spruce stands was established with 5
+blocks with randomly distributed treatments in 0.1 ha plots. The
+treatments are with 3 different intensities in fertilization
+
+-   F1: Fertilized every year
+
+-   F2: Fertilized every second year
+
+-   F3: Fertilized every third year
+
+-   C: Control without Fertilzation.
+
+The amount of nutrients over time was calculated to be more or less the
+same in F1 F2 and F3.
+
+The experiment was measured initially in revision 1 (2006) and there
+after in several revisions, but the important revisions are the focus
+here which is an interval of 5 years period (rev 1, 4, 5, and 6).
+
+The volume (m3/ha) and CAI (m3 ha-1yr-1) were calculated for every
+treatment plot in all blocks.
+
+##Questions
+
+    -   is there a significant effect of treatment compared to control?
+
+    -   Do you find a significant difference in between the different treatments, meaning fertilization intensity
+
+    -   Do you find any different effect of treatment early on in the experiment compared to later revisions
+
+**Importing the data**
+
+``` r
+expfert <- read.table('https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/Lab6/expfert.txt',
+           header = T,
+           sep = '\t',
+           na.strings = 'NA',
+           dec = '.',
+           strip.white = T)
+```
+
+**A Little Data Exploration**
+
+``` r
+str(expfert)
+summary(expfert)
+```
+
+**To check the numbe rof replications we have in this experiment**
+
+``` r
+ftable(expfert$block, expfert$treatment, expfert$revision)
+```
+
+    ##          1 4 5 6
+    ##                 
+    ## 1523 C   1 1 1 1
+    ##      F1  1 1 1 1
+    ##      F2  1 1 1 1
+    ##      F3  1 1 1 1
+    ## 1524 C   1 1 1 1
+    ##      F1  1 1 1 1
+    ##      F2  1 1 1 1
+    ##      F3  1 1 1 1
+    ## 1525 C   1 1 1 1
+    ##      F1  1 1 1 1
+    ##      F2  1 1 1 1
+    ##      F3  1 1 1 1
+    ## 1526 C   1 1 1 1
+    ##      F1  1 1 1 1
+    ##      F2  1 1 1 1
+    ##      F3  1 1 1 1
+    ## 1527 C   1 1 1 1
+    ##      F1  1 1 1 1
+    ##      F2  1 1 1 1
+    ##      F3  1 1 1 1
+
+We have 4 revisions and 5 replicates
+
+We can check a quick visual on how the experiment have been measured
+repeatedly overtime (revisions)
+
+``` r
+xyplot(age~revision|block, data = expfert,
+       col = 1,
+       pch = 16,
+       type= c('p','l'), # to change the plot type, an alternative is using type = 'b'
+       strip = strip.custom(bg = 'red'))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-46-1.png)
+
+**Visualizing CAI changes over the revisions**
+
+``` r
+xyplot(CAI~factor(revision)|block,
+       groups=treatment,data=expfert,
+       par.settings=simpleTheme(col=c(1,2,3,4),pch=c(16,1,2,3)), #adding settings for symbology
+       auto.key=list(corner = c(0.02, 0.94),border="black",cex=0.5,points=T))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-47-1.png)
+
+``` r
+xyplot(volume~domheight | treatment,
+       group = block,
+       data = expfert,
+       type = 'b',
+       xlab = 'Dominant Height',
+       auto.key = list(corner = c(0.02,0.8), border = 'blue', cex = 0.7))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-48-1.png)
+
 [Back to home page](https://xrander.github.io)

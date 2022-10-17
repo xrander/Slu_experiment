@@ -906,7 +906,7 @@ From the figure above we can see that spruce was thinned 3 times while birch was
 
 ## Heavy or Light Thinning(s)?
 
-The definition of what is heavy or not is something that varies depending on the parameter used for thinning viz basal area or stand density, but for simplicity, stand density will be the parameter used to determine the thinning intensity. Based on the stand density or number of trees removed from the stand, thinning ≤ 25% is regarded as light thinning, 50% regarded as moderate, and \> 50% is regarded as heavy thinning (Gonçalves, 2021). Using thinning intensity or degree formula provided by Gonçalves 2021 $$RN = Nrem/Nt $$ Where Nrem = Number of trees removed Nt = Total number of trees
+The definition of what is heavy or not is something that varies depending on the parameter used for thinning viz basal area or stand density, but for simplicity, stand density will be the parameter used to determine the thinning intensity. Based on the stand density or number of trees removed from the stand, thinning ≤ 25% is regarded as light thinning, 50% regarded as moderate, and > 50% is regarded as heavy thinning (Gonçalves, 2021). Using thinning intensity or degree formula provided by Gonçalves 2021 $$RN = Nrem/Nt $$ Where Nrem = Number of trees removed Nt = Total number of trees
 
 **For spruce**
 
@@ -926,5 +926,82 @@ The definition of what is heavy or not is something that varies depending on the
 
 : Thinning for Birch
 
+
+# Poplar Cutting Experiment - Exp V
+
+# Fertilizer Regime Experiment - Exp VI
+In this experiment, a young Norway Spruce stands was established with 5 blocks with randomly distributed treatments in 0.1 ha plots. The treatments are with 3 different intensities in fertilization
+
+- F1:   Fertilized every year
+
+- F2:   Fertilized every second year
+
+- F3:   Fertilized every third year
+
+-  C:   Control without Fertilzation.
+
+The amount of nutrients over time was calculated to be more or less the same in F1 F2 and F3.
+
+The experiment was measured initially in revision 1 (2006) and there after in several revisions, but the important revisions are the focus here which is an interval of 5 years period  (rev 1, 4, 5, and 6).
+
+The volume (m3/ha) and CAI (m3 ha-1yr-1) were calculated for every treatment plot in all blocks.
+
+##Questions
+
+    -   is there a significant effect of treatment compared to control?
+    
+    -   Do you find a significant difference in between the different treatments, meaning fertilization intensity
+    
+    -   Do you find any different effect of treatment early on in the experiment compared to later revisions
+
+
+**Importing the data**
+```{r}
+expfert <- read.table('https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/Lab6/expfert.txt',
+           header = T,
+           sep = '\t',
+           na.strings = 'NA',
+           dec = '.',
+           strip.white = T)
+
+
+```
+**A Little Data Exploration**
+```{r results='hide', message=FALSE,warning=FALSE}
+
+str(expfert)
+summary(expfert)
+```
+**To check the numbe rof replications we have in this experiment**
+```{r}
+ftable(expfert$block, expfert$treatment, expfert$revision)
+
+```
+We have 4 revisions and 5 replicates
+
+We can check a quick visual on how the experiment have been measured repeatedly overtime (revisions)
+```{r}
+xyplot(age~revision|block, data = expfert,
+       col = 1,
+       pch = 16,
+       type= c('p','l'), # to change the plot type, an alternative is using type = 'b'
+       strip = strip.custom(bg = 'red'))
+```
+
+**Visualizing CAI changes over the revisions**
+```{r}
+xyplot(CAI~factor(revision)|block,
+       groups=treatment,data=expfert,
+       par.settings=simpleTheme(col=c(1,2,3,4),pch=c(16,1,2,3)), #adding settings for symbology
+       auto.key=list(corner = c(0.02, 0.94),border="black",cex=0.5,points=T))
+```
+```{r}
+xyplot(volume~domheight | treatment,
+       group = block,
+       data = expfert,
+       type = 'b',
+       xlab = 'Dominant Height',
+       auto.key = list(corner = c(0.02,0.8), border = 'blue', cex = 0.7))
+```
 
 [Back to home page](https://xrander.github.io)

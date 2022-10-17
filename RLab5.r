@@ -56,7 +56,6 @@ summary(pop2)
 # we check the mean, quantiles, min, and max value to see where the outlier exist
 #dia is having an outlier
 pop2[(pop2$dia> 5),]
-<<<<<<< HEAD
 # row 98 is having the data with an outlier
 # On checking the original data written from the field, the result was 38
 
@@ -161,8 +160,3 @@ plot(sprce$sprce_height, sprce_dbh,
 lines(sprce$sprce_height, sprce_dbh,
       col = 'black')
 points(spruce2$height, spruce2$dbh)
-=======
-#row 98 is having the data with an outlier
-
-
->>>>>>> 0099599db55d7a7cc439967fd65f2e2d5c01c495
