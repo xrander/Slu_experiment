@@ -4,7 +4,6 @@ author: 'Olamide Adu'
 output: 
   md_document: 
     variant: markdown_github
-theme: minima
 ---
 
 # Sverige LantbruksUniversitet (SLU) Permanent Forest Experiments
