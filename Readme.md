@@ -1225,7 +1225,7 @@ treatments are with 3 different intensities in fertilization
 The amount of nutrients over time was calculated to be more or less the
 same in F1 F2 and F3.
 
-The experiment was measured initially in revision 1 (2006) and there
+The experiment was measured initially in revision 1 (1972) and there
 after in several revisions, but the important revisions are the focus
 here which is an interval of 5 years period (rev 1, 4, 5, and 6).
 
@@ -1322,6 +1322,112 @@ xyplot(volume~domheight | treatment,
        auto.key = list(corner = c(0.02,0.8), border = 'blue', cex = 0.7))
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-48-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-48-1.png) \##
+VOlume and CAI at the different blocks for the different treatments \###
+Volume
+
+``` r
+barchart(volume~treatment|block, data = expfert,
+         subset = revision == 1,
+         main = 'Revision 1',
+         ylab = substitute(paste(bold('Volume'))),
+         xlab = substitute(paste(bold('Treatment'))))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-49-1.png)
+
+``` r
+barchart(volume~treatment|block, data = expfert,
+         subset = revision == 4,
+         main = 'Revision 4',
+         col = 'purple',
+         ylab = substitute(paste(bold('Volume'))),
+         xlab = substitute(paste(bold('Treatment'))))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-50-1.png)
+
+``` r
+barchart(volume~treatment|block, data = expfert,
+         subset = revision == 5,
+         main = 'Revision 5',
+         col = 'blue',
+         ylab = substitute(paste(bold('Volume'))),
+         xlab = substitute(paste(bold('Treatment'))))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-51-1.png)
+
+``` r
+barchart(volume~treatment|block, data = expfert,
+         subset = revision == 6,
+         main = 'Revision 6',
+         col = 'red',
+         ylab = substitute(paste(bold('Volume'))),
+         xlab = substitute(paste(bold('Treatment'))))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-52-1.png)
+
+### CAI
+
+``` r
+barchart(CAI~treatment|block, data = expfert,
+         subset = revision == 4,
+         col = 'purple',
+         main = 'Revision 4',
+         xlab = substitute(paste(bold('treatment'))),
+         ylab = substitute(paste(bold('CAI'))))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-53-1.png)
+
+``` r
+barchart(CAI~treatment|block, data = expfert,
+         subset = revision == 5,
+         col = 'blue',
+         main = 'Revision 5',
+         xlab = substitute(paste(bold('treatment'))),
+         ylab = substitute(paste(bold('CAI'))))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-54-1.png)
+
+``` r
+barchart(CAI~treatment|block, data = expfert,
+         subset = revision == 6,
+         col = 'red',
+         main = 'Revision 6',
+         xlab = substitute(paste(bold('treatment'))),
+         ylab = substitute(paste(bold('CAI'))))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-55-1.png) \## Box
+plot of DOminant Height
+
+``` r
+bwplot(domheight~treatment, subset=revision==1, data = expfert,
+       col = treatment)
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-56-1.png)
+
+``` r
+bwplot(domheight~treatment, subset=revision==4, data = expfert)
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-56-2.png)
+
+``` r
+bwplot(domheight~treatment, subset=revision==5, data = expfert)
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-56-3.png)
+
+``` r
+bwplot(domheight~treatment, subset=revision==6, data = expfert)
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-56-4.png)
 
 [Back to home page](https://xrander.github.io)
