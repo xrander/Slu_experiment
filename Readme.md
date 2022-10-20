@@ -1206,7 +1206,11 @@ Thinning for Spruce
 
 Thinning for Birch
 
+------------------------------------------------------------------------
+
 # Poplar Cutting Experiment - Exp V
+
+-   -   -   -   -   -   -   -   -   -   ’
 
 # Fertilizer Regime Experiment - Exp VI
 
@@ -1323,7 +1327,7 @@ xyplot(volume~domheight | treatment,
 ```
 
 ![](Readme_files/figure-markdown_github/unnamed-chunk-48-1.png) \##
-VOlume and CAI at the different blocks for the different treatments \###
+Volume and CAI at the different blocks for the different treatments \###
 Volume
 
 ``` r
@@ -1402,32 +1406,376 @@ barchart(CAI~treatment|block, data = expfert,
          ylab = substitute(paste(bold('CAI'))))
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-55-1.png) \## Box
-plot of DOminant Height
+![](Readme_files/figure-markdown_github/unnamed-chunk-55-1.png) \##
+Dominant Height across treatments
 
 ``` r
 bwplot(domheight~treatment, subset=revision==1, data = expfert,
-       col = treatment)
+       xlab = substitute(paste(bold('treatment'))),
+       ylab = substitute(paste(bold('dominant height (m)'))),
+       main = 'dominant height across treatments for revision 1')
 ```
 
 ![](Readme_files/figure-markdown_github/unnamed-chunk-56-1.png)
 
 ``` r
-bwplot(domheight~treatment, subset=revision==4, data = expfert)
+bwplot(domheight~treatment, subset=revision==4, data = expfert,
+       xlab = substitute(paste(bold('treatment'))),
+       ylab = substitute(paste(bold('dominant height (m)'))),
+       main = 'dominant height across treatments for revision 4')
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-56-2.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-57-1.png)
 
 ``` r
-bwplot(domheight~treatment, subset=revision==5, data = expfert)
+bwplot(domheight~treatment, subset=revision==5, data = expfert,
+       xlab = substitute(paste(bold('treatment'))),
+       ylab = substitute(paste(bold('dominant height (m)'))),
+       main = 'dominant height across treatments for revision 5')
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-56-3.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-58-1.png)
 
 ``` r
-bwplot(domheight~treatment, subset=revision==6, data = expfert)
+bwplot(domheight~treatment, subset=revision==6, data = expfert,
+       xlab = substitute(paste(bold('treatment'))),
+       ylab = substitute(paste(bold('dominant height (m)'))),
+       main = 'dominant height across treatments for revision 6')
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-56-4.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-59-1.png) \##
+Analysis of Variance to see the effect of the treatments on the volume
+produced \### Revision of 4
+
+``` r
+M.vol <- lm(volume~block+treatment, 
+            data = expfert[expfert$revision==4,])
+M.vol
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = volume ~ block + treatment, data = expfert[expfert$revision == 
+    ##     4, ])
+    ## 
+    ## Coefficients:
+    ## (Intercept)        block  treatmentF1  treatmentF2  treatmentF3  
+    ##    4847.563       -3.163       19.740       22.287       10.807
+
+``` r
+anova(M.vol)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: volume
+    ##           Df  Sum Sq Mean Sq F value   Pr(>F)   
+    ## block      1  400.27  400.27  6.2491 0.024515 * 
+    ## treatment  3 1526.53  508.84  7.9442 0.002098 **
+    ## Residuals 15  960.78   64.05                    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+#### Posthoc test using Tukeyhsd
+
+``` r
+T.vol <- TukeyC(x = M.vol, which = 'treatment')
+summary(T.vol)
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##    Means G1 G2
+    ## F2 45.77  a   
+    ## F1 43.22  a   
+    ## F3 34.29  a  b
+    ## C  23.48     b
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##       F2    F1     F3      C
+    ## F2 0.000 2.547 11.480 22.287
+    ## F1 0.957 0.000  8.933 19.740
+    ## F3 0.150 0.327  0.000 10.807
+    ## C  0.003 0.007  0.187  0.000
+
+**Checking for patterns in the residuals with a residual plot**
+
+``` r
+plot(M.vol$fitted.values, M.vol$residuals,
+     xlab = 'Fitted Values',
+     ylab = 'Residuals')
+abline (c(0,0), col = 2)
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-62-1.png)
+**Getting more information using base r plot function**
+
+``` r
+plot(M.vol)
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-63-1.png)![](Readme_files/figure-markdown_github/unnamed-chunk-63-2.png)![](Readme_files/figure-markdown_github/unnamed-chunk-63-3.png)![](Readme_files/figure-markdown_github/unnamed-chunk-63-4.png)
+
+### Revision 5
+
+``` r
+M.vol5 <- lm(volume~block+treatment,
+             data = expfert[expfert$revision == 5,])
+anova(M.vol5)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: volume
+    ##           Df  Sum Sq Mean Sq F value    Pr(>F)    
+    ## block      1   376.2   376.2  0.7221 0.4088005    
+    ## treatment  3 18234.6  6078.2 11.6683 0.0003327 ***
+    ## Residuals 15  7813.8   520.9                      
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+#### Post hoc test using Tukeys HSD
+
+``` r
+T.vol5 <- TukeyC(x = M.vol5, which = 'treatment')
+
+summary(T.vol5)
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##     Means G1 G2
+    ## F1 133.36  a   
+    ## F2 131.78  a   
+    ## F3 102.30  a   
+    ## C   58.87     b
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##       F1    F2     F3      C
+    ## F1 0.000 1.583 31.060 74.493
+    ## F2 1.000 0.000 29.477 72.910
+    ## F3 0.182 0.217  0.000 43.433
+    ## C  0.001 0.001  0.039  0.000
+
+**Checking for patterns in the residuals with a residual plot**
+
+``` r
+plot(M.vol5$fitted.values, M.vol5$residuals,
+     xlab ='fitted values',
+     ylab = 'residuals')
+abline(c(0,0), col = 'black')
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-66-1.png)
+
+### Revision 6
+
+``` r
+M.vol6 <- lm(volume~block+treatment,
+             data = expfert[expfert$revision == 6,])
+anova(M.vol6)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: volume
+    ##           Df Sum Sq Mean Sq F value    Pr(>F)    
+    ## block      1   3597  3597.3  3.4533   0.08286 .  
+    ## treatment  3  57590 19196.8 18.4283 2.721e-05 ***
+    ## Residuals 15  15626  1041.7                      
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+#### Posthoc test (Tukey HSD)
+
+``` r
+T.vol6 <- TukeyC(x = M.vol6, which = 'treatment')
+
+summary(T.vol6)
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##     Means G1 G2
+    ## F1 241.38  a   
+    ## F2 239.30  a   
+    ## F3 202.05  a   
+    ## C  109.04     b
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##       F1    F2     F3       C
+    ## F1 0.000 2.077 39.327 132.340
+    ## F2 1.000 0.000 37.250 130.263
+    ## F3 0.259 0.300  0.000  93.013
+    ## C  0.000 0.000  0.002   0.000
+
+**Checking for patterns in the residuals with a residual plot**
+
+``` r
+plot(M.vol6$fitted.values, M.vol6$residuals,
+     xlab ='fitted values',
+     ylab = 'residuals')
+abline(c(0,0), col = 'black')
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-69-1.png)
+
+## Analysis of Variance to see the effect of the treatments on the current annual increment
+
+### Revision 4
+
+``` r
+m.cai4 <- lm(CAI~block+treatment,
+             data = expfert[expfert$revision == 4,])
+anova(m.cai4)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: CAI
+    ##           Df  Sum Sq Mean Sq F value    Pr(>F)    
+    ## block      1  22.952  22.952  3.4420 0.0833172 .  
+    ## treatment  3 192.571  64.190  9.6263 0.0008639 ***
+    ## Residuals 15 100.024   6.668                      
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+#### Posthoc test for ranking
+
+``` r
+t.cai4 <- TukeyC(x = m.cai4, which = 'treatment')
+
+summary(t.cai4)
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##    Means G1 G2
+    ## F2 12.81  a   
+    ## F1 12.53  a   
+    ## F3  9.97  a   
+    ## C   5.07     b
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##       F2    F1    F3     C
+    ## F2 0.000 0.277 2.833 7.733
+    ## F1 0.998 0.000 2.557 7.457
+    ## F3 0.341 0.426 0.000 4.900
+    ## C  0.001 0.002 0.040 0.000
+
+**Checking for patterns in the residuals with a residual plot**
+
+``` r
+plot(m.cai4$fitted.values, m.cai4$residuals,
+     xlab ='fitted values',
+     ylab = 'residuals')
+abline(c(0,0), col = 'black')
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-72-1.png)
+
+### Revision 5
+
+``` r
+m.cai5 <- lm(CAI~block+treatment,
+            data = expfert[expfert$revision == 5,])
+anova(m.cai5)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: CAI
+    ##           Df Sum Sq Mean Sq F value    Pr(>F)    
+    ## block      1   0.06   0.059  0.0058 0.9403289    
+    ## treatment  3 383.49 127.830 12.6017 0.0002232 ***
+    ## Residuals 15 152.16  10.144                      
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+#### Posthoc test
+
+``` r
+t.cai5 <- TukeyC(x = m.cai4, which = 'treatment')
+
+summary(t.cai5)
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##    Means G1 G2
+    ## F2 12.81  a   
+    ## F1 12.53  a   
+    ## F3  9.97  a   
+    ## C   5.07     b
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##       F2    F1    F3     C
+    ## F2 0.000 0.277 2.833 7.733
+    ## F1 0.998 0.000 2.557 7.457
+    ## F3 0.341 0.426 0.000 4.900
+    ## C  0.001 0.002 0.040 0.000
+
+**Checking for patterns in the residuals with a residual plot**
+
+``` r
+plot(m.cai5$fitted.values, m.cai5$residuals,
+     xlab ='fitted values',
+     ylab = 'residuals')
+abline(c(0,0), col = 'black')
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-75-1.png)
+
+### Revision 6
+
+``` r
+m.cai6 <- lm(CAI~block+treatment,
+            data = expfert[expfert$revision == 6,])
+anova(m.cai6)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: CAI
+    ##           Df Sum Sq Mean Sq F value    Pr(>F)    
+    ## block      1  72.27  72.271  9.8601  0.006742 ** 
+    ## treatment  3 517.17 172.390 23.5195 6.353e-06 ***
+    ## Residuals 15 109.95   7.330                      
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+#### Post hoc test
+
+``` r
+t.cai6 <- TukeyC(x = m.cai4, which = 'treatment')
+
+summary(t.cai6)
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##    Means G1 G2
+    ## F2 12.81  a   
+    ## F1 12.53  a   
+    ## F3  9.97  a   
+    ## C   5.07     b
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##       F2    F1    F3     C
+    ## F2 0.000 0.277 2.833 7.733
+    ## F1 0.998 0.000 2.557 7.457
+    ## F3 0.341 0.426 0.000 4.900
+    ## C  0.001 0.002 0.040 0.000
+
+**Checking for patterns in the residuals with a residual plot**
+
+``` r
+plot(m.cai6$fitted.values, m.cai6$residuals,
+     xlab ='fitted values',
+     ylab = 'residuals')
+abline(c(0,0), col = 'black')
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-78-1.png)
 
 [Back to home page](https://xrander.github.io)

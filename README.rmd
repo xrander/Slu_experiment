@@ -925,8 +925,11 @@ The definition of what is heavy or not is something that varies depending on the
 
 : Thinning for Birch
 
+* * * * * *
 
 # Poplar Cutting Experiment - Exp V
+
+* * * * * * * * * * ' 
 
 # Fertilizer Regime Experiment - Exp VI
 In this experiment, a young Norway Spruce stands was established with 5 blocks with randomly distributed treatments in 0.1 ha plots. The treatments are with 3 different intensities in fertilization
@@ -1002,7 +1005,7 @@ xyplot(volume~domheight | treatment,
        xlab = 'Dominant Height',
        auto.key = list(corner = c(0.02,0.8), border = 'blue', cex = 0.7))
 ```
-## VOlume and CAI at the different blocks for the different treatments
+## Volume and CAI at the different blocks for the different treatments
 ### Volume
 
 ```{r}
@@ -1066,16 +1069,175 @@ barchart(CAI~treatment|block, data = expfert,
          xlab = substitute(paste(bold('treatment'))),
          ylab = substitute(paste(bold('CAI'))))
 ```
-## Box plot of DOminant Height
+## Dominant Height across treatments
+
 ```{r}
 bwplot(domheight~treatment, subset=revision==1, data = expfert,
-       col = treatment)
+       xlab = substitute(paste(bold('treatment'))),
+       ylab = substitute(paste(bold('dominant height (m)'))),
+       main = 'dominant height across treatments for revision 1')
+```
 
-bwplot(domheight~treatment, subset=revision==4, data = expfert)
+```{r}
+bwplot(domheight~treatment, subset=revision==4, data = expfert,
+       xlab = substitute(paste(bold('treatment'))),
+       ylab = substitute(paste(bold('dominant height (m)'))),
+       main = 'dominant height across treatments for revision 4')
+```
 
-bwplot(domheight~treatment, subset=revision==5, data = expfert)
+```{r}
+bwplot(domheight~treatment, subset=revision==5, data = expfert,
+       xlab = substitute(paste(bold('treatment'))),
+       ylab = substitute(paste(bold('dominant height (m)'))),
+       main = 'dominant height across treatments for revision 5')
+```
 
-bwplot(domheight~treatment, subset=revision==6, data = expfert)
+```{r}
+bwplot(domheight~treatment, subset=revision==6, data = expfert,
+       xlab = substitute(paste(bold('treatment'))),
+       ylab = substitute(paste(bold('dominant height (m)'))),
+       main = 'dominant height across treatments for revision 6')
+```
+## Analysis of Variance to see the effect of the treatments on the volume produced
+### Revision of 4
+```{r}
+M.vol <- lm(volume~block+treatment, 
+            data = expfert[expfert$revision==4,])
+M.vol
+anova(M.vol)
+```
+
+#### Posthoc test using Tukeyhsd
+```{r}
+T.vol <- TukeyC(x = M.vol, which = 'treatment')
+summary(T.vol)
+```
+
+
+**Checking for patterns in the residuals with a residual plot**
+```{r}
+plot(M.vol$fitted.values, M.vol$residuals,
+     xlab = 'Fitted Values',
+     ylab = 'Residuals')
+abline (c(0,0), col = 2)
+```
+**Getting more information using base r plot function**
+
+```{r}
+plot(M.vol)
+```
+
+### Revision 5
+```{r}
+M.vol5 <- lm(volume~block+treatment,
+             data = expfert[expfert$revision == 5,])
+anova(M.vol5)
+```
+
+#### Post hoc test using Tukeys HSD
+```{r}
+T.vol5 <- TukeyC(x = M.vol5, which = 'treatment')
+
+summary(T.vol5)
+```
+
+**Checking for patterns in the residuals with a residual plot**
+```{r}
+plot(M.vol5$fitted.values, M.vol5$residuals,
+     xlab ='fitted values',
+     ylab = 'residuals')
+abline(c(0,0), col = 'black')
+```
+
+### Revision 6
+```{r}
+M.vol6 <- lm(volume~block+treatment,
+             data = expfert[expfert$revision == 6,])
+anova(M.vol6)
+
+```
+
+#### Posthoc test (Tukey HSD)
+```{r}
+T.vol6 <- TukeyC(x = M.vol6, which = 'treatment')
+
+summary(T.vol6)
+```
+**Checking for patterns in the residuals with a residual plot**
+```{r}
+plot(M.vol6$fitted.values, M.vol6$residuals,
+     xlab ='fitted values',
+     ylab = 'residuals')
+abline(c(0,0), col = 'black')
+
+```
+
+## Analysis of Variance to see the effect of the treatments on the current annual increment
+### Revision 4
+```{r}
+m.cai4 <- lm(CAI~block+treatment,
+             data = expfert[expfert$revision == 4,])
+anova(m.cai4)
+```
+
+#### Posthoc test for ranking
+```{r}
+t.cai4 <- TukeyC(x = m.cai4, which = 'treatment')
+
+summary(t.cai4)
+```
+
+
+**Checking for patterns in the residuals with a residual plot**
+```{r}
+plot(m.cai4$fitted.values, m.cai4$residuals,
+     xlab ='fitted values',
+     ylab = 'residuals')
+abline(c(0,0), col = 'black')
+```
+
+### Revision 5
+
+```{r}
+m.cai5 <- lm(CAI~block+treatment,
+            data = expfert[expfert$revision == 5,])
+anova(m.cai5)
+```
+#### Posthoc test
+```{r}
+t.cai5 <- TukeyC(x = m.cai4, which = 'treatment')
+
+summary(t.cai5)
+```
+
+**Checking for patterns in the residuals with a residual plot**
+```{r}
+plot(m.cai5$fitted.values, m.cai5$residuals,
+     xlab ='fitted values',
+     ylab = 'residuals')
+abline(c(0,0), col = 'black')
+```
+
+### Revision 6
+```{r}
+m.cai6 <- lm(CAI~block+treatment,
+            data = expfert[expfert$revision == 6,])
+anova(m.cai6)
+```
+
+#### Post hoc test
+```{r}
+t.cai6 <- TukeyC(x = m.cai4, which = 'treatment')
+
+summary(t.cai6)
+```
+
+**Checking for patterns in the residuals with a residual plot**
+```{r}
+plot(m.cai6$fitted.values, m.cai6$residuals,
+     xlab ='fitted values',
+     ylab = 'residuals')
+abline(c(0,0), col = 'black')
 ```
 
 [Back to home page](https://xrander.github.io)
