@@ -1134,6 +1134,7 @@ M.vol5 <- lm(volume~block+treatment,
 anova(M.vol5)
 ```
 
+The anova test shows a significant in the treatment effect on volume production.
 #### Post hoc test using Tukeys HSD
 ```{r}
 T.vol5 <- TukeyC(x = M.vol5, which = 'treatment')
@@ -1239,5 +1240,276 @@ plot(m.cai6$fitted.values, m.cai6$residuals,
      ylab = 'residuals')
 abline(c(0,0), col = 'black')
 ```
+
+
+# Fertilization Experiment with Poplar - VI (2)
+**Importing the data**
+```{r}
+read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab6/poplartreatment.txt',
+           header = T, sep = '\t',
+           dec = '.', na.strings = 'NA',
+           strip.white = T)
+```
+
+This is an extract from the seedling experiment earlier. We'll try to see if there's a significant difference between fertilized and unfertilized seedlings.
+**Data Exploration**
+```{r}
+str(poptr)
+```
+
+```{r}
+bwplot(volume~treatment, data = poptr,
+       xlab = substitute(paste(bold('treatment'))),
+       ylab = substitute(paste(bold('volume (m3)'))),
+       main = 'Volume distribution for the different treatments')
+```
+```{r}
+bwplot(cutw ~treatment,
+       data = poptr,
+       xlab = substitute(paste(bold('treatment'))),
+       ylab = substitute(paste(bold('colar width (mm)'))),
+       main = 'collar width of the different treatments')
+```
+```{r}
+xyplot(volume~cutw, data = poptr,
+       group = treatment,
+       xlab = substitute(paste(bold('Colar Width (mm)'))),
+       ylab = substitute(paste(bold('Volume(m3)'))),
+       main = 'collar_width vs volume')
+```
+
+## Analysis of Variance
+Now we test to see if there are no effect of the treatment on the volume
+```{r}
+lm(volume~treatmen, data = poptr)
+```
+
+# Mean Test of Regeneration - Exp (VII) (1)
+The stem density inventory of regeneration is made from clear cuts labeled A,B,C, and D. Two species were regenerated, Norway Spruce and Birch were the species measured. Norway spruce was planted and Birch was naturally regenerated. The same plots were sed for the clearcuts but the number of plots varied between sites. The regenerations are already 6 years of age.
+![](https://silvlib.cfans.umn.edu/sites/silvlib.cfans.umn.edu/files/styles/cover_type_small/public/figure_3_1.jpg?itok=J1FF9IiL)
+
+## Question
+ The aim of this session is to compare two means, individual species stem density mean vs mean value of all inventory plots from all sites.
+ 
+```{r}
+regen <- read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab%207/regenerationsprucebirch.txt',
+           header = T, dec = '.',
+           strip.white = T,
+           sep = '\t',
+           na.strings = 'NA')
+```
+**Data Description**
+site = site_id A, B, C or D
+plot = plot id 1 - 7
+species = spruce or birch
+density = stems per ha
+
+**Data  Exploration**
+```{r}
+str(regen)
+```
+changing plot to factor data type
+```{r}
+regen$plot <- as.factor(regen$plot)
+```
+
+```{r}
+str(regen)
+```
+```{R}
+summary(regen)
+```
+
+From the summary we can notice that we have unequal replications of the plots in the sites
+
+```{r}
+xyplot(density~plot, data = regen,
+       group = species,
+       main = 'Distribution of regeneration across the plots',
+       ylab = substitute(paste(bold('No of Stems'))),
+       xlab = substitute(paste(bold('plot'))),
+       auto.key = list(corner = c(0.9,0.9), border = 'blue', cex = 0.7))
+```
+
+**getting a view of the experiment design**
+```{r}
+table(regen$site, regen$plot)
+```
+
+**Comparing mean**
+```{r}
+mean_1 <- summaryBy(density~species, data = regen, FUN = c(mean,sd, length))
+mean_1
+```
+This is the general mean without regards for the differences in the site replications.
+
+```{r}
+sitemean <- summaryBy(density~species + site, data = regen, na.rm = T, keep.names = T, FUN = mean)
+
+sitemean
+```
+```{r}
+mean_2 <- summaryBy(density~species, data = sitemean,
+        FUN = c(mean, sd, length))
+mean_2
+```
+
+
+**Estimating the standard error**
+
+```{r}
+mean_1$st_err <- mean_1$density.sd/sqrt(mean_1$density.length)
+mean_2$str_err <- mean_2$density.sd/sqrt(mean_2$density.length)
+```
+
+# LodgePole Pine Experiment (VII) (2)
+This experiment is a soil scarification experiment with Lodegepole Pine in Västerbotten, Sweden. The treatments were either planting after soil scarification using deep plowing (deep), or planting without any site preparation (control). The size of the treatment plots were 30*30 m and the experiment was replicated in 4 blokcs. The plantation was made in 1988 and the experiment was remeasured after several years, to 2012, when all trees in the treatment plots were cross calipered at dbh (mm).
+
+## Questions
+For this data,
+I'll be exploring the data and then calculating the basal area/ha and stem density/ha for every block and treatment. I seek to answer the following:
+
+    - What effect have a radical soil scarification method such as deep plowing on:
+        -- survival and
+        
+        -- growth of lodgepole pine on the site
+
+In other words: Is there a significant effect of treatment  if we test for:
+
+
+-   stem density and
+
+-   basal area.
+
+**Importing the data**
+```{r}
+L_pine <- read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab%207/deepcult_lodgepolepine.txt',
+           header = T,
+           sep = '\t',
+           na.strings = 'NA',
+           dec = '.',
+           strip.white = T)
+```
+
+
+
+
+
+
+
+
+
+
+
+# Thinning Experiment in Scot Pine
+
+**Importing data**
+```{r}
+scot <- read.table('C:/Users/aduol/Documents/SLU/RSust/Exam/TaskB_GG.txt',
+           sep = '\t', strip.white = T,
+           header = T,
+           na.strings = 'NA',
+           dec = )
+```
+## Questions
+
+-   What is the total volume production
+
+-   is there any statistical differences between the selected treatments at the time of measurement in terms of total volume production, PAI and dbh?
+
+**Data Exploration**
+
+```{r}
+str(scot)
+
+summary(scot)
+```
+Some data type will be changed.
+
+```{r}
+scot$site <- as.factor(scot$site)
+scot$treatment <- as.factor(scot$treatment)
+scot$plotno <- as.factor(scot$plotno)
+```
+
+**Experimental design**
+A quick preview of the experimental design
+```{r}
+ftable(scot$site, scot$treatment, scot$plot)
+```
+
+The design is a randonmized blocked design
+
+### Total Volume Produced
+```{R}
+scot$tot_vol <- scot$standingvol + scot$harvestvol + scot$mortvol
+```
+
+**Volume produced by each treatments**
+```{R}
+summaryBy(tot_vol~treatment, data = scot, FUN = sum)
+```
+
+```{r}
+barchart(tot_vol~treatment | site,
+         data = scot,
+         group = treatment,
+         ylab = substitute(paste(bold('Total Volume (m3)'))),
+         xlab = substitute(paste(bold('Treatments'))),
+         main = 'Total Volume produced by each treatments at the different sites')
+```
+
+
+```{r}
+summaryBy(tot_vol + paiha + dbh ~ treatment,
+          FUM = mean,
+          data = scot)
+```
+### Analysis of Variance (ANOVA)
+```{r}
+## pai
+s_paiha <- lm(paiha ~ site+treatment , data = scot)
+
+##tot_vol
+s_tvol <- lm(tot_vol ~ site+treatment , data = scot)
+
+##tot_dbh
+s_dbh <- lm(dbh~site+treatment, data = scot)
+```
+
+```{r}
+## tot_vol
+anova(s_tvol)
+
+##dbh
+anova(s_dbh)
+
+##pai
+anova(s_paiha)
+```
+
+### Post hoc test
+**Total Volume**
+```{r}
+## Post hoc test
+summary(TukeyC(s_tvol, which = 'treatment'))
+```
+
+**Periodic Annual Increment Per hectare**
+```{r}
+## Post hoc test
+summary(TukeyC(s_paiha, which = 'treatment'))
+```
+
+**Diameter at breastheight**
+```{r}
+## Post hoc test
+summary(TukeyC(s_dbh, which = 'treatment'))
+```
+
+
+
+
+
 
 [Back to home page](https://xrander.github.io)
