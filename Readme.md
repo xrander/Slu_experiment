@@ -29,6 +29,7 @@ library(doBy)
 library(dplyr)
 library(lattice)
 library(ggplot2)
+library(car)
 library(data.table)
 library(TukeyC)
 ```
@@ -1210,6 +1211,739 @@ Thinning for Birch
 
 # Poplar Cutting Experiment - Exp V
 
+## Question:
+
+    -   Investigate if the volume of 12 weeks seedlings is related to the initial cutting weight.
+
+    -   Make a regression of height and dbh,then determine if dbh can be used to predict height if height data is missing.
+
+**Importing data**
+
+``` r
+# Importing data
+pop2 <- read.table("https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab%205/pop2.txt",
+           header = T, sep = '\t', dec = '.', na.strings = 'NA', strip.white = T)
+poplar <- read.table("https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab%205/poplar.txt",
+                     header = T, sep = '\t', dec = '.', na.strings = 'NA', strip.white = T)
+spruce2 <- read.table("https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab%205/spruce.txt",
+                      header = T, sep = '\t', dec = '.', na.strings = 'NA', strip.white = T)
+```
+
+**Data description** ***pop2 and poplar***
+
+-   block:1-5
+
+-   cutw:total dryweight biomass (g)
+
+-   height:aboveground height (mm)
+
+-   dia:root collar diameter (mm)
+
+-   clone: A,B,C
+
+-   fert: 1=fertilized, 3= control
+
+***Spruce***\* The data is just a short list of sampled saplings of
+Norway spruce with dbh (mm) and height (dm). The data is taken from a
+short interval of heights and the relation between height and diameter
+is still linear (compared to the range that you usually have in a
+stand). That is why, we are interested in testing whether we could use a
+linear model to fit a regression line of the relationship of height and
+dbh.
+
+\*\* Little exploration\*\*
+
+``` r
+str(pop2)
+```
+
+    ## 'data.frame':    189 obs. of  6 variables:
+    ##  $ block : int  1 1 1 1 2 2 2 2 2 2 ...
+    ##  $ cutw  : num  2.4 0.7 6.5 1.1 2 4.9 0.8 1.3 8.8 2 ...
+    ##  $ height: int  71 67 211 69 116 123 68 79 166 91 ...
+    ##  $ dia   : num  0.6 1.4 3.5 1 1.4 3.2 2.2 1.8 2.4 2.5 ...
+    ##  $ clone : chr  "A" "A" "A" "A" ...
+    ##  $ fert  : int  3 3 3 3 3 3 3 3 3 3 ...
+
+``` r
+summary(pop2)
+```
+
+    ##      block            cutw           height           dia        
+    ##  Min.   :1.000   Min.   : 0.10   Min.   : 22.0   Min.   : 0.600  
+    ##  1st Qu.:2.000   1st Qu.: 1.10   1st Qu.:100.5   1st Qu.: 2.000  
+    ##  Median :3.000   Median : 2.20   Median :262.5   Median : 3.200  
+    ##  Mean   :3.011   Mean   : 3.78   Mean   :248.5   Mean   : 3.046  
+    ##  3rd Qu.:4.000   3rd Qu.: 5.80   3rd Qu.:365.2   3rd Qu.: 3.600  
+    ##  Max.   :5.000   Max.   :19.70   Max.   :506.0   Max.   :39.000  
+    ##                                  NA's   :1                       
+    ##     clone                fert      
+    ##  Length:189         Min.   :1.000  
+    ##  Class :character   1st Qu.:1.000  
+    ##  Mode  :character   Median :1.000  
+    ##                     Mean   :1.963  
+    ##                     3rd Qu.:3.000  
+    ##                     Max.   :3.000  
+    ## 
+
+``` r
+plot (pop2$dia)
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-44-1.png)
+
+There is a wrong diameter value that is far from the average mean.Also,
+we have missing value in the height variable.
+
+#### Dealing with Missing Data
+
+``` r
+pop2[is.na(pop2$height), ]
+```
+
+    ##     block cutw height dia clone fert
+    ## 109     4  0.5     NA 3.1     A    1
+
+``` r
+## This shows we have one Na Value and it is in row 109
+
+pop2[complete.cases(pop2), ] ## can be written as 
+```
+
+    ##     block cutw height  dia clone fert
+    ## 1       1  2.4     71  0.6     A    3
+    ## 2       1  0.7     67  1.4     A    3
+    ## 3       1  6.5    211  3.5     A    3
+    ## 4       1  1.1     69  1.0     A    3
+    ## 5       2  2.0    116  1.4     A    3
+    ## 6       2  4.9    123  3.2     A    3
+    ## 7       2  0.8     68  2.2     A    3
+    ## 8       2  1.3     79  1.8     A    3
+    ## 9       2  8.8    166  2.4     A    3
+    ## 10      2  2.0     91  2.5     A    3
+    ## 11      2  2.5     32  1.9     A    3
+    ## 12      3  2.5    127  2.1     A    3
+    ## 13      3  1.3     79  1.5     A    3
+    ## 14      3  1.0     81  1.6     A    3
+    ## 15      3  6.3    186  2.9     A    3
+    ## 16      3 12.1    234  2.7     A    3
+    ## 17      4  1.6     94  1.7     A    3
+    ## 18      4  0.5     43  0.6     A    3
+    ## 19      4  8.5    249  3.2     A    3
+    ## 20      4  1.1     86  1.6     A    3
+    ## 21      5  1.7     92  1.9     A    3
+    ## 22      5  7.2    241  3.7     A    3
+    ## 23      5  2.7    154  2.4     A    3
+    ## 24      5  1.4     92  1.9     A    3
+    ## 25      1  1.4     36  1.4     B    3
+    ## 26      1  2.6    186  2.2     B    3
+    ## 27      1  2.2    197  2.0     B    3
+    ## 28      1 14.7    349  3.5     B    3
+    ## 29      1  0.7     66  1.3     B    3
+    ## 30      1  1.9    233  2.2     B    3
+    ## 31      1  4.6    251  2.8     B    3
+    ## 32      1  0.8     26  1.0     B    3
+    ## 33      2  0.9     32  0.8     B    3
+    ## 34      2  2.1     89  2.4     B    3
+    ## 35      2  5.2    246  3.5     B    3
+    ## 36      2 11.3    238  3.0     B    3
+    ## 37      2  5.7    245  2.8     B    3
+    ## 38      3  7.0    247  3.0     B    3
+    ## 39      3  2.8    161  2.1     B    3
+    ## 40      3  2.0    117  1.7     B    3
+    ## 41      3  4.3    163  3.2     B    3
+    ## 42      3  0.7     51  1.3     B    3
+    ## 43      4  0.5     81  1.5     B    3
+    ## 44      4  1.9    144  2.1     B    3
+    ## 45      4 19.7    324  2.8     B    3
+    ## 46      4  3.1    164  2.0     B    3
+    ## 47      4  6.8    242  3.0     B    3
+    ## 48      4  1.5    101  1.6     B    3
+    ## 49      4 14.3    323  3.6     B    3
+    ## 50      5 11.8    294  3.9     B    3
+    ## 51      5  4.1    144  2.8     B    3
+    ## 52      5  3.8    173  2.3     B    3
+    ## 53      5  2.3     61  2.0     B    3
+    ## 54      5  2.4     58  1.3     B    3
+    ## 55      5  1.4     99  2.0     B    3
+    ## 56      1  0.6     79  0.9     C    3
+    ## 57      1  0.9     24  0.9     C    3
+    ## 58      1  4.5    208  3.2     C    3
+    ## 59      1  0.8     93  1.2     C    3
+    ## 60      1  0.6     93  0.9     C    3
+    ## 61      2  0.7    116  1.1     C    3
+    ## 62      2  4.1    261  2.7     C    3
+    ## 63      2  7.4    282  3.5     C    3
+    ## 64      2  1.1     62  0.9     C    3
+    ## 65      2  0.6     48  0.9     C    3
+    ## 66      2 10.3    281  3.6     C    3
+    ## 67      2 14.7    284  3.8     C    3
+    ## 68      2  1.8     79  1.9     C    3
+    ## 69      3  2.4     42  2.4     C    3
+    ## 70      3  2.2     77  2.1     C    3
+    ## 71      3  1.2    114  1.7     C    3
+    ## 72      3  0.8     81  1.3     C    3
+    ## 73      3  0.7     27  0.9     C    3
+    ## 74      3  5.6     22  2.1     C    3
+    ## 75      3  8.5     73  4.0     C    3
+    ## 76      3 10.1    276  3.9     C    3
+    ## 77      4  8.6    247  3.4     C    3
+    ## 78      4  0.9     93  1.8     C    3
+    ## 79      4  0.9     76  1.2     C    3
+    ## 80      4  7.1    221  3.3     C    3
+    ## 81      4  2.1     49  1.4     C    3
+    ## 82      4  0.7     82  1.4     C    3
+    ## 83      4  9.2    241  3.2     C    3
+    ## 84      5  1.1     48  1.3     C    3
+    ## 85      5  2.0     74  1.5     C    3
+    ## 86      5  4.7     51  3.2     C    3
+    ## 87      5  2.9     31  1.3     C    3
+    ## 88      5  8.4    221  3.6     C    3
+    ## 89      5  6.1    227  2.8     C    3
+    ## 90      5  0.5     79  1.0     C    3
+    ## 91      5  0.8    128  1.6     C    3
+    ## 92      1  4.6    441  4.0     A    1
+    ## 93      1  3.6    316  3.6     A    1
+    ## 94      1  2.1    353  3.3     A    1
+    ## 95      1  0.3    284  3.2     A    1
+    ## 96      2  0.1    366  3.4     A    1
+    ## 97      2  0.8    421  4.1     A    1
+    ## 98      2  7.3    407 39.0     A    1
+    ## 99      2  0.6    182  1.6     A    1
+    ## 100     2 14.2    414  3.6     A    1
+    ## 101     2  3.2    305  3.4     A    1
+    ## 102     3  0.9    306  3.0     A    1
+    ## 103     3  7.7    418  4.5     A    1
+    ## 104     3  0.6    373  3.7     A    1
+    ## 105     3  0.9    188  2.3     A    1
+    ## 106     3  2.1    328  3.1     A    1
+    ## 107     4  1.3    371  3.6     A    1
+    ## 108     4  1.4    377  3.8     A    1
+    ## 110     4  2.2    416  3.4     A    1
+    ## 111     4  6.0    406  3.8     A    1
+    ## 112     5  5.3    261  3.0     A    1
+    ## 113     5  0.4     68  2.0     A    1
+    ## 114     5  4.1    218  2.3     A    1
+    ## 115     5  1.6    334  3.2     A    1
+    ## 116     5  5.1    371  3.8     A    1
+    ## 117     5  3.1    274  3.1     A    1
+    ## 118     5  1.1    262  2.8     A    1
+    ## 119     1  2.7    394  3.4     B    1
+    ## 120     1 12.2    431  4.3     B    1
+    ## 121     1  0.8    386  3.3     B    1
+    ## 122     1  1.3    349  3.1     B    1
+    ## 123     1  7.6    361  4.0     B    1
+    ## 124     1  0.9    343  3.2     B    1
+    ## 125     1  0.7    306  2.7     B    1
+    ## 126     1  6.1    424  3.5     B    1
+    ## 127     2  1.9    406  3.4     B    1
+    ## 128     2  2.0    434  3.4     B    1
+    ## 129     2  1.2    356  3.3     B    1
+    ## 130     2  0.8    404  3.3     B    1
+    ## 131     2  6.8    378  3.8     B    1
+    ## 132     2  0.5    391  3.5     B    1
+    ## 133     2  7.2    364  4.2     B    1
+    ## 134     3  1.9    357  3.8     B    1
+    ## 135     3  2.4    313  3.4     B    1
+    ## 136     3  1.3    236  2.8     B    1
+    ## 137     3  3.2    366  3.8     B    1
+    ## 138     3  7.7    346  3.8     B    1
+    ## 139     3  1.3    348  3.3     B    1
+    ## 140     3  6.3    347  3.9     B    1
+    ## 141     4  6.5    408  4.2     B    1
+    ## 142     4  0.6    371  3.5     B    1
+    ## 143     4  5.6    414  4.1     B    1
+    ## 144     4  2.6    413  3.4     B    1
+    ## 145     4  1.1    459  3.4     B    1
+    ## 146     4  2.5    339  3.6     B    1
+    ## 147     4  4.0    423  3.7     B    1
+    ## 148     5  5.2    342  3.5     B    1
+    ## 149     5  4.7    254  2.6     B    1
+    ## 150     5  1.2    293  2.8     B    1
+    ## 151     5  1.2    323  2.7     B    1
+    ## 152     5  1.0    397  3.2     B    1
+    ## 153     5  6.9    373  3.6     B    1
+    ## 154     5  0.9    334  3.0     B    1
+    ## 155     5  1.6    186  2.0     B    1
+    ## 156     1  1.6    391  3.4     C    1
+    ## 157     1  1.0    382  3.7     C    1
+    ## 158     1  0.5    336  3.3     C    1
+    ## 159     1  5.1    411  4.0     C    1
+    ## 160     1  6.6    316  4.0     C    1
+    ## 161     1 12.8    401  4.5     C    1
+    ## 162     1  1.3    366  3.7     C    1
+    ## 163     1  4.6    353  2.4     C    1
+    ## 164     2  5.8    506  4.2     C    1
+    ## 165     2 10.2    499  4.9     C    1
+    ## 166     2  1.5    213  2.9     C    1
+    ## 167     2  0.7    414  3.4     C    1
+    ## 168     2  6.8    431  4.1     C    1
+    ## 169     2  3.9    365  4.1     C    1
+    ## 170     3 12.1    340  4.2     C    1
+    ## 171     3  0.7    341  3.4     C    1
+    ## 172     3  6.3    307  4.1     C    1
+    ## 173     3  3.7    349  4.0     C    1
+    ## 174     3  1.1    259  3.2     C    1
+    ## 175     3  2.1    302  3.6     C    1
+    ## 176     3  1.0    267  3.4     C    1
+    ## 177     4  1.7    393  3.7     C    1
+    ## 178     4  0.8    394  3.6     C    1
+    ## 179     4  6.2    403  4.4     C    1
+    ## 180     4 10.2    437  4.5     C    1
+    ## 181     4  3.5    454  4.4     C    1
+    ## 182     4  4.8    307  3.6     C    1
+    ## 183     4  1.2    418  3.6     C    1
+    ## 184     5  1.3    263  3.3     C    1
+    ## 185     5  5.1    323  3.8     C    1
+    ## 186     5 11.6    394  4.4     C    1
+    ## 187     5  6.8    336  4.1     C    1
+    ## 188     5  1.3    393  3.1     C    1
+    ## 189     5  6.0    339  3.8     C    1
+
+``` r
+pop2[complete.cases(pop2$height), ]## still the same.
+```
+
+    ##     block cutw height  dia clone fert
+    ## 1       1  2.4     71  0.6     A    3
+    ## 2       1  0.7     67  1.4     A    3
+    ## 3       1  6.5    211  3.5     A    3
+    ## 4       1  1.1     69  1.0     A    3
+    ## 5       2  2.0    116  1.4     A    3
+    ## 6       2  4.9    123  3.2     A    3
+    ## 7       2  0.8     68  2.2     A    3
+    ## 8       2  1.3     79  1.8     A    3
+    ## 9       2  8.8    166  2.4     A    3
+    ## 10      2  2.0     91  2.5     A    3
+    ## 11      2  2.5     32  1.9     A    3
+    ## 12      3  2.5    127  2.1     A    3
+    ## 13      3  1.3     79  1.5     A    3
+    ## 14      3  1.0     81  1.6     A    3
+    ## 15      3  6.3    186  2.9     A    3
+    ## 16      3 12.1    234  2.7     A    3
+    ## 17      4  1.6     94  1.7     A    3
+    ## 18      4  0.5     43  0.6     A    3
+    ## 19      4  8.5    249  3.2     A    3
+    ## 20      4  1.1     86  1.6     A    3
+    ## 21      5  1.7     92  1.9     A    3
+    ## 22      5  7.2    241  3.7     A    3
+    ## 23      5  2.7    154  2.4     A    3
+    ## 24      5  1.4     92  1.9     A    3
+    ## 25      1  1.4     36  1.4     B    3
+    ## 26      1  2.6    186  2.2     B    3
+    ## 27      1  2.2    197  2.0     B    3
+    ## 28      1 14.7    349  3.5     B    3
+    ## 29      1  0.7     66  1.3     B    3
+    ## 30      1  1.9    233  2.2     B    3
+    ## 31      1  4.6    251  2.8     B    3
+    ## 32      1  0.8     26  1.0     B    3
+    ## 33      2  0.9     32  0.8     B    3
+    ## 34      2  2.1     89  2.4     B    3
+    ## 35      2  5.2    246  3.5     B    3
+    ## 36      2 11.3    238  3.0     B    3
+    ## 37      2  5.7    245  2.8     B    3
+    ## 38      3  7.0    247  3.0     B    3
+    ## 39      3  2.8    161  2.1     B    3
+    ## 40      3  2.0    117  1.7     B    3
+    ## 41      3  4.3    163  3.2     B    3
+    ## 42      3  0.7     51  1.3     B    3
+    ## 43      4  0.5     81  1.5     B    3
+    ## 44      4  1.9    144  2.1     B    3
+    ## 45      4 19.7    324  2.8     B    3
+    ## 46      4  3.1    164  2.0     B    3
+    ## 47      4  6.8    242  3.0     B    3
+    ## 48      4  1.5    101  1.6     B    3
+    ## 49      4 14.3    323  3.6     B    3
+    ## 50      5 11.8    294  3.9     B    3
+    ## 51      5  4.1    144  2.8     B    3
+    ## 52      5  3.8    173  2.3     B    3
+    ## 53      5  2.3     61  2.0     B    3
+    ## 54      5  2.4     58  1.3     B    3
+    ## 55      5  1.4     99  2.0     B    3
+    ## 56      1  0.6     79  0.9     C    3
+    ## 57      1  0.9     24  0.9     C    3
+    ## 58      1  4.5    208  3.2     C    3
+    ## 59      1  0.8     93  1.2     C    3
+    ## 60      1  0.6     93  0.9     C    3
+    ## 61      2  0.7    116  1.1     C    3
+    ## 62      2  4.1    261  2.7     C    3
+    ## 63      2  7.4    282  3.5     C    3
+    ## 64      2  1.1     62  0.9     C    3
+    ## 65      2  0.6     48  0.9     C    3
+    ## 66      2 10.3    281  3.6     C    3
+    ## 67      2 14.7    284  3.8     C    3
+    ## 68      2  1.8     79  1.9     C    3
+    ## 69      3  2.4     42  2.4     C    3
+    ## 70      3  2.2     77  2.1     C    3
+    ## 71      3  1.2    114  1.7     C    3
+    ## 72      3  0.8     81  1.3     C    3
+    ## 73      3  0.7     27  0.9     C    3
+    ## 74      3  5.6     22  2.1     C    3
+    ## 75      3  8.5     73  4.0     C    3
+    ## 76      3 10.1    276  3.9     C    3
+    ## 77      4  8.6    247  3.4     C    3
+    ## 78      4  0.9     93  1.8     C    3
+    ## 79      4  0.9     76  1.2     C    3
+    ## 80      4  7.1    221  3.3     C    3
+    ## 81      4  2.1     49  1.4     C    3
+    ## 82      4  0.7     82  1.4     C    3
+    ## 83      4  9.2    241  3.2     C    3
+    ## 84      5  1.1     48  1.3     C    3
+    ## 85      5  2.0     74  1.5     C    3
+    ## 86      5  4.7     51  3.2     C    3
+    ## 87      5  2.9     31  1.3     C    3
+    ## 88      5  8.4    221  3.6     C    3
+    ## 89      5  6.1    227  2.8     C    3
+    ## 90      5  0.5     79  1.0     C    3
+    ## 91      5  0.8    128  1.6     C    3
+    ## 92      1  4.6    441  4.0     A    1
+    ## 93      1  3.6    316  3.6     A    1
+    ## 94      1  2.1    353  3.3     A    1
+    ## 95      1  0.3    284  3.2     A    1
+    ## 96      2  0.1    366  3.4     A    1
+    ## 97      2  0.8    421  4.1     A    1
+    ## 98      2  7.3    407 39.0     A    1
+    ## 99      2  0.6    182  1.6     A    1
+    ## 100     2 14.2    414  3.6     A    1
+    ## 101     2  3.2    305  3.4     A    1
+    ## 102     3  0.9    306  3.0     A    1
+    ## 103     3  7.7    418  4.5     A    1
+    ## 104     3  0.6    373  3.7     A    1
+    ## 105     3  0.9    188  2.3     A    1
+    ## 106     3  2.1    328  3.1     A    1
+    ## 107     4  1.3    371  3.6     A    1
+    ## 108     4  1.4    377  3.8     A    1
+    ## 110     4  2.2    416  3.4     A    1
+    ## 111     4  6.0    406  3.8     A    1
+    ## 112     5  5.3    261  3.0     A    1
+    ## 113     5  0.4     68  2.0     A    1
+    ## 114     5  4.1    218  2.3     A    1
+    ## 115     5  1.6    334  3.2     A    1
+    ## 116     5  5.1    371  3.8     A    1
+    ## 117     5  3.1    274  3.1     A    1
+    ## 118     5  1.1    262  2.8     A    1
+    ## 119     1  2.7    394  3.4     B    1
+    ## 120     1 12.2    431  4.3     B    1
+    ## 121     1  0.8    386  3.3     B    1
+    ## 122     1  1.3    349  3.1     B    1
+    ## 123     1  7.6    361  4.0     B    1
+    ## 124     1  0.9    343  3.2     B    1
+    ## 125     1  0.7    306  2.7     B    1
+    ## 126     1  6.1    424  3.5     B    1
+    ## 127     2  1.9    406  3.4     B    1
+    ## 128     2  2.0    434  3.4     B    1
+    ## 129     2  1.2    356  3.3     B    1
+    ## 130     2  0.8    404  3.3     B    1
+    ## 131     2  6.8    378  3.8     B    1
+    ## 132     2  0.5    391  3.5     B    1
+    ## 133     2  7.2    364  4.2     B    1
+    ## 134     3  1.9    357  3.8     B    1
+    ## 135     3  2.4    313  3.4     B    1
+    ## 136     3  1.3    236  2.8     B    1
+    ## 137     3  3.2    366  3.8     B    1
+    ## 138     3  7.7    346  3.8     B    1
+    ## 139     3  1.3    348  3.3     B    1
+    ## 140     3  6.3    347  3.9     B    1
+    ## 141     4  6.5    408  4.2     B    1
+    ## 142     4  0.6    371  3.5     B    1
+    ## 143     4  5.6    414  4.1     B    1
+    ## 144     4  2.6    413  3.4     B    1
+    ## 145     4  1.1    459  3.4     B    1
+    ## 146     4  2.5    339  3.6     B    1
+    ## 147     4  4.0    423  3.7     B    1
+    ## 148     5  5.2    342  3.5     B    1
+    ## 149     5  4.7    254  2.6     B    1
+    ## 150     5  1.2    293  2.8     B    1
+    ## 151     5  1.2    323  2.7     B    1
+    ## 152     5  1.0    397  3.2     B    1
+    ## 153     5  6.9    373  3.6     B    1
+    ## 154     5  0.9    334  3.0     B    1
+    ## 155     5  1.6    186  2.0     B    1
+    ## 156     1  1.6    391  3.4     C    1
+    ## 157     1  1.0    382  3.7     C    1
+    ## 158     1  0.5    336  3.3     C    1
+    ## 159     1  5.1    411  4.0     C    1
+    ## 160     1  6.6    316  4.0     C    1
+    ## 161     1 12.8    401  4.5     C    1
+    ## 162     1  1.3    366  3.7     C    1
+    ## 163     1  4.6    353  2.4     C    1
+    ## 164     2  5.8    506  4.2     C    1
+    ## 165     2 10.2    499  4.9     C    1
+    ## 166     2  1.5    213  2.9     C    1
+    ## 167     2  0.7    414  3.4     C    1
+    ## 168     2  6.8    431  4.1     C    1
+    ## 169     2  3.9    365  4.1     C    1
+    ## 170     3 12.1    340  4.2     C    1
+    ## 171     3  0.7    341  3.4     C    1
+    ## 172     3  6.3    307  4.1     C    1
+    ## 173     3  3.7    349  4.0     C    1
+    ## 174     3  1.1    259  3.2     C    1
+    ## 175     3  2.1    302  3.6     C    1
+    ## 176     3  1.0    267  3.4     C    1
+    ## 177     4  1.7    393  3.7     C    1
+    ## 178     4  0.8    394  3.6     C    1
+    ## 179     4  6.2    403  4.4     C    1
+    ## 180     4 10.2    437  4.5     C    1
+    ## 181     4  3.5    454  4.4     C    1
+    ## 182     4  4.8    307  3.6     C    1
+    ## 183     4  1.2    418  3.6     C    1
+    ## 184     5  1.3    263  3.3     C    1
+    ## 185     5  5.1    323  3.8     C    1
+    ## 186     5 11.6    394  4.4     C    1
+    ## 187     5  6.8    336  4.1     C    1
+    ## 188     5  1.3    393  3.1     C    1
+    ## 189     5  6.0    339  3.8     C    1
+
+``` r
+## This shows only the complete cases or rows without missing values
+```
+
+Let’s say we found the value where we recorded the data we can simply
+replace it using the chunk below
+
+``` r
+pop2[is.na(pop$height), ] <- 331
+```
+
+Now we run the summary again to see if there’s a missing data
+
+``` r
+is.na(pop2)
+```
+
+The result is false all through
+
+#### Dealing with Outliers
+
+With outliers we need to careful as they can sometime be true and not
+errors.
+
+**Identifying the outlier**
+
+``` r
+summary(pop2)
+```
+
+    ##      block            cutw           height           dia        
+    ##  Min.   :1.000   Min.   : 0.10   Min.   : 22.0   Min.   : 0.600  
+    ##  1st Qu.:2.000   1st Qu.: 1.10   1st Qu.:100.5   1st Qu.: 2.000  
+    ##  Median :3.000   Median : 2.20   Median :262.5   Median : 3.200  
+    ##  Mean   :3.011   Mean   : 3.78   Mean   :248.5   Mean   : 3.046  
+    ##  3rd Qu.:4.000   3rd Qu.: 5.80   3rd Qu.:365.2   3rd Qu.: 3.600  
+    ##  Max.   :5.000   Max.   :19.70   Max.   :506.0   Max.   :39.000  
+    ##                                  NA's   :1                       
+    ##     clone                fert      
+    ##  Length:189         Min.   :1.000  
+    ##  Class :character   1st Qu.:1.000  
+    ##  Mode  :character   Median :1.000  
+    ##                     Mean   :1.963  
+    ##                     3rd Qu.:3.000  
+    ##                     Max.   :3.000  
+    ## 
+
+We check the mean, quantiles, min, and max value to see where the
+outlier exist. dia is having an outlier
+
+``` r
+pop2[(pop2$dia> 5),]
+```
+
+    ##    block cutw height dia clone fert
+    ## 98     2  7.3    407  39     A    1
+
+row 98 is having the data with an outlier. On checking the original data
+written from the field, the result was 38
+
+``` r
+## changing data
+pop2$dia <- ifelse(pop2$dia > 38, 3.9, pop2$dia)
+```
+
+### Fitting the Linear Model
+
+``` r
+plot(poplar$cutw, poplar$vol)
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-51-1.png)
+
+``` r
+# Linear model
+lmpop <-lm(vol~cutw, data = poplar)
+
+anova (lmpop)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: vol
+    ##            Df Sum Sq Mean Sq F value    Pr(>F)    
+    ## cutw        1  33029   33029  233.48 < 2.2e-16 ***
+    ## Residuals 279  39470     141                      
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+**checking the distribution of the data.**
+
+``` r
+hist(lmpop$residuals)
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-52-1.png)
+
+Checking for homoscedactisity, i.e, the assumption for similar variance
+for a group being compared.
+
+``` r
+plot(lmpop$fitted.values, lmpop$residuals,
+     xlab = 'Fitted Values',
+     ylab = 'Residuals')
+abline(c(0,0), col = 2)
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-53-1.png)
+
+Making a **qqplot** (quantile-quantile plot) to check for normal
+distribution
+
+``` r
+qqnorm(lmpop$residuals)
+qqline(lmpop$residuals, col = 'red')
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-54-1.png)
+
+Now we can use the predicted values of the linear model as a function to
+estimat4e a value when we have the cutting weight available. Let’s use
+the function which we have To get the value for the function, we extract
+the intercept and slope
+
+``` r
+##intercept
+intcpt <- coef(lmpop)[1]
+
+## slope
+slp <- coef(lmpop)[2]
+```
+
+##### Creating a simulated value for cutting weights
+
+``` r
+simul.cutw <- c(0.1, 2, 4,5,6, 9, 10, 14, 16)
+
+### Applying the model
+simul.vol <- intcpt + (slp * simul.cutw)
+
+###
+simul <- data.frame(simul.cutw, simul.vol)
+```
+
+Plotting the data the relationship
+
+``` r
+plot(simul$simul.cutw, simul$simul.vol,
+     pch = 16,
+     col = 'red',
+     xlab = 'cutting width',
+     ylab = 'volume',
+     main = 'Cutting width vs volume relationship in Poplar')
+lines(simul$simul.cutw, simul$simul.vol,
+      lwd = 1.1,
+      col = 'blue')
+points(poplar$cutw, poplar$vol,
+       pch = 2,
+       cex = 0.6,
+       col = 'black')
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-57-1.png) \##
+SPruce Stand **Data exploration**
+
+``` r
+summary(spruce2)
+```
+
+    ##      height           dbh       
+    ##  Min.   :13.00   Min.   : 4.00  
+    ##  1st Qu.:20.00   1st Qu.:13.00  
+    ##  Median :25.00   Median :20.00  
+    ##  Mean   :25.56   Mean   :19.89  
+    ##  3rd Qu.:32.00   3rd Qu.:27.00  
+    ##  Max.   :41.00   Max.   :39.00
+
+``` r
+## quick visualization
+plot(spruce2$height, spruce2$dbh)
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-58-1.png) Fittiing
+linear model
+
+``` r
+lmspruce <- lm(spruce2$height~spruce2$dbh)
+
+anova(lmspruce)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: spruce2$height
+    ##             Df Sum Sq Mean Sq F value    Pr(>F)    
+    ## spruce2$dbh  1 3541.3  3541.3  1341.4 < 2.2e-16 ***
+    ## Residuals   69  182.2     2.6                      
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Checking the distribution of the residuals
+
+``` r
+hist(lmspruce$residuals)
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-60-1.png)
+
+Checking for homoscedactisity,i.e the assumption for similar variance
+for a group being compared.
+
+``` r
+plot(lmspruce$fitted.values, lmspruce$residuals,
+     xlab = 'fitted values',
+     ylab = 'residuals')
+abline(c(0,0), col = 'red')
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-61-1.png)
+
+**QQplot**
+
+``` r
+qqnorm(lmspruce$residuals)
+qqline(lmspruce$residuals, col = 'green')
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-62-1.png) \#####
+Testing the model
+
+``` r
+int_spr <-coef(lmspruce)[1]
+slp_spr <- coef(lmspruce)[2]
+
+### Generating random numbers
+sprce_dbh = sample(5:50, replace = TRUE)
+sprce_height = int_spr + (slp_spr * sprce_dbh)
+sprce <- data.frame(sprce_height, sprce_dbh)
+```
+
+``` r
+plot(sprce$sprce_height, sprce_dbh,
+     col = 'red')
+lines(sprce$sprce_height, sprce_dbh,
+      col = 'black')
+points(spruce2$height, spruce2$dbh)
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-64-1.png)
+
 -   -   -   -   -   -   -   -   -   -   ’
 
 # Fertilizer Regime Experiment - Exp VI
@@ -1304,7 +2038,7 @@ xyplot(age~revision|block, data = expfert,
        strip = strip.custom(bg = 'red'))
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-46-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-68-1.png)
 
 **Visualizing CAI changes over the revisions**
 
@@ -1315,7 +2049,7 @@ xyplot(CAI~factor(revision)|block,
        auto.key=list(corner = c(0.02, 0.94),border="black",cex=0.5,points=T))
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-47-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-69-1.png)
 
 ``` r
 xyplot(volume~domheight | treatment,
@@ -1326,7 +2060,7 @@ xyplot(volume~domheight | treatment,
        auto.key = list(corner = c(0.02,0.8), border = 'blue', cex = 0.7))
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-48-1.png) \##
+![](Readme_files/figure-markdown_github/unnamed-chunk-70-1.png) \##
 Volume and CAI at the different blocks for the different treatments \###
 Volume
 
@@ -1338,7 +2072,7 @@ barchart(volume~treatment|block, data = expfert,
          xlab = substitute(paste(bold('Treatment'))))
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-49-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-71-1.png)
 
 ``` r
 barchart(volume~treatment|block, data = expfert,
@@ -1349,7 +2083,7 @@ barchart(volume~treatment|block, data = expfert,
          xlab = substitute(paste(bold('Treatment'))))
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-50-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-72-1.png)
 
 ``` r
 barchart(volume~treatment|block, data = expfert,
@@ -1360,7 +2094,7 @@ barchart(volume~treatment|block, data = expfert,
          xlab = substitute(paste(bold('Treatment'))))
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-51-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-73-1.png)
 
 ``` r
 barchart(volume~treatment|block, data = expfert,
@@ -1371,12 +2105,12 @@ barchart(volume~treatment|block, data = expfert,
          xlab = substitute(paste(bold('Treatment'))))
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-52-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-74-1.png)
 
 ### CAI
 
 ``` r
-barchart(CAI~treatment|block, data = expfert,
+barchart(CAI~treatment | block, data = expfert,
          subset = revision == 4,
          col = 'purple',
          main = 'Revision 4',
@@ -1384,7 +2118,7 @@ barchart(CAI~treatment|block, data = expfert,
          ylab = substitute(paste(bold('CAI'))))
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-53-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-75-1.png)
 
 ``` r
 barchart(CAI~treatment|block, data = expfert,
@@ -1395,7 +2129,7 @@ barchart(CAI~treatment|block, data = expfert,
          ylab = substitute(paste(bold('CAI'))))
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-54-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-76-1.png)
 
 ``` r
 barchart(CAI~treatment|block, data = expfert,
@@ -1406,7 +2140,7 @@ barchart(CAI~treatment|block, data = expfert,
          ylab = substitute(paste(bold('CAI'))))
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-55-1.png) \##
+![](Readme_files/figure-markdown_github/unnamed-chunk-77-1.png) \##
 Dominant Height across treatments
 
 ``` r
@@ -1416,7 +2150,7 @@ bwplot(domheight~treatment, subset=revision==1, data = expfert,
        main = 'dominant height across treatments for revision 1')
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-56-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-78-1.png)
 
 ``` r
 bwplot(domheight~treatment, subset=revision==4, data = expfert,
@@ -1425,7 +2159,7 @@ bwplot(domheight~treatment, subset=revision==4, data = expfert,
        main = 'dominant height across treatments for revision 4')
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-57-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-79-1.png)
 
 ``` r
 bwplot(domheight~treatment, subset=revision==5, data = expfert,
@@ -1434,7 +2168,7 @@ bwplot(domheight~treatment, subset=revision==5, data = expfert,
        main = 'dominant height across treatments for revision 5')
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-58-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-80-1.png)
 
 ``` r
 bwplot(domheight~treatment, subset=revision==6, data = expfert,
@@ -1443,7 +2177,7 @@ bwplot(domheight~treatment, subset=revision==6, data = expfert,
        main = 'dominant height across treatments for revision 6')
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-59-1.png) \##
+![](Readme_files/figure-markdown_github/unnamed-chunk-81-1.png) \##
 Analysis of Variance to see the effect of the treatments on the volume
 produced \### Revision of 4
 
@@ -1507,14 +2241,14 @@ plot(M.vol$fitted.values, M.vol$residuals,
 abline (c(0,0), col = 2)
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-62-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-84-1.png)
 **Getting more information using base r plot function**
 
 ``` r
 plot(M.vol)
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-63-1.png)![](Readme_files/figure-markdown_github/unnamed-chunk-63-2.png)![](Readme_files/figure-markdown_github/unnamed-chunk-63-3.png)![](Readme_files/figure-markdown_github/unnamed-chunk-63-4.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-85-1.png)![](Readme_files/figure-markdown_github/unnamed-chunk-85-2.png)![](Readme_files/figure-markdown_github/unnamed-chunk-85-3.png)![](Readme_files/figure-markdown_github/unnamed-chunk-85-4.png)
 
 ### Revision 5
 
@@ -1534,7 +2268,8 @@ anova(M.vol5)
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-#### Post hoc test using Tukeys HSD
+The anova test shows a significant in the treatment effect on volume
+production. \#### Post hoc test using Tukeys HSD
 
 ``` r
 T.vol5 <- TukeyC(x = M.vol5, which = 'treatment')
@@ -1566,7 +2301,7 @@ plot(M.vol5$fitted.values, M.vol5$residuals,
 abline(c(0,0), col = 'black')
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-66-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-88-1.png)
 
 ### Revision 6
 
@@ -1618,7 +2353,7 @@ plot(M.vol6$fitted.values, M.vol6$residuals,
 abline(c(0,0), col = 'black')
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-69-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-91-1.png)
 
 ## Analysis of Variance to see the effect of the treatments on the current annual increment
 
@@ -1672,7 +2407,7 @@ plot(m.cai4$fitted.values, m.cai4$residuals,
 abline(c(0,0), col = 'black')
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-72-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-94-1.png)
 
 ### Revision 5
 
@@ -1724,7 +2459,7 @@ plot(m.cai5$fitted.values, m.cai5$residuals,
 abline(c(0,0), col = 'black')
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-75-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-97-1.png)
 
 ### Revision 6
 
@@ -1776,6 +2511,806 @@ plot(m.cai6$fitted.values, m.cai6$residuals,
 abline(c(0,0), col = 'black')
 ```
 
-![](Readme_files/figure-markdown_github/unnamed-chunk-78-1.png)
+![](Readme_files/figure-markdown_github/unnamed-chunk-100-1.png)
+
+# Fertilization Experiment with Poplar - VI (2)
+
+**Importing the data**
+
+``` r
+poptr<- read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab6/poplartreatment.txt',
+           header = T, sep = '\t',
+           dec = '.', na.strings = 'NA',
+           strip.white = T)
+```
+
+This is an extract from the seedling experiment earlier. We’ll try to
+see if there’s a significant difference between fertilized and
+unfertilized seedlings. **Data Exploration**
+
+``` r
+str(poptr)
+```
+
+    ## 'data.frame':    150 obs. of  3 variables:
+    ##  $ treatment: chr  "unfert" "unfert" "unfert" "unfert" ...
+    ##  $ cutw     : num  2.4 0.7 6.5 1.1 2 4.9 0.8 1.3 8.8 2 ...
+    ##  $ volume   : num  2.65 5.15 27.75 5.05 7.85 ...
+
+``` r
+bwplot(volume~treatment, data = poptr,
+       xlab = substitute(paste(bold('treatment'))),
+       ylab = substitute(paste(bold('volume (m3)'))),
+       main = 'Volume distribution for the different treatments')
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-103-1.png)
+
+``` r
+bwplot(cutw ~treatment,
+       data = poptr,
+       xlab = substitute(paste(bold('treatment'))),
+       ylab = substitute(paste(bold('colar width (mm)'))),
+       main = 'collar width of the different treatments')
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-104-1.png)
+
+``` r
+xyplot(volume~cutw, data = poptr,
+       group = treatment,
+       xlab = substitute(paste(bold('Colar Width (mm)'))),
+       ylab = substitute(paste(bold('Volume(m3)'))),
+       main = 'collar_width vs volume')
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-105-1.png)
+
+## Analysis of Variance
+
+Now we test to see if there are no effect of the treatment on the volume
+
+``` r
+lm(volume~treatment, data = poptr)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = volume ~ treatment, data = poptr)
+    ## 
+    ## Coefficients:
+    ##     (Intercept)  treatmentunfert  
+    ##           44.65           -31.86
+
+# Mean Test of Regeneration - Exp (VII) (1)
+
+The stem density inventory of regeneration is made from clear cuts
+labeled A,B,C, and D. Two species were regenerated, Norway Spruce and
+Birch were the species measured. Norway spruce was planted and Birch was
+naturally regenerated. The same plots were sed for the clearcuts but the
+number of plots varied between sites. The regenerations are already 6
+years of age.
+![](https://silvlib.cfans.umn.edu/sites/silvlib.cfans.umn.edu/files/styles/cover_type_small/public/figure_3_1.jpg?itok=J1FF9IiL)
+
+## Question
+
+The aim of this session is to compare two means, individual species stem
+density mean vs mean value of all inventory plots from all sites.
+
+``` r
+regen <- read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab%207/regenerationsprucebirch.txt',
+           header = T, dec = '.',
+           strip.white = T,
+           sep = '\t',
+           na.strings = 'NA')
+```
+
+**Data Description** site = site_id A, B, C or D plot = plot id 1 - 7
+species = spruce or birch density = stems per ha
+
+**Data Exploration**
+
+``` r
+str(regen)
+```
+
+    ## 'data.frame':    38 obs. of  4 variables:
+    ##  $ site   : chr  "A" "A" "A" "B" ...
+    ##  $ plot   : int  1 2 3 1 2 3 4 1 2 3 ...
+    ##  $ species: chr  "spruce" "spruce" "spruce" "spruce" ...
+    ##  $ density: int  2100 2200 2200 1900 2200 2300 2000 1900 1900 2200 ...
+
+changing plot to factor data type
+
+``` r
+regen$plot <- as.factor(regen$plot)
+```
+
+``` r
+str(regen)
+```
+
+    ## 'data.frame':    38 obs. of  4 variables:
+    ##  $ site   : chr  "A" "A" "A" "B" ...
+    ##  $ plot   : Factor w/ 7 levels "1","2","3","4",..: 1 2 3 1 2 3 4 1 2 3 ...
+    ##  $ species: chr  "spruce" "spruce" "spruce" "spruce" ...
+    ##  $ density: int  2100 2200 2200 1900 2200 2300 2000 1900 1900 2200 ...
+
+``` r
+summary(regen)
+```
+
+    ##      site           plot    species             density     
+    ##  Length:38          1:8   Length:38          Min.   :  459  
+    ##  Class :character   2:8   Class :character   1st Qu.: 1900  
+    ##  Mode  :character   3:8   Mode  :character   Median : 2150  
+    ##                     4:6                      Mean   : 4922  
+    ##                     5:4                      3rd Qu.: 8361  
+    ##                     6:2                      Max.   :22793  
+    ##                     7:2
+
+From the summary we can notice that we have unequal replications of the
+plots in the sites
+
+``` r
+xyplot(density~plot, data = regen,
+       group = species,
+       main = 'Distribution of regeneration across the plots',
+       ylab = substitute(paste(bold('No of Stems'))),
+       xlab = substitute(paste(bold('plot'))),
+       auto.key = list(corner = c(0.9,0.9), border = 'blue', cex = 0.7))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-112-1.png)
+
+**getting a view of the experiment design**
+
+``` r
+table(regen$site, regen$plot)
+```
+
+    ##    
+    ##     1 2 3 4 5 6 7
+    ##   A 2 2 2 0 0 0 0
+    ##   B 2 2 2 2 0 0 0
+    ##   C 2 2 2 2 2 0 0
+    ##   D 2 2 2 2 2 2 2
+
+**Comparing mean**
+
+``` r
+mean_1 <- summaryBy(density~species, data = regen, FUN = c(mean,sd, length))
+mean_1
+```
+
+    ##   species density.mean density.sd density.length
+    ## 1   birch     7728.789  7345.5638             19
+    ## 2  spruce     2115.789   146.2994             19
+
+This is the general mean without regards for the differences in the site
+replications.
+
+``` r
+sitemean <- summaryBy(density~species + site, data = regen, na.rm = T, keep.names = T, FUN = mean)
+
+sitemean
+```
+
+    ##   species site   density
+    ## 1   birch    A 19665.333
+    ## 2   birch    B   864.000
+    ## 3   birch    C 11793.200
+    ## 4   birch    D  3632.714
+    ## 5  spruce    A  2166.667
+    ## 6  spruce    B  2100.000
+    ## 7  spruce    C  2080.000
+    ## 8  spruce    D  2128.571
+
+``` r
+mean_2 <- summaryBy(density~species, data = sitemean,
+        FUN = c(mean, sd, length))
+mean_2
+```
+
+    ##   species density.mean density.sd density.length
+    ## 1   birch     8988.812 8496.13741              4
+    ## 2  spruce     2118.810   37.61905              4
+
+**Estimating the standard error**
+
+``` r
+mean_1$st_err <- mean_1$density.sd/sqrt(mean_1$density.length)
+mean_2$str_err <- mean_2$density.sd/sqrt(mean_2$density.length)
+```
+
+# LodgePole Pine Experiment (VII) (2)
+
+This experiment is a soil scarification experiment with Lodegepole Pine
+in Västerbotten, Sweden. The treatments were either planting after soil
+scarification using deep plowing (deep), or planting without any site
+preparation (control). The size of the treatment plots were 30\*30 m and
+the experiment was replicated in 4 blokcs. The plantation was made in
+1988 and the experiment was remeasured after several years, to 2012,
+when all trees in the treatment plots were cross calipered at dbh (mm).
+
+## Questions
+
+For this data, I’ll be exploring the data and then calculating the basal
+area/ha and stem density/ha for every block and treatment. I seek to
+answer the following:
+
+    - What effect have a radical soil scarification method such as deep plowing on:
+        -- survival and
+        
+        -- growth of lodgepole pine on the site
+
+In other words: Is there a significant effect of treatment if we test
+for:
+
+-   stem density and
+
+-   basal area.
+
+**Importing the data**
+
+``` r
+L_pine <- read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab%207/deepcult_lodgepolepine.txt',
+           header = T,
+           sep = '\t',
+           na.strings = 'NA',
+           dec = '.',
+           strip.white = T)
+```
+
+# Thinning Experiment in Scot Pine
+
+This is an experiment to determine how thinning grade, intensity and
+thinning form affects stem volume, production and tree dimensions. The
+thinning program is a compromise between several factors but the most
+important are e.g. stem volume production, economy and risk. In this
+experiment established in the 1960s, 1970s and 1980s, the effect of
+various thinning programs on stem volume production and mortality was
+test. The experiment includes in total 46 sites in Scots Pine but to
+make it a little easier, 15 sites have been chosen for this assignment.
+Also, the original experiment includes up to 14 different treatments but
+the data for this analysis include only four main treatments. The
+thinning treatments are A, C, D and I. The overall thinning treatments
+in this assignment were:
+
+-   A. **Normal thinning program**: Three thinnings from below. Average
+    basal area after first thinning in these six sites was 16.7 m2 ha-1
+
+-   B. **Reduced number of thinnings**: Two thinnings from below. The
+    second thinning was not done in this treatment but the average basal
+    area after thinnings were lower compared to A and the idea was that
+    average basal area over the whole period should be about the same as
+    in A. Average basal area after the first thinning was in these 15
+    sites 12.8 m2 ha-1.
+
+-   C. **One Thinning**: In this treatment, a one-time thinning from
+    below was tested and it was done at the same time as first thinning
+    in A-treatment. Average basal area after the one.timing.thinning was
+    9.4 m2 ha-1
+
+-   D. **High thinning grade**: Three thinings from below with high
+    thinning grade. Basal area was on average 11.9 m2 ha-1 after the
+    first thinning and two more hard thinnings were done at the same
+    time as thinning was done in treatment A.
+
+-   E. **Late first thinning**
+
+-   F. **Thinning from above**: The same thinning grade as in treatment
+    A but thinning was done from above with removal of the largest
+    trees.
+
+-   G. **Fertilization with N**
+
+-   H. **Fertilization with N + P**
+
+-   I. **Unthinned**: An unthinned control for reference.
+
+Treatments were typically done on 0.1 ha net-plots with a bordering
+buffer-zone of 5-10 m that was thinned in the same way as the net-plot.
+However, plot area varies for some sites and the area is included in the
+data. Measurements were done at each thinning written as revisions, but
+just the second revisions measurement is given in the data, which is the
+first remeasurement after the first thinning. The initial age at
+revision 1 and treatments, varies for the sites (between 32 and 48
+years) and so does the time between revision 1 and 2 (7-15 years).
+
+**Importing data**
+
+``` r
+scot_a <- read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Last%20straw/TaskA_GG.txt',
+                    sep = '\t',
+                    strip.white = T,
+                    header = T,
+                    na.strings = 'NA',
+                    dec = '.')
+```
+
+``` r
+scot_b <- read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Last%20straw/TaskB_GG.txt',
+           sep = '\t', strip.white = T,
+           header = T,
+           na.strings = 'NA',
+           dec = '.')
+```
+
+**Data Description** - Site: site number, also referred to as block.
+
+-   plot: the plot number within the site
+
+-   Treatment: given as the code above for the different thinning grade.
+
+-   Area: area of the plot in ha
+
+-   Standingvol: standing volume at time of first thinning (m3 ha-1)
+
+-   Harvestvol: harvested volume at time of first thinning (m3 ha-1)
+
+-   Mortvol: measured mortality until second revision (m3 ha-1)
+
+-   Paiha: Measured periodic annual increment between revision 1 and 2
+    (m3 ha-1 yr-1)
+
+-   Dbh: Mean dbh at revision 2 (cm)
+
+## Questions
+
+-   What is the total volume production
+
+-   is there any statistical differences between the selected treatments
+    at the time of measurement in terms of total volume production, PAI
+    and dbh?
+
+**Data Exploration**
+
+``` r
+str(scot_a)
+
+summary(scot_a)
+
+str(scot_b)
+
+summary(scot_b)
+```
+
+After a quick view, some data type will be changed.
+
+``` r
+scot_a$site <- as.factor(scot_a$site)
+scot_a$treatment <- as.factor(scot_a$treatment)
+scot_a$plotno <- as.factor(scot_a$plotno)
+```
+
+``` r
+scot_b$site <- as.factor(scot_b$site)
+scot_b$treatment <- as.factor(scot_b$treatment)
+scot_b$plotno <- as.factor(scot_b$plotno)
+```
+
+**Experimental design** A quick preview of the experimental design
+
+``` r
+table(scot_a$site, scot_a$treatment)
+```
+
+    ##      
+    ##       A B F I
+    ##   787 1 1 1 1
+    ##   895 1 1 1 1
+    ##   900 1 1 1 1
+    ##   910 1 1 1 1
+    ##   913 1 1 1 1
+    ##   918 1 1 1 1
+    ##   922 1 1 1 1
+    ##   923 1 1 1 1
+    ##   924 1 1 1 1
+    ##   929 1 1 1 1
+    ##   930 1 1 1 1
+    ##   940 1 1 1 1
+
+``` r
+table(scot_b$site, scot_b$treatment)
+```
+
+    ##      
+    ##       A C D I
+    ##   787 1 1 1 1
+    ##   895 1 1 1 1
+    ##   900 1 1 1 1
+    ##   910 1 1 1 1
+    ##   913 1 1 1 1
+    ##   918 1 1 1 1
+    ##   922 1 1 1 1
+    ##   923 1 1 1 1
+    ##   924 1 1 1 1
+    ##   929 1 1 1 1
+    ##   930 1 1 1 1
+    ##   940 1 1 1 1
+
+The design is a randomized blocked design
+
+### Total Volume Produced
+
+``` r
+scot_a$tot_vol <- scot_a$standingvol + scot_a$harvestvol + scot_a$mortvol
+```
+
+``` r
+scot_b$tot_vol <- scot_b$standingvol + scot_b$harvestvol + scot_b$mortvol
+```
+
+**Volume produced by each treatments**
+
+``` r
+summaryBy(tot_vol~treatment, data = scot_a, FUN = sum)
+```
+
+    ##   treatment tot_vol.sum
+    ## 1         A    2757.481
+    ## 2         B    2593.389
+    ## 3         F    2607.507
+    ## 4         I    2734.862
+
+``` r
+summaryBy(tot_vol~treatment, data = scot_b, FUN = sum)
+```
+
+    ##   treatment tot_vol.sum
+    ## 1         A    2757.481
+    ## 2         C    2427.520
+    ## 3         D    2628.397
+    ## 4         I    2734.862
+
+\*\*Visualizing similar result
+
+``` r
+barchart(tot_vol~treatment,
+         data = scot_a,
+         group = site,
+         ylab = substitute(paste(bold('Total Volume (m3)'))),
+         xlab = substitute(paste(bold('Treatments'))),
+         main = 'Total Volume produced by each treatments at the different sites',
+         auto.key = list(column = 4))
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-130-1.png)
+
+``` r
+barchart(tot_vol~treatment,
+         data = scot_b,
+         group = site,
+         ylab = substitute(paste(bold('Total Volume (m3)'))),
+         xlab = substitute(paste(bold('Treatments'))),
+         main = 'Total Volume produced by each treatments at the different sites',
+         auto.key = list(corner = c(0.4, 0.95), columns = 3, cex = 0.7),
+         box.ratio = 2,)
+```
+
+![](Readme_files/figure-markdown_github/unnamed-chunk-131-1.png)
+
+``` r
+summaryBy(tot_vol + paiha + dbh ~ treatment,
+          FUM = mean,
+          data = scot_a)
+```
+
+    ##   treatment tot_vol.mean paiha.mean dbh.mean
+    ## 1         A     229.7901   8.045398 16.65431
+    ## 2         B     216.1158   7.067756 17.51680
+    ## 3         F     217.2922   7.605466 13.91031
+    ## 4         I     227.9052   8.489020 14.49433
+
+``` r
+summaryBy(tot_vol + paiha + dbh ~ treatment,
+          FUM = mean,
+          data = scot_b)
+```
+
+    ##   treatment tot_vol.mean paiha.mean dbh.mean
+    ## 1         A     229.7901   8.045398 16.65431
+    ## 2         C     202.2933   5.970695 20.03243
+    ## 3         D     219.0331   6.742520 18.21101
+    ## 4         I     227.9052   8.489020 14.49433
+
+### Analysis of Variance (ANOVA)
+
+``` r
+## pai
+sa_paiha <- lm(paiha ~ site+treatment , data = scot_a)
+
+##tot_vol
+sa_tvol <- lm(tot_vol ~ site+treatment , data = scot_a)
+
+##tot_dbh
+sa_dbh <- lm(dbh~site+treatment, data = scot_a)
+```
+
+``` r
+## pai
+sb_paiha <- lm(paiha ~ site+treatment , data = scot_b)
+
+##tot_vol
+sb_tvol <- lm(tot_vol ~ site+treatment , data = scot_b)
+
+##tot_dbh
+sb_dbh <- lm(dbh~site+treatment, data = scot_b)
+```
+
+``` r
+## tot_vol
+anova(sa_tvol)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: tot_vol
+    ##           Df Sum Sq Mean Sq F value  Pr(>F)    
+    ## site      11 147104 13373.1 70.7531 < 2e-16 ***
+    ## treatment  3   1799   599.7  3.1731 0.03696 *  
+    ## Residuals 33   6237   189.0                    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+``` r
+##dbh
+anova(sa_dbh)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: dbh
+    ##           Df  Sum Sq Mean Sq F value    Pr(>F)    
+    ## site      11 115.263  10.478  10.657 5.534e-08 ***
+    ## treatment  3 106.266  35.422  36.027 1.607e-10 ***
+    ## Residuals 33  32.446   0.983                      
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+``` r
+##pai
+anova(sa_paiha)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: paiha
+    ##           Df Sum Sq Mean Sq F value    Pr(>F)    
+    ## site      11 360.62  32.784 61.9563 < 2.2e-16 ***
+    ## treatment  3  13.31   4.436  8.3833 0.0002785 ***
+    ## Residuals 33  17.46   0.529                      
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+In this analysis the effect of treatment and not block is the interest.
+There is a significant effect of treatment on total volume, dbh and
+periodic and annual increment.
+
+``` r
+## tot_vol
+anova(sb_tvol)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: tot_vol
+    ##           Df Sum Sq Mean Sq F value    Pr(>F)    
+    ## site      11 113743 10340.2 32.2852 1.702e-14 ***
+    ## treatment  3   5671  1890.2  5.9019  0.002432 ** 
+    ## Residuals 33  10569   320.3                      
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+``` r
+##dbh
+anova(sb_dbh)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: dbh
+    ##           Df  Sum Sq Mean Sq F value    Pr(>F)    
+    ## site      11  92.933   8.448  5.6924 4.644e-05 ***
+    ## treatment  3 198.907  66.302 44.6733 1.014e-11 ***
+    ## Residuals 33  48.977   1.484                      
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+``` r
+##pai
+anova(sb_paiha)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: paiha
+    ##           Df  Sum Sq Mean Sq F value    Pr(>F)    
+    ## site      11 255.696 23.2451  36.910 2.332e-15 ***
+    ## treatment  3  48.560 16.1866  25.703 9.209e-09 ***
+    ## Residuals 33  20.782  0.6298                      
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+In this analysis the effect of treatment and not block is the interest.
+There is a significant effect of treatment on total volume, dbh and
+periodic and annual increment.
+
+### Post hoc test
+
+**Total Volume**
+
+``` r
+## Post hoc test
+summary(TukeyC(sa_tvol, which = 'treatment'))
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##    Means G1
+    ## A 229.79  a
+    ## I 227.91  a
+    ## F 217.29  a
+    ## B 216.12  a
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##       A     I      F      B
+    ## A 0.000 1.885 12.498 13.674
+    ## I 0.987 0.000 10.613 11.789
+    ## F 0.137 0.251  0.000  1.176
+    ## B 0.090 0.174  0.997  0.000
+
+Post hoc test shows no differnce in the effect of treatment on volume
+production
+
+``` r
+## Post hoc test
+summary(TukeyC(sb_tvol, which = 'treatment'))
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##    Means G1 G2
+    ## A 229.79  a   
+    ## I 227.91  a   
+    ## D 219.03  a  b
+    ## C 202.29     b
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##       A     I      D      C
+    ## A 0.000 1.885 10.757 27.497
+    ## I 0.994 0.000  8.872 25.612
+    ## D 0.465 0.622  0.000 16.740
+    ## C 0.003 0.007  0.121  0.000
+
+There is a difference in the effect of the treatment on total volume
+here. Here treatment A, and I are having similar effect on volume,
+producing almost similar volumes, while treatment D is having more or
+less similar effect on total volume produced as treatments A, I and C
+**Periodic Annual Increment Per hectare**
+
+``` r
+## Post hoc test
+summary(TukeyC(sa_paiha, which = 'treatment'))
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##   Means G1 G2 G3
+    ## I  8.49  a      
+    ## A  8.05  a  b   
+    ## F  7.61     b  c
+    ## B  7.07        c
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##       I     A     F     B
+    ## I 0.000 0.444 0.884 1.421
+    ## A 0.453 0.000 0.440 0.978
+    ## F 0.027 0.460 0.000 0.538
+    ## B 0.000 0.012 0.287 0.000
+
+Treatment I shows the highest in the periodic annual increment
+
+``` r
+## Post hoc test
+summary(TukeyC(sb_paiha, which = 'treatment'))
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##   Means G1 G2
+    ## I  8.49  a   
+    ## A  8.05  a   
+    ## D  6.74     b
+    ## C  5.97     b
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##       I     A     D     C
+    ## I 0.000 0.444 1.746 2.518
+    ## A 0.527 0.000 1.303 2.075
+    ## D 0.000 0.002 0.000 0.772
+    ## C 0.000 0.000 0.100 0.000
+
+**Diameter at breast height**
+
+``` r
+## Post hoc test
+summary(TukeyC(sa_dbh, which = 'treatment'))
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##   Means G1 G2
+    ## B 17.52  a   
+    ## A 16.65  a   
+    ## I 14.49     b
+    ## F 13.91     b
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##       B     A     I     F
+    ## B 0.000 0.862 3.022 3.606
+    ## A 0.165 0.000 2.160 2.744
+    ## I 0.000 0.000 0.000 0.584
+    ## F 0.000 0.000 0.483 0.000
+
+``` r
+## Post hoc test
+summary(TukeyC(sb_dbh, which = 'treatment'))
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##   Means G1 G2 G3 G4
+    ## C 20.03  a         
+    ## D 18.21     b      
+    ## A 16.65        c   
+    ## I 14.49           d
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##       C     D     A     I
+    ## C 0.000 1.821 3.378 5.538
+    ## D 0.005 0.000 1.557 3.717
+    ## A 0.000 0.018 0.000 2.160
+    ## I 0.000 0.000 0.001 0.000
+
+# Mixed Forest Experiment
+
+This an experiment on the site 8556. Is it a significant difference in
+net and gross production between the monoculture and mixtures? Does the
+Norway spruce trees in the treatments differ in mean diameter? Many
+forests in southern Sweden is managed as mixtures of Norway spruce and
+birch. This is a 38- year old stand where an experiment has been
+established in the precommercial thinning stage. The purpose of the
+experiment has been, and is, to evaluate this different forest types
+over time, where one of the species (birch) is fast growing in the
+establishment phase and the other tree species (Norway spruce) is
+expected to catch up in growth in the more mature phase. One of the
+questions for forest owners that want to use the mixture of Norway
+spruce and birch is how to manage the difference in growth rhythm and
+how to keep both species during the full rotation of the stand.
+Experimental design The experiment is organized in three blocks) and the
+treatments were randomly assigned to plots of about 0.1 ha each, one
+treatment plot in each block. . 1. Monoculture: 100 % Norway spruce 2.
+Admixture: 80 % Norway spruce and 20 % birch 3. Mixed: 50 % Norway
+spruce and 50 % birch The experiment has been revised 5 times (including
+thinning 3 times) after the beginning of the experiment. In every
+thinning the mixture percentage in basal area, has been retained. In the
+data-set that you will work with, you have sample plot data at the time
+of second revision, which is the first remeasurement after the first
+thinning. The initial age at revision 1 and treatments, varies for the
+sites (between 32 and 48 years) and so do the time between revision 1
+and 2 (7-15 years). The data-set includes data from revision 2: Block
+block Plotno plot number Treatment treatment code (same as listed above)
+Standingvol standing volume per hectare (m3 ha-1 ) Harvestvol harvested
+volume in thinnings and measured dead volume (m3 ha-1 ) Paiha Measured
+periodic annual increment at latest revision (m3 ha-1 year-1) Dbh Mean
+dbh of Norway spruce at latest revision, age 38 (cm) The questions for
+you are: What is total volume production at the last revision? Can you
+find any statistical differences between the selected treatments at this
+time, in terms of total volume production, PAI, dbh? Show with some
+figures that you understand the data and your results.The data-set
+includes data from revision 2: Block block Plotno plot number Treatment
+treatment code (same as listed above)
 
 [Back to home page](https://xrander.github.io)

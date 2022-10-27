@@ -27,6 +27,7 @@ library(doBy)
 library(dplyr)
 library(lattice)
 library(ggplot2)
+library(car)
 library(data.table)
 library(TukeyC)
 ```
@@ -929,6 +930,212 @@ The definition of what is heavy or not is something that varies depending on the
 
 # Poplar Cutting Experiment - Exp V
 
+## Question:
+
+    -   Investigate if the volume of 12 weeks seedlings is related to the initial cutting weight.
+
+    -   Make a regression of height and dbh,then determine if dbh can be used to predict height if height data is missing.
+
+**Importing data**
+```{r}
+
+# Importing data
+pop2 <- read.table("https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab%205/pop2.txt",
+           header = T, sep = '\t', dec = '.', na.strings = 'NA', strip.white = T)
+poplar <- read.table("https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab%205/poplar.txt",
+                     header = T, sep = '\t', dec = '.', na.strings = 'NA', strip.white = T)
+spruce2 <- read.table("https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab%205/spruce.txt",
+                      header = T, sep = '\t', dec = '.', na.strings = 'NA', strip.white = T)
+```
+
+**Data description**
+***pop2 and poplar***
+  
+- block:1-5 
+
+- cutw:total dryweight biomass (g)
+
+- height:aboveground height (mm)
+
+- dia:root collar diameter (mm)
+
+- clone: A,B,C
+
+- fert: 1=fertilized, 3= control
+
+***Spruce****
+The data is just a short list of sampled saplings of Norway spruce with dbh (mm) and height (dm). The data is taken from a short interval of heights and the relation between height and diameter is still linear (compared to the range that you usually have in a stand). That is why, we are interested in testing whether we could use a linear model to fit a regression line of the relationship of height and dbh.
+
+  
+** Little exploration**
+```{r}
+str(pop2)
+summary(pop2)
+plot (pop2$dia)
+```
+
+There is a wrong diameter value that is far from the average mean.Also, we have missing value in the height variable.
+
+#### Dealing with Missing Data
+```{r}
+pop2[is.na(pop2$height), ]
+## This shows we have one Na Value and it is in row 109
+
+pop2[complete.cases(pop2), ] ## can be written as 
+pop2[complete.cases(pop2$height), ]## still the same.
+## This shows only the complete cases or rows without missing values
+```
+
+Let's say we found the value where we recorded the data we can simply replace it using the chunk below
+```{r}
+pop2[is.na(pop$height), ] <- 331
+```
+Now we run the summary again to see if there's a missing data
+
+```{r eval=FALSE, results='hide'}
+is.na(pop2)
+```
+The result is false all through
+
+#### Dealing with Outliers
+With outliers we need to careful as they can sometime be true and not errors.
+
+**Identifying the outlier**
+```{r}
+summary(pop2)
+```
+
+We check the mean, quantiles, min, and max value to see where the outlier exist. dia is having an outlier
+```{r}
+pop2[(pop2$dia> 5),]
+```
+
+row 98 is having the data with an outlier. On checking the original data written from the field, the result was 38
+```{r}
+## changing data
+pop2$dia <- ifelse(pop2$dia > 38, 3.9, pop2$dia)
+```
+
+### Fitting the Linear Model
+```{r}
+plot(poplar$cutw, poplar$vol)
+
+# Linear model
+lmpop <-lm(vol~cutw, data = poplar)
+
+anova (lmpop)
+```
+**checking the distribution of the data.**
+```{r}
+hist(lmpop$residuals)
+```
+
+Checking for homoscedactisity, i.e, the assumption for similar variance for a group being compared.
+
+```{r}
+plot(lmpop$fitted.values, lmpop$residuals,
+     xlab = 'Fitted Values',
+     ylab = 'Residuals')
+abline(c(0,0), col = 2)
+```
+
+Making a **qqplot** (quantile-quantile plot) to check for normal distribution
+```{r}
+qqnorm(lmpop$residuals)
+qqline(lmpop$residuals, col = 'red')
+```
+
+
+Now we can use the predicted values of the linear model as a function to estimat4e a value when we have the cutting weight available. Let's use the function which we have
+To get the value for the function, we extract the intercept and slope
+```{r}
+##intercept
+intcpt <- coef(lmpop)[1]
+
+## slope
+slp <- coef(lmpop)[2]
+```
+
+##### Creating a simulated value for cutting weights
+```{r}
+simul.cutw <- c(0.1, 2, 4,5,6, 9, 10, 14, 16)
+
+### Applying the model
+simul.vol <- intcpt + (slp * simul.cutw)
+
+###
+simul <- data.frame(simul.cutw, simul.vol)
+```
+
+Plotting the data the relationship
+```{r}
+plot(simul$simul.cutw, simul$simul.vol,
+     pch = 16,
+     col = 'red',
+     xlab = 'cutting width',
+     ylab = 'volume',
+     main = 'Cutting width vs volume relationship in Poplar')
+lines(simul$simul.cutw, simul$simul.vol,
+      lwd = 1.1,
+      col = 'blue')
+points(poplar$cutw, poplar$vol,
+       pch = 2,
+       cex = 0.6,
+       col = 'black')
+```
+## SPruce Stand
+**Data exploration**
+```{r}
+summary(spruce2)
+## quick visualization
+plot(spruce2$height, spruce2$dbh)
+```
+Fittiing linear model
+```{r}
+lmspruce <- lm(spruce2$height~spruce2$dbh)
+
+anova(lmspruce)
+```
+
+Checking the distribution of the residuals
+```{r}
+hist(lmspruce$residuals)
+```
+
+Checking for homoscedactisity,i.e the assumption for similar variance for a group being compared.
+```{r}
+plot(lmspruce$fitted.values, lmspruce$residuals,
+     xlab = 'fitted values',
+     ylab = 'residuals')
+abline(c(0,0), col = 'red')
+```
+
+**QQplot**
+```{r}
+qqnorm(lmspruce$residuals)
+qqline(lmspruce$residuals, col = 'green')
+
+```
+##### Testing the model
+```{r}
+int_spr <-coef(lmspruce)[1]
+slp_spr <- coef(lmspruce)[2]
+
+### Generating random numbers
+sprce_dbh = sample(5:50, replace = TRUE)
+sprce_height = int_spr + (slp_spr * sprce_dbh)
+sprce <- data.frame(sprce_height, sprce_dbh)
+
+```
+
+```{r}
+plot(sprce$sprce_height, sprce_dbh,
+     col = 'red')
+lines(sprce$sprce_height, sprce_dbh,
+      col = 'black')
+points(spruce2$height, spruce2$dbh)
+```
+
 * * * * * * * * * * ' 
 
 # Fertilizer Regime Experiment - Exp VI
@@ -1044,7 +1251,7 @@ barchart(volume~treatment|block, data = expfert,
 
 ### CAI
 ```{r}
-barchart(CAI~treatment|block, data = expfert,
+barchart(CAI~treatment | block, data = expfert,
          subset = revision == 4,
          col = 'purple',
          main = 'Revision 4',
@@ -1245,7 +1452,7 @@ abline(c(0,0), col = 'black')
 # Fertilization Experiment with Poplar - VI (2)
 **Importing the data**
 ```{r}
-read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab6/poplartreatment.txt',
+poptr<- read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab6/poplartreatment.txt',
            header = T, sep = '\t',
            dec = '.', na.strings = 'NA',
            strip.white = T)
@@ -1281,7 +1488,7 @@ xyplot(volume~cutw, data = poptr,
 ## Analysis of Variance
 Now we test to see if there are no effect of the treatment on the volume
 ```{r}
-lm(volume~treatmen, data = poptr)
+lm(volume~treatment, data = poptr)
 ```
 
 # Mean Test of Regeneration - Exp (VII) (1)
@@ -1392,25 +1599,70 @@ L_pine <- read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/m
 ```
 
 
-
-
-
-
-
-
-
-
-
 # Thinning Experiment in Scot Pine
+This is an experiment to determine how thinning grade, intensity and thinning form affects stem volume, production and tree dimensions. The thinning program is a compromise between several factors but the most important are e.g. stem volume production, economy and risk. In this experiment established in the 1960s, 1970s and 1980s, the effect of various thinning programs on stem volume production and mortality was test. The experiment includes in total 46 sites in Scots Pine but to make it a little easier, 15 sites have been chosen for this assignment. Also, the original experiment includes up to 14 different treatments but the data for this analysis include only four main treatments.
+The thinning treatments are A, C, D and I.
+The overall thinning treatments in this assignment were:
+
+-   A. **Normal thinning program**: Three thinnings from below. Average basal area after first thinning in these six sites was 16.7 m2 ha-1
+
+-   B. **Reduced number of thinnings**: Two thinnings from below. The second thinning was not done in this treatment but the average basal area after thinnings were lower compared to A and the idea was that average basal area over the whole period should be about the same as in A. Average basal area after the first thinning was in these 15 sites 12.8 m2 ha-1.
+
+-   C. **One Thinning**: In this treatment, a one-time thinning from below was tested and it was done at the same time as first thinning in A-treatment. Average basal area after the one.timing.thinning was 9.4 m2 ha-1
+
+-   D. **High thinning grade**: Three thinings from below with high thinning grade. Basal area was on average 11.9 m2 ha-1 after the first thinning and two more hard thinnings were done at the same time as thinning was done in treatment A.
+
+-   E. **Late first thinning**
+
+-   F. **Thinning from above**: The same thinning grade as in treatment A but thinning was done from above with removal of the largest trees.
+
+
+-   G. **Fertilization with N**
+
+-   H. **Fertilization with N + P**
+
+-   I. **Unthinned**: An unthinned control for reference.
+
+Treatments were typically done on 0.1 ha net-plots with a bordering buffer-zone of 5-10 m that was thinned in the same way as the net-plot. However, plot area varies for some sites and the area is included in the data. Measurements were done at each thinning written as revisions, but just the second revisions measurement is given in the data, which is the first remeasurement after the first thinning. The initial age at revision 1 and treatments, varies for the sites (between 32 and 48 years) and so does the time between revision 1 and 2 (7-15 years).
 
 **Importing data**
 ```{r}
-scot <- read.table('C:/Users/aduol/Documents/SLU/RSust/Exam/TaskB_GG.txt',
+scot_a <- read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Last%20straw/TaskA_GG.txt',
+                    sep = '\t',
+                    strip.white = T,
+                    header = T,
+                    na.strings = 'NA',
+                    dec = '.')
+```
+
+```{r}
+scot_b <- read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Last%20straw/TaskB_GG.txt',
            sep = '\t', strip.white = T,
            header = T,
            na.strings = 'NA',
-           dec = )
+           dec = '.')
 ```
+
+**Data Description**
+-   Site: site number, also referred to as block.
+
+-   plot: the plot number within the site
+
+-   Treatment: given as the code above for the different thinning grade.
+
+-   Area: area of the plot in ha
+
+-   Standingvol: standing volume at time of first thinning (m3 ha-1)
+
+-   Harvestvol: harvested volume at time of first thinning (m3 ha-1)
+
+-   Mortvol: measured mortality until second revision (m3 ha-1)
+
+-   Paiha: Measured periodic annual increment between revision 1 and 2 (m3 ha-1 yr-1)
+
+-   Dbh: Mean dbh at revision 2 (cm)
+
+
 ## Questions
 
 -   What is the total volume production
@@ -1419,97 +1671,215 @@ scot <- read.table('C:/Users/aduol/Documents/SLU/RSust/Exam/TaskB_GG.txt',
 
 **Data Exploration**
 
-```{r}
-str(scot)
+```{r eval =FALSE, results = 'hide'}
+str(scot_a)
 
-summary(scot)
+summary(scot_a)
+
+str(scot_b)
+
+summary(scot_b)
 ```
-Some data type will be changed.
+After a quick view, some data type will be changed.
 
 ```{r}
-scot$site <- as.factor(scot$site)
-scot$treatment <- as.factor(scot$treatment)
-scot$plotno <- as.factor(scot$plotno)
+scot_a$site <- as.factor(scot_a$site)
+scot_a$treatment <- as.factor(scot_a$treatment)
+scot_a$plotno <- as.factor(scot_a$plotno)
+```
+
+```{r}
+scot_b$site <- as.factor(scot_b$site)
+scot_b$treatment <- as.factor(scot_b$treatment)
+scot_b$plotno <- as.factor(scot_b$plotno)
 ```
 
 **Experimental design**
 A quick preview of the experimental design
 ```{r}
-ftable(scot$site, scot$treatment, scot$plot)
+table(scot_a$site, scot_a$treatment)
 ```
 
-The design is a randonmized blocked design
+```{r}
+table(scot_b$site, scot_b$treatment)
+```
+The design is a randomized blocked design
 
 ### Total Volume Produced
 ```{R}
-scot$tot_vol <- scot$standingvol + scot$harvestvol + scot$mortvol
+scot_a$tot_vol <- scot_a$standingvol + scot_a$harvestvol + scot_a$mortvol
+```
+
+```{r}
+scot_b$tot_vol <- scot_b$standingvol + scot_b$harvestvol + scot_b$mortvol
 ```
 
 **Volume produced by each treatments**
 ```{R}
-summaryBy(tot_vol~treatment, data = scot, FUN = sum)
+summaryBy(tot_vol~treatment, data = scot_a, FUN = sum)
 ```
 
 ```{r}
-barchart(tot_vol~treatment | site,
-         data = scot,
-         group = treatment,
+summaryBy(tot_vol~treatment, data = scot_b, FUN = sum)
+```
+**Visualizing similar result
+```{r}
+barchart(tot_vol~treatment,
+         data = scot_a,
+         group = site,
          ylab = substitute(paste(bold('Total Volume (m3)'))),
          xlab = substitute(paste(bold('Treatments'))),
-         main = 'Total Volume produced by each treatments at the different sites')
+         main = 'Total Volume produced by each treatments at the different sites',
+         auto.key = list(column = 4))
 ```
 
+```{r}
+barchart(tot_vol~treatment,
+         data = scot_b,
+         group = site,
+         ylab = substitute(paste(bold('Total Volume (m3)'))),
+         xlab = substitute(paste(bold('Treatments'))),
+         main = 'Total Volume produced by each treatments at the different sites',
+         auto.key = list(corner = c(0.4, 0.95), columns = 3, cex = 0.7),
+         box.ratio = 2,)
+```
 
 ```{r}
 summaryBy(tot_vol + paiha + dbh ~ treatment,
           FUM = mean,
-          data = scot)
+          data = scot_a)
+```
+
+```{r}
+summaryBy(tot_vol + paiha + dbh ~ treatment,
+          FUM = mean,
+          data = scot_b)
 ```
 ### Analysis of Variance (ANOVA)
 ```{r}
 ## pai
-s_paiha <- lm(paiha ~ site+treatment , data = scot)
+sa_paiha <- lm(paiha ~ site+treatment , data = scot_a)
 
 ##tot_vol
-s_tvol <- lm(tot_vol ~ site+treatment , data = scot)
+sa_tvol <- lm(tot_vol ~ site+treatment , data = scot_a)
 
 ##tot_dbh
-s_dbh <- lm(dbh~site+treatment, data = scot)
+sa_dbh <- lm(dbh~site+treatment, data = scot_a)
+```
+
+```{r}
+## pai
+sb_paiha <- lm(paiha ~ site+treatment , data = scot_b)
+
+##tot_vol
+sb_tvol <- lm(tot_vol ~ site+treatment , data = scot_b)
+
+##tot_dbh
+sb_dbh <- lm(dbh~site+treatment, data = scot_b)
 ```
 
 ```{r}
 ## tot_vol
-anova(s_tvol)
+anova(sa_tvol)
 
 ##dbh
-anova(s_dbh)
+anova(sa_dbh)
 
 ##pai
-anova(s_paiha)
+anova(sa_paiha)
 ```
+In this analysis the effect of treatment and not block is the interest. There is a significant effect of treatment on total volume, dbh and periodic and annual increment. 
+
+```{r}
+## tot_vol
+anova(sb_tvol)
+
+##dbh
+anova(sb_dbh)
+
+##pai
+anova(sb_paiha)
+```
+In this analysis the effect of treatment and not block is the interest. There is a significant effect of treatment on total volume, dbh and periodic and annual increment.
 
 ### Post hoc test
 **Total Volume**
 ```{r}
 ## Post hoc test
-summary(TukeyC(s_tvol, which = 'treatment'))
+summary(TukeyC(sa_tvol, which = 'treatment'))
+```
+Post hoc test shows no differnce in the effect of treatment on volume production
+```{r}
+## Post hoc test
+summary(TukeyC(sb_tvol, which = 'treatment'))
 ```
 
+There is a difference in the effect of the treatment on total volume here. Here treatment A, and I are having similar effect on volume, producing almost similar volumes, while treatment D is having more or less similar effect on total volume produced as treatments A, I and C
 **Periodic Annual Increment Per hectare**
 ```{r}
 ## Post hoc test
-summary(TukeyC(s_paiha, which = 'treatment'))
+summary(TukeyC(sa_paiha, which = 'treatment'))
 ```
 
-**Diameter at breastheight**
+Treatment I shows the highest in the periodic annual increment 
 ```{r}
 ## Post hoc test
-summary(TukeyC(s_dbh, which = 'treatment'))
+summary(TukeyC(sb_paiha, which = 'treatment'))
 ```
 
 
+**Diameter at breast height**
+```{r}
+## Post hoc test
+summary(TukeyC(sa_dbh, which = 'treatment'))
+```
 
+```{r}
+## Post hoc test
+summary(TukeyC(sb_dbh, which = 'treatment'))
+```
 
+# Mixed Forest Experiment
+This an experiment on the site 8556.
+Is it a significant difference in net and gross production between the monoculture and 
+mixtures? Does the Norway spruce trees in the treatments differ in mean diameter?
+Many forests in southern Sweden is managed as mixtures of Norway spruce and birch. This is 
+a 38- year old stand where an experiment has been established in the precommercial 
+thinning stage. The purpose of the experiment has been, and is, to evaluate this different 
+forest types over time, where one of the species (birch) is fast growing in the establishment 
+phase and the other tree species (Norway spruce) is expected to catch up in growth in the 
+more mature phase. One of the questions for forest owners that want to use the mixture of 
+Norway spruce and birch is how to manage the difference in growth rhythm and how to 
+keep both species during the full rotation of the stand.
+Experimental design
+The experiment is organized in three blocks) and the treatments were randomly assigned to 
+plots of about 0.1 ha each, one treatment plot in each block. 
+. 
+1. Monoculture: 100 % Norway spruce
+2. Admixture: 80 % Norway spruce and 20 % birch
+3. Mixed: 50 % Norway spruce and  50 % birch
+The experiment has been revised 5 times (including thinning 3 times) after the beginning of 
+the experiment. In every thinning the mixture percentage in basal area, has been retained. 
+In the data-set that you will work with, you have sample plot data at the time of  second 
+revision, which is the first remeasurement after the first thinning. The initial age at revision 1 
+and treatments, varies for the sites (between 32 and 48 years) and so do the time between 
+revision 1 and 2 (7-15 years). 
+The data-set includes data from revision 2:
+Block block
+Plotno plot number
+Treatment treatment code (same as listed above)
+Standingvol  standing volume per hectare (m3 ha-1 )
+Harvestvol harvested volume in thinnings and measured dead volume (m3 ha-1 )
+Paiha Measured periodic annual increment at latest revision (m3 ha-1  year-1)
+Dbh Mean dbh of Norway spruce at latest revision, age 38 (cm)
+The questions for you are:
+What is total volume production at the last revision?
+Can you find any statistical differences between the selected treatments at this time, in 
+terms of total volume production, PAI, dbh?
+Show with some figures that you understand the data and your results.The data-set includes data from revision 2:
+Block block
+Plotno plot number
+Treatment treatment code (same as listed above)
 
 
 [Back to home page](https://xrander.github.io)
