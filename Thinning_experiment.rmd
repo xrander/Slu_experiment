@@ -1,0 +1,343 @@
+---
+title: "Thinning Experiment"
+author: "Olamide Adu"
+date: "2022-10-29"
+output:
+  md_document:
+    variant: markdown_github
+---
+```{r results='hide', message=FALSE, warning=FALSE}
+library(doBy)
+library(dplyr)
+library(lattice)
+library(ggplot2)
+library(car)
+library(data.table)
+library(TukeyC)
+```
+
+# Thinning Experiment in Scot Pine
+This is an experiment to determine how thinning grade, intensity and thinning form affects stem volume, production and tree dimensions. The thinning program is a compromise between several factors but the most important are e.g. stem volume production, economy and risk. In this experiment established in the 1960s, 1970s and 1980s, the effect of various thinning programs on stem volume production and mortality was test. The experiment includes in total 46 sites in Scots Pine but to make it a little easier, 15 sites have been chosen for this assignment. Also, the original experiment includes up to 14 different treatments but the data for this analysis include only four main treatments.
+The thinning treatments are A, C, D and I.
+The overall thinning treatments in this assignment were:
+
+-   A. **Normal thinning program**: Three thinnings from below. Average basal area after first thinning in these six sites was 16.7 m2 ha-1
+
+-   B. **Reduced number of thinnings**: Two thinnings from below. The second thinning was not done in this treatment but the average basal area after thinnings were lower compared to A and the idea was that average basal area over the whole period should be about the same as in A. Average basal area after the first thinning was in these 15 sites 12.8 m2 ha-1.
+
+-   C. **One Thinning**: In this treatment, a one-time thinning from below was tested and it was done at the same time as first thinning in A-treatment. Average basal area after the one.timing.thinning was 9.4 m2 ha-1
+
+-   D. **High thinning grade**: Three thinings from below with high thinning grade. Basal area was on average 11.9 m2 ha-1 after the first thinning and two more hard thinnings were done at the same time as thinning was done in treatment A.
+
+-   E. **Late first thinning**
+
+-   F. **Thinning from above**: The same thinning grade as in treatment A but thinning was done from above with removal of the largest trees.
+
+
+-   G. **Fertilization with N**
+
+-   H. **Fertilization with N + P**
+
+-   I. **Unthinned**: An unthinned control for reference.
+
+Treatments were typically done on 0.1 ha net-plots with a bordering buffer-zone of 5-10 m that was thinned in the same way as the net-plot. However, plot area varies for some sites and the area is included in the data. Measurements were done at each thinning written as revisions, but just the second revisions measurement is given in the data, which is the first remeasurement after the first thinning. The initial age at revision 1 and treatments, varies for the sites (between 32 and 48 years) and so does the time between revision 1 and 2 (7-15 years).
+
+**Importing data**
+```{r}
+scot_a <- read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Last%20straw/TaskA_GG.txt',
+                    sep = '\t',
+                    strip.white = T,
+                    header = T,
+                    na.strings = 'NA',
+                    dec = '.')
+```
+
+```{r}
+scot_b <- read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Last%20straw/TaskB_GG.txt',
+           sep = '\t', strip.white = T,
+           header = T,
+           na.strings = 'NA',
+           dec = '.')
+```
+
+**Data Description**
+-   Site: site number, also referred to as block.
+
+-   plot: the plot number within the site
+
+-   Treatment: given as the code above for the different thinning grade.
+
+-   Area: area of the plot in ha
+
+-   Standingvol: standing volume at time of first thinning (m3 ha-1)
+
+-   Harvestvol: harvested volume at time of first thinning (m3 ha-1)
+
+-   Mortvol: measured mortality until second revision (m3 ha-1)
+
+-   Paiha: Measured periodic annual increment between revision 1 and 2 (m3 ha-1 yr-1)
+
+-   Dbh: Mean dbh at revision 2 (cm)
+
+
+## Questions
+
+-   What is the total volume production
+
+-   is there any statistical differences between the selected treatments at the time of measurement in terms of total volume production, PAI and dbh?
+
+**Data Exploration**
+
+```{r eval =FALSE, results = 'hide'}
+str(scot_a)
+
+summary(scot_a)
+```
+
+```{r}
+str(scot_b)
+
+summary(scot_b)
+```
+*variable names*
+```{r}
+names(scot_a)
+```
+
+```{r}
+names(scot_b)
+```
+
+*number of rows*
+```{r}
+nrow(scot_a)
+```
+
+```{r}
+nrow(scot_b)
+```
+
+After a quick view, some data type will be changed.
+
+```{r}
+scot_a$site <- as.factor(scot_a$site)
+scot_a$treatment <- as.factor(scot_a$treatment)
+scot_a$plotno <- as.factor(scot_a$plotno)
+```
+
+```{r}
+scot_b$site <- as.factor(scot_b$site)
+scot_b$treatment <- as.factor(scot_b$treatment)
+scot_b$plotno <- as.factor(scot_b$plotno)
+```
+
+```{R}
+barplot(scot_b$dbh, names.arg = scot_b$site,
+        ylab = 'dbh (cm)',
+        xlab = 'sites',
+        main = 'DBH distribution across sites',
+        ylim = c(0, 30))
+```
+```{r}
+plot(scot_b$dbh,scot_b$standingvol)
+```
+**Experimental design**
+A quick preview of the experimental design
+```{r}
+table(scot_a$site, scot_a$treatment)
+```
+
+```{r}
+table(scot_b$site, scot_b$treatment)
+```
+The design is a randomized blocked design
+
+### Total Volume Produced
+```{R}
+scot_a$tot_vol <- scot_a$standingvol + scot_a$harvestvol + scot_a$mortvol
+```
+
+```{r}
+scot_b$tot_vol <- scot_b$standingvol + scot_b$harvestvol + scot_b$mortvol
+```
+
+**Volume produced by each treatments**
+```{R}
+summaryBy(tot_vol~treatment, data = scot_a, FUN = sum)
+```
+
+```{r}
+summaryBy(tot_vol~treatment, data = scot_b, FUN = sum)
+```
+**Visualizing similar result**
+
+
+```{r}
+barchart(tot_vol~treatment,
+         data = scot_a,
+         group = site,
+         ylab = substitute(paste(bold('Total Volume (m3)'))),
+         xlab = substitute(paste(bold('Treatments'))),
+         main = 'Total Volume produced by each treatments at the different sites',
+         auto.key = list(column = 4))
+```
+
+```{r}
+barchart(tot_vol~treatment,
+         data = scot_b,
+         group = site,
+         ylab = substitute(paste(bold('Total Volume (m3)'))),
+         xlab = substitute(paste(bold('Treatments'))),
+         main = 'Total Volume produced by each treatments at the different sites',
+         auto.key = list(corner = c(0.4, 0.95), columns = 3, cex = 0.9),
+         box.ratio = 2,)
+```
+```{r}
+xyplot(tot_vol~dbh | treatment,
+         data = scot_b,
+         group = site,
+         ylab = substitute(paste(bold('Total Volume (m3)'))),
+         xlab = substitute(paste(bold('DBH (cm)'))),
+         main = 'Total Volume produced by each treatments at the different sites',
+         auto.key = list(columns = 3, cex = 0.9))
+```
+
+```{r}
+barchart(tot_vol~treatment|site, data = scot_b)
+```
+```{r}
+bwplot(tot_vol~treatment, data = scot_b,
+       xlab = substitute(paste(bold('Treatment'))),
+       ylab = substitute(paste(bold('Total Volume (m3)'))),
+       main = 'Distribution of Treatment')
+```
+
+```{r}
+bwplot(dbh~treatment, data = scot_b,
+       xlab = substitute(paste(bold('Treatment'))),
+       ylab = substitute(paste(bold('Total Volume (m3)'))),
+       main = 'Distribution of DBH')
+```
+
+```{r}
+bwplot(paiha~treatment, data = scot_b,
+       xlab = substitute(paste(bold('Treatment'))),
+       ylab = substitute(paste(bold('Total Volume (m3)'))),
+       main = 'Distribution of Periodic annual increment')
+```
+
+```{r}
+summaryBy(tot_vol + paiha + dbh ~ treatment,
+          FUM = mean,
+          data = scot_a)
+```
+
+```{r}
+summaryBy(tot_vol + paiha + dbh ~ treatment,
+          FUM = mean,
+          data = scot_b)
+```
+### Analysis of Variance (ANOVA)
+```{r}
+## pai
+sa_paiha <- lm(paiha ~ site+treatment , data = scot_a)
+
+##tot_vol
+sa_tvol <- lm(tot_vol ~ site+treatment , data = scot_a)
+
+##tot_dbh
+sa_dbh <- lm(dbh~site+treatment, data = scot_a)
+```
+
+
+```{r}
+plot(sa_tvol)
+```
+```
+
+```{r}
+## pai
+sb_paiha <- lm(paiha ~ site+treatment , data = scot_b)
+
+##tot_vol
+sb_tvol <- lm(tot_vol ~ site+treatment , data = scot_b)
+
+##tot_dbh
+sb_dbh <- lm(dbh~site+treatment, data = scot_b)
+```
+
+```{r}
+plot(sb_paiha)
+```
+
+```{r}
+plot(sb_dbh)
+```
+
+```{r}
+plot(sb_tvol$fitted.values, sb_tvol$residuals,
+     col = 'red')
+
+abline(c(0,0), col='red')
+```
+
+```{r}
+## tot_vol
+anova(sa_tvol)
+
+##dbh
+anova(sa_dbh)
+
+##pai
+anova(sa_paiha)
+```
+In this analysis the effect of treatment and not block is the interest. There is a significant effect of treatment on total volume, dbh and periodic and annual increment. 
+
+```{r}
+## tot_vol
+anova(sb_tvol)
+
+##dbh
+anova(sb_dbh)
+
+##pai
+anova(sb_paiha)
+```
+In this analysis the effect of treatment and not block is the interest. There is a significant effect of treatment on total volume, dbh and periodic and annual increment.
+
+### Post hoc test
+**Total Volume**
+```{r}
+## Post hoc test
+summary(TukeyC(sa_tvol, which = 'treatment'))
+```
+Post hoc test shows no differnce in the effect of treatment on volume production
+```{r}
+## Post hoc test
+summary(TukeyC(sa_paiha, which = 'treatment'))
+```
+
+There is a difference in the effect of the treatment on total volume here. Here treatment A, and I are having similar effect on volume, producing almost similar volumes, while treatment D is having more or less similar effect on total volume produced as treatments A, I and C
+**Periodic Annual Increment Per hectare**
+```{r}
+## Post hoc test
+summary(TukeyC(sa_paiha, which = 'treatment'))
+```
+
+Treatment I shows the highest in the periodic annual increment 
+```{r}
+## Post hoc test
+summary(TukeyC(sb_paiha, which = 'treatment'))
+```
+
+
+**Diameter at breast height**
+```{r}
+## Post hoc test
+summary(TukeyC(sa_dbh, which = 'treatment'))
+```
+
+```{r}
+## Post hoc test
+summary(TukeyC(sb_dbh, which = 'treatment'))
+```
