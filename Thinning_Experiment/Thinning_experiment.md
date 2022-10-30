@@ -567,23 +567,23 @@ production
 
 ``` r
 ## Post hoc test
-summary(TukeyC(sa_paiha, which = 'treatment'))
+summary(TukeyC(sb_tvol, which = 'treatment'))
 ```
 
     ## Goups of means at sig.level = 0.05 
-    ##   Means G1 G2 G3
-    ## I  8.49  a      
-    ## A  8.05  a  b   
-    ## F  7.61     b  c
-    ## B  7.07        c
+    ##    Means G1 G2
+    ## A 229.79  a   
+    ## I 227.91  a   
+    ## D 219.03  a  b
+    ## C 202.29     b
     ## 
     ## Matrix of the difference of means above diagonal and
     ## respective p-values of the Tukey test below diagonal values
-    ##       I     A     F     B
-    ## I 0.000 0.444 0.884 1.421
-    ## A 0.453 0.000 0.440 0.978
-    ## F 0.027 0.460 0.000 0.538
-    ## B 0.000 0.012 0.287 0.000
+    ##       A     I      D      C
+    ## A 0.000 1.885 10.757 27.497
+    ## I 0.994 0.000  8.872 25.612
+    ## D 0.465 0.622  0.000 16.740
+    ## C 0.003 0.007  0.121  0.000
 
 There is a difference in the effect of the treatment on total volume
 here. Here treatment A, and I are having similar effect on volume,

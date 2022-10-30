@@ -1732,8 +1732,7 @@ summary(TukeyC(mix_paiha, which = 'treatment'))
 summary(TukeyC(mix_dbh, which = 'treatment'))
 ```
 
-```{r}
-summary(TukeyC(sa_tvol, which = 'treatment'))
-```
+
+[Next Page](/Thinning_Experiment/Thinning_Experiment.md)
 
 [Back to home page](https://xrander.github.io)

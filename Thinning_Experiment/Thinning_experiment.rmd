@@ -314,7 +314,7 @@ summary(TukeyC(sa_tvol, which = 'treatment'))
 Post hoc test shows no differnce in the effect of treatment on volume production
 ```{r}
 ## Post hoc test
-summary(TukeyC(sa_paiha, which = 'treatment'))
+summary(TukeyC(sb_tvol, which = 'treatment'))
 ```
 
 There is a difference in the effect of the treatment on total volume here. Here treatment A, and I are having similar effect on volume, producing almost similar volumes, while treatment D is having more or less similar effect on total volume produced as treatments A, I and C
