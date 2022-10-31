@@ -2442,7 +2442,7 @@ summary(TukeyC(mix_dbh, which = 'treatment'))
     ## NS80  0.094 0.000 0.833
     ## NS50  0.033 0.515 0.000
 
-[Growth Experiment](growth_experiment,md) <br>
+[Growth Experiment](growth_experiment.md) <br>
 [Spacing Experiment](spacing_experiment.md) <br>
 [Thinning Exeperiment](Thinning_experiment.md)
 
