@@ -1,5 +1,7 @@
 # Spacing Experiment of Scotch Pine - Exp II
 
+![](https://www.orangepippintrees.co.uk/zimages/spacings/vdwarf.gif)
+
 Numerous experiment have been executed to check the effect of spacing on
 the productivity of a stand. Without drawing into conclusion and relying
 on facts from already established truths. I’ll explore the to see the
