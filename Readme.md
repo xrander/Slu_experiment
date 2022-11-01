@@ -920,10 +920,10 @@ summary(TukeyC(mix_dbh, which = 'treatment'))
     ## NS80  0.094 0.000 0.833
     ## NS50  0.033 0.515 0.000
 
-[Fertilization Experiment](fertilizer.md) [Cuttings
-Experiment](cutting.md) [Clone Trial Experiment](clone.md) [Growth
-Experiment](growth_experiment,md) [Spacing
-Experiment](spacing_experiment.md) [Thinning
-Exeperiment](Thinning_experiment.md)
+[Fertilization Experiment](fertilizer.md) <br> [Cuttings
+Experiment](cutting.md) <br> [Clone Trial Experiment](clone.md) <br>
+[Growth Experiment](growth_experiment,md) <br> [Spacing
+Experiment](spacing_experiment.md) <br> [Thinning
+Exeperiment](Thinning_experiment.md) <br>
 
 [Back to home page](https://xrander.github.io)
