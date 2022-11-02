@@ -287,3 +287,9 @@ summary(TukeyC(mix_dbh, which = 'treatment'))
     ## NS100 0.000 2.000 2.833
     ## NS80  0.094 0.000 0.833
     ## NS50  0.033 0.515 0.000
+
+[Previous page](Thinning_experiment.md) <br>
+
+[Homepage](Readme.md) <br>
+
+[Back to portfolio](https://xrander.github.io)

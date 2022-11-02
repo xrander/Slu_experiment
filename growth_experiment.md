@@ -301,3 +301,11 @@ barplot(tapply(site1012$paiha,
 ```
 
 ![](growth_experiment_files/figure-markdown_github/unnamed-chunk-14-1.png)
+
+[Previous page](clone.md) <br>
+
+[Homepage](Readme.md) <br>
+
+[Next Page](spacing_experiment.md) <br>
+
+[Back to portfolio](https://xrander.github.io)

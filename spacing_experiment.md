@@ -344,3 +344,11 @@ ggplot(data = amd_qmd, aes(x = as.character(plot), y = diameter, fill = measures
 ```
 
 ![](spacing_experiment_files/figure-markdown_github/unnamed-chunk-13-1.png)
+
+[Previous page](growth_experiment.md) <br>
+
+[Homepage](Readme.md) <br>
+
+[Next Page](Thinning_experiment.md) <br>
+
+[Back to portfolio](https://xrander.github.io)

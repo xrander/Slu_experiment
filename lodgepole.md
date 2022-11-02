@@ -48,3 +48,11 @@ L_pine <- read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/m
            dec = '.',
            strip.white = T)
 ```
+
+[Previous page](pct.md) <br>
+
+[Homepage](Readme.md) <br>
+
+[Next Page](growth_experiment.md) <br>
+
+[Back to portfolio](https://xrander.github.io)

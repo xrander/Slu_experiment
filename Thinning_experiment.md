@@ -409,17 +409,16 @@ plot(sa_tvol)
 
 ![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-30-1.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-30-2.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-30-3.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-30-4.png)
 
+``` r
+## pai
+sb_paiha <- lm(paiha ~ site+treatment , data = scot_b)
 
+##tot_vol
+sb_tvol <- lm(tot_vol ~ site+treatment , data = scot_b)
 
-    ```r
-    ## pai
-    sb_paiha <- lm(paiha ~ site+treatment , data = scot_b)
-
-    ##tot_vol
-    sb_tvol <- lm(tot_vol ~ site+treatment , data = scot_b)
-
-    ##tot_dbh
-    sb_dbh <- lm(dbh~site+treatment, data = scot_b)
+##tot_dbh
+sb_dbh <- lm(dbh~site+treatment, data = scot_b)
+```
 
 ``` r
 plot(sb_paiha)
@@ -698,3 +697,11 @@ plot(summary(TukeyC(sb_dbh, which = 'treatment')))
     ## I 0.000 0.000 0.001 0.000
 
 ![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-43-1.png)
+
+[Previous page](spacing_experiment.md) <br>
+
+[Homepage](Readme.md) <br>
+
+[Next Page](mixed_forest.md) <br>
+
+[Back to portfolio](https://xrander.github.io)

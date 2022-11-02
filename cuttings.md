@@ -763,3 +763,11 @@ points(spruce2$height, spruce2$dbh)
 ```
 
 ![](cuttings_files/figure-markdown_github/unnamed-chunk-23-1.png)
+
+[Previous Page](fertilizer.md) <br>
+
+[Homepage](Readme.md) <br>
+
+[Next Page](pct.md) <br>
+
+[Back to Portfolio](https://xrander.github.io)
