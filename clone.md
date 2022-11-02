@@ -22,6 +22,7 @@ library(TukeyC)
 
 ``` r
 pop <- read.table('https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/Lab1/popdata.txt', header = T)
+
 head(pop)
 ```
 

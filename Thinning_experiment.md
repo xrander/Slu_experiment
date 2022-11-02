@@ -5,7 +5,7 @@
 This is an experiment to determine how thinning grade, intensity and
 thinning form affects stem volume, production and tree dimensions. The
 thinning program is a compromise between several factors but the most
-important are e.g. stem volume production, economy and risk. In this
+important are e.g., stem volume production, economy and risk. In this
 experiment established in the 1960s, 1970s and 1980s, the effect of
 various thinning programs on stem volume production and mortality was
 test. The experiment includes in total 46 sites in Scots Pine but to
