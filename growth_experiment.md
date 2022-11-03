@@ -1,14 +1,6 @@
-``` r
-library(doBy)
-library(dplyr)
-library(lattice)
-library(ggplot2)
-library(car)
-library(data.table)
-library(TukeyC)
-```
-
 # Growth Measures - Exp III
+
+[](https://serc.si.edu/sites/default/files/styles/slideshow-wide/public/pictures/QuantitativeEcologyLab/chris_carya_alba_crop.jpg?itok=yzN5!kN_i&timestamp=1663276331)
 
 There are various characteristics of a stand that can affect the growth
 of the stand. Those characteristics include:
@@ -64,6 +56,16 @@ We’ll try to:
 
 To do this we use the tvol1012 data which consists of a revised data
 from 2 separate years, year 1980 and 1987 will be imported.
+
+``` r
+library(doBy)
+library(dplyr)
+library(lattice)
+library(ggplot2)
+library(car)
+library(data.table)
+library(TukeyC)
+```
 
 *Reading the data*
 
@@ -299,3 +301,11 @@ barplot(tapply(site1012$paiha,
 ```
 
 ![](growth_experiment_files/figure-markdown_github/unnamed-chunk-14-1.png)
+
+[Previous page](clone.md) <br>
+
+[Homepage](Readme.md) <br>
+
+[Next Page](spacing_experiment.md) <br>
+
+[Back to portfolio](https://xrander.github.io)

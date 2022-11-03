@@ -1,19 +1,11 @@
-``` r
-library(doBy)
-library(dplyr)
-library(lattice)
-library(ggplot2)
-library(car)
-library(data.table)
-library(TukeyC)
-```
-
 # Thinning Experiment in Scot Pine
+
+![](https://www.researchgate.net/publication/277816997/figure/fig3/AS:669410054385680@1536611202808/Schematic-showing-the-principles-of-thinning-to-reduce-stand-level-hazard.png)
 
 This is an experiment to determine how thinning grade, intensity and
 thinning form affects stem volume, production and tree dimensions. The
 thinning program is a compromise between several factors but the most
-important are e.g. stem volume production, economy and risk. In this
+important are e.g., stem volume production, economy and risk. In this
 experiment established in the 1960s, 1970s and 1980s, the effect of
 various thinning programs on stem volume production and mortality was
 test. The experiment includes in total 46 sites in Scots Pine but to
@@ -73,6 +65,16 @@ scot_a <- read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/m
                     header = T,
                     na.strings = 'NA',
                     dec = '.')
+```
+
+``` r
+library(doBy)
+library(dplyr)
+library(lattice)
+library(ggplot2)
+library(car)
+library(data.table)
+library(TukeyC)
 ```
 
 ``` r
@@ -407,17 +409,16 @@ plot(sa_tvol)
 
 ![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-30-1.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-30-2.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-30-3.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-30-4.png)
 
+``` r
+## pai
+sb_paiha <- lm(paiha ~ site+treatment , data = scot_b)
 
+##tot_vol
+sb_tvol <- lm(tot_vol ~ site+treatment , data = scot_b)
 
-    ```r
-    ## pai
-    sb_paiha <- lm(paiha ~ site+treatment , data = scot_b)
-
-    ##tot_vol
-    sb_tvol <- lm(tot_vol ~ site+treatment , data = scot_b)
-
-    ##tot_dbh
-    sb_dbh <- lm(dbh~site+treatment, data = scot_b)
+##tot_dbh
+sb_dbh <- lm(dbh~site+treatment, data = scot_b)
+```
 
 ``` r
 plot(sb_paiha)
@@ -655,9 +656,10 @@ summary(TukeyC(sa_dbh, which = 'treatment'))
     ## I 0.000 0.000 0.000 0.584
     ## F 0.000 0.000 0.483 0.000
 
-``` r
 ## Post hoc test
-summary(TukeyC(sb_dbh, which = 'treatment'))
+
+``` r
+T_dbh <- summary(TukeyC(sb_dbh, which = 'treatment'))
 ```
 
     ## Goups of means at sig.level = 0.05 
@@ -674,3 +676,32 @@ summary(TukeyC(sb_dbh, which = 'treatment'))
     ## D 0.005 0.000 1.557 3.717
     ## A 0.000 0.018 0.000 2.160
     ## I 0.000 0.000 0.001 0.000
+
+``` r
+plot(summary(TukeyC(sb_dbh, which = 'treatment')))
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##   Means G1 G2 G3 G4
+    ## C 20.03  a         
+    ## D 18.21     b      
+    ## A 16.65        c   
+    ## I 14.49           d
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##       C     D     A     I
+    ## C 0.000 1.821 3.378 5.538
+    ## D 0.005 0.000 1.557 3.717
+    ## A 0.000 0.018 0.000 2.160
+    ## I 0.000 0.000 0.001 0.000
+
+![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-43-1.png)
+
+[Previous page](spacing_experiment.md) <br>
+
+[Homepage](Readme.md) <br>
+
+[Next Page](mixed_forest.md) <br>
+
+[Back to portfolio](https://xrander.github.io)
