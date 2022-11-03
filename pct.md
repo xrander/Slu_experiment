@@ -569,3 +569,11 @@ mean_2
 mean_1$st_err <- mean_1$density.sd/sqrt(mean_1$density.length)
 mean_2$str_err <- mean_2$density.sd/sqrt(mean_2$density.length)
 ```
+
+[Previous page](cutting.md) <br>
+
+[Homepage](Readme.md) <br>
+
+[Next Page](clone.md) <br>
+
+[Back to portfolio](https://xrander.github.io)

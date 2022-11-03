@@ -1,9 +1,21 @@
 # Fertilizer Regime Experiment - Exp VI
 
 ![](https://www.vmcdn.ca/f/files/piquenewsmagazine/import/2020-02_news_seatosky2-46e8bfa3e301c696.jpg)
-In this experiment, a young Norway Spruce stands was established with 5
-blocks with randomly distributed treatments in 0.1 ha plots. The
-treatments are with 3 different intensities in fertilization
+Fertilization of plantations in Sweden is region specific. In the
+Northern part of Sweden the use of fertilizer is common, while in the
+Southern region its use is prohibited. The Southern part is having rich
+soil and have no need to fertilize the soil. Swedish forest
+fertilization mainly involves the application of Nitrogen which is
+normally the limiting nutrient for high stand growth. Different
+fertilization experiments have been set to either see the effect of
+different fertilizers on stand development or see the effect of
+fertilization application frequency on the stand development.
+
+This experiment is set to see the effect of fertilization frequency on
+the growth of a stand. The experiment is a young Norway Spruce stands
+which was established with 5 blocks having randomly distributed
+treatments in 0.1 ha plots. The treatments are with 3 different
+intensities in fertilization
 
 -   F1: Fertilized every year
 
@@ -16,9 +28,12 @@ treatments are with 3 different intensities in fertilization
 The amount of nutrients over time was calculated to be more or less the
 same in F1 F2 and F3.
 
-The experiment was measured initially in revision 1 (1972) and there
-after in several revisions, but the important revisions are the focus
-here which is an interval of 5 years period (rev 1, 4, 5, and 6).
+The experiment was measured initially in year 1972, first measurement
+revision (revision 1) and there after there were several revisions, but
+the important revisions are the focus here which is an interval of 5
+years period (rev 1, 4, 5, and 6). This means that the difference
+between revision 1 and 4 is 15 years, then the addition of the usual 5
+years interval.
 
 The volume (m3/ha) and CAI (m3 ha-1yr-1) were calculated for every
 treatment plot in all blocks.
@@ -59,7 +74,7 @@ str(expfert)
 summary(expfert)
 ```
 
-**To check the numbe rof replications we have in this experiment**
+**To check the number of replications we have in this experiment**
 
 ``` r
 ftable(expfert$block, expfert$treatment, expfert$revision)
