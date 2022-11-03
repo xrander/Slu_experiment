@@ -112,7 +112,7 @@ intensities in fertilization
 
     -  C:   Control without Fertilzation.
 
--   **[Cuttings Experiment](cutting.md)**:
+-   **[Cuttings Experiment](cuttings.md)**:
 
 -   **[Precommercial Thinning and Thinning Experiment](pct.md)**
 

@@ -659,3 +659,9 @@ lm(volume~treatment, data = poptr)
     ## Coefficients:
     ##     (Intercept)  treatmentunfert  
     ##           44.65           -31.86
+
+[Back to homepage](Readme.md) <br>
+
+[Next Page](cuttings.md) <br>
+
+[Back to Portfolio](https://xrander.github.io)
