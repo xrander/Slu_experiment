@@ -412,7 +412,9 @@ plot(sa_tvol)
 ``` r
 ## pai
 sb_paiha <- lm(paiha ~ site+treatment , data = scot_b)
+```
 
+``` r
 ##tot_vol
 sb_tvol <- lm(tot_vol ~ site+treatment , data = scot_b)
 
@@ -424,13 +426,13 @@ sb_dbh <- lm(dbh~site+treatment, data = scot_b)
 plot(sb_paiha)
 ```
 
-![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-32-1.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-32-2.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-32-3.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-32-4.png)
+![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-33-1.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-33-2.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-33-3.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-33-4.png)
 
 ``` r
 plot(sb_dbh)
 ```
 
-![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-33-1.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-33-2.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-33-3.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-33-4.png)
+![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-34-1.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-34-2.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-34-3.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-34-4.png)
 
 ``` r
 plot(sb_tvol$fitted.values, sb_tvol$residuals,
@@ -439,7 +441,7 @@ plot(sb_tvol$fitted.values, sb_tvol$residuals,
 abline(c(0,0), col='red')
 ```
 
-![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-34-1.png)
+![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-35-1.png)
 
 ``` r
 ## tot_vol
@@ -696,7 +698,7 @@ plot(summary(TukeyC(sb_dbh, which = 'treatment')))
     ## A 0.000 0.018 0.000 2.160
     ## I 0.000 0.000 0.001 0.000
 
-![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-43-1.png)
+![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-45-1.png)
 
 [Previous page](spacing_experiment.md) <br>
 
