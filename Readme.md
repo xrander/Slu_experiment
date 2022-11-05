@@ -93,18 +93,18 @@ development stage. The experiments are:
 -   **[Fertilization Experiment](fertilizer.md)**:
     ![](https://www.mdpi.com/forests/forests-12-00298/article_deploy/html/images/forests-12-00298-g001.png)
 
-Fertilization of plantations in Sweden is area specific. In the Northern
-part of Sweden the use of fertilizer is common, while in the Southern
-region its use is prohibited. The Southern part is having rich soil and
-have no need to fertilize the soil. Swedish forest fertilization mainly
-involves the application of Nitrogen which is normally the limiting
-nutrient for high stand growth.
+    Fertilization of plantations in Sweden is area specific. In the Northern
+    part of Sweden the use of fertilizer is common, while in the Southern
+    region its use is prohibited. The Southern part is having rich soil and
+    have no need to fertilize the soil. Swedish forest fertilization mainly
+    involves the application of Nitrogen which is normally the limiting
+    nutrient for high stand growth.
 
-This experiment is set to see the effect of fertilization frequency on
-the growth of a stand. The experiment is a young Norway Spruce stands
-which was established with 5 blocks having randomly distributed
-treatments in 0.1 ha plots. The treatments are with 3 different
-intensities in fertilization
+    This experiment is set to see the effect of fertilization frequency on
+    the growth of a stand. The experiment is a young Norway Spruce stands
+    which was established with 5 blocks having randomly distributed
+    treatments in 0.1 ha plots. The treatments are with 3 different
+    intensities in fertilization
 
     - F1:   Fertilized every year
 
@@ -115,8 +115,10 @@ intensities in fertilization
     -  C:   Control without Fertilzation.
 
 -   **[Cuttings Experiment](cuttings.md)**:
+<br>
     ![](https://www.sgaonline.org.au/images/pics/hardwoodcuttings.jpg)
-    <br> Cuttings are one of the ways to propagate tree seedlings,
+ 
+ <br> Cuttings are one of the ways to propagate tree seedlings,
     another is through seeding. The later is the common in Sweden’s
     nursery. This experiment test the effect of fertilization on
     different clones of poplar cuttings.
