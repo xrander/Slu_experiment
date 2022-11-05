@@ -678,10 +678,10 @@ bwplot(dia~clone|fert_name,
 
 ![](cuttings_files/figure-markdown_github/diameter%20performance%20for%20clone%20and%20treatment-1.png)
 
-### Analysis of Variance
+### Analysis of Variance for Height
 
 Test of difference with post-hoc to see the effect of the clones and
-fertilizer on diameter and height \#### **Clone**
+fertilizer on height \#### **Clone**
 
 ``` r
 pophd <- lm(height ~ block + clone, data = pop2)
@@ -798,6 +798,162 @@ summary(TukeyC(pop_cf))
 The post-hoc shows the clear difference on the clone performance, with
 clone B producing having greater effect when fertilizer is added.
 
+### Analysis of Variance for Diameter
+
+Test of difference with post-hoc to see the effect of the clones and
+fertilizer on diameter \#### **Clone**
+
+``` r
+popd <- lm(dia ~ block + clone, data = pop2)
+```
+
+**anova**
+
+``` r
+anova (popd)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: dia
+    ##            Df  Sum Sq Mean Sq F value Pr(>F)
+    ## block       4   2.411 0.60272  0.5706 0.6843
+    ## clone       2   1.679 0.83928  0.7945 0.4534
+    ## Residuals 182 192.263 1.05639
+
+Result of anova shows that the clone variants is having no effect on the
+diameter development of the seedlings propagated through cuttings. Thus,
+there is no need for a post-hoc test, as the clone effects are more or
+less the same.
+
+#### **Fertilizer**
+
+``` r
+popdf <- lm(dia~fert_name+block, data = pop2)
+```
+
+**anova**
+
+``` r
+anova(popdf)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: dia
+    ##            Df  Sum Sq Mean Sq  F value Pr(>F)    
+    ## fert_name   1  85.695  85.695 146.3392 <2e-16 ***
+    ## block       4   3.494   0.873   1.4914 0.2066    
+    ## Residuals 183 107.164   0.586                    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Result of anova shows that there’s a significant effect of fertilizer on
+the development of diameter of poplar cuttings. However, we don’t have
+to perform a post-hoc test because there’s just one degree of freedom
+for fert. If the test is to be conducted anyways the control is lower.
+
+``` r
+summary(TukeyC(popdf, where = fert_name))
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##            Means G1 G2
+    ## fertilized  3.51  a   
+    ## control     2.16     b
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##            fertilized control
+    ## fertilized          0   1.357
+    ## control             0   0.000
+
+#### **Clone and Fertilizer Interaction**
+
+``` r
+pop_dcf <- lm(dia ~fert_name*clone+block, data = pop2)
+```
+
+``` r
+pop_dcf2 <- lm(dia ~clone+fert_name+block, data = pop2)
+```
+
+**anova**
+
+``` r
+anova(pop_dcf)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: dia
+    ##                  Df  Sum Sq Mean Sq  F value  Pr(>F)    
+    ## fert_name         1  85.695  85.695 150.8916 < 2e-16 ***
+    ## clone             2   2.189   1.094   1.9268 0.14862    
+    ## block             4   3.627   0.907   1.5966 0.17716    
+    ## fert_name:clone   2   3.183   1.591   2.8021 0.06335 .  
+    ## Residuals       179 101.659   0.568                     
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Result of anova shows that fertilizer has a large of effect on the
+diameter development of the poplar cuttings seedlings, as other factors
+or interaction of factors have no effect.
+
+``` r
+anova(pop_dcf2)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: dia
+    ##            Df  Sum Sq Mean Sq  F value Pr(>F)    
+    ## clone       2   1.553   0.777   1.3406 0.2643    
+    ## fert_name   1  86.331  86.331 149.0427 <2e-16 ***
+    ## block       4   3.627   0.907   1.5655 0.1854    
+    ## Residuals 181 104.842   0.579                    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+**post-hoc**
+
+``` r
+summary(TukeyC(pop_dcf, where = fert_name))
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##            Means G1 G2
+    ## fertilized  3.50  a   
+    ## control     2.15     b
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##            fertilized control
+    ## fertilized          0   1.349
+    ## control             0   0.000
+
+The post-hoc shows the clear difference on the clone performance, with
+clone B producing having greater effect when fertilizer is added.
+
+``` r
+summary(TukeyC(pop_dcf2, where = clone))
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##   Means G1
+    ## C  2.94  a
+    ## B  2.86  a
+    ## A  2.66  a
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##       C     B     A
+    ## C 0.000 0.084 0.278
+    ## B 0.795 0.000 0.195
+    ## A 0.118 0.353 0.000
+
+No difference in the effect of the clones.
+
 # Poplar
 
 ## Linear Model for Poplar
@@ -806,7 +962,7 @@ clone B producing having greater effect when fertilizer is added.
 plot(poplar$cutw, poplar$vol)
 ```
 
-![](cuttings_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](cuttings_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
 ``` r
 # Linear model
@@ -830,7 +986,7 @@ anova (lmpop)
 hist(lmpop$residuals)
 ```
 
-![](cuttings_files/figure-markdown_github/unnamed-chunk-21-1.png)
+![](cuttings_files/figure-markdown_github/unnamed-chunk-31-1.png)
 
 Checking for homoscedactisity, i.e, the assumption for similar variance
 for a group being compared.
@@ -842,7 +998,7 @@ plot(lmpop$fitted.values, lmpop$residuals,
 abline(c(0,0), col = 2)
 ```
 
-![](cuttings_files/figure-markdown_github/unnamed-chunk-22-1.png)
+![](cuttings_files/figure-markdown_github/unnamed-chunk-32-1.png)
 
 Making a **qqplot** (quantile-quantile plot) to check for normal
 distribution
@@ -852,7 +1008,7 @@ qqnorm(lmpop$residuals)
 qqline(lmpop$residuals, col = 'red')
 ```
 
-![](cuttings_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](cuttings_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
 Now we can use the predicted values of the linear model as a function to
 estimate a value when we have the cutting weight available. Let’s use
@@ -897,9 +1053,9 @@ points(poplar$cutw, poplar$vol,
        col = 'black')
 ```
 
-![](cuttings_files/figure-markdown_github/unnamed-chunk-26-1.png)
+![](cuttings_files/figure-markdown_github/unnamed-chunk-36-1.png)
 
-## Spruce Stand
+## Spruce Stand Linear Model
 
 **Data exploration**
 
@@ -920,7 +1076,7 @@ summary(spruce2)
 plot(spruce2$height, spruce2$dbh)
 ```
 
-![](cuttings_files/figure-markdown_github/unnamed-chunk-27-1.png)
+![](cuttings_files/figure-markdown_github/unnamed-chunk-37-1.png)
 Fitting linear model
 
 ``` r
@@ -944,7 +1100,7 @@ Checking the distribution of the residuals
 hist(lmspruce$residuals)
 ```
 
-![](cuttings_files/figure-markdown_github/unnamed-chunk-29-1.png)
+![](cuttings_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
 Checking for homoscedactisity,i.e the assumption for similar variance
 for a group being compared.
@@ -956,7 +1112,7 @@ plot(lmspruce$fitted.values, lmspruce$residuals,
 abline(c(0,0), col = 'red')
 ```
 
-![](cuttings_files/figure-markdown_github/unnamed-chunk-30-1.png)
+![](cuttings_files/figure-markdown_github/unnamed-chunk-40-1.png)
 
 **QQplot**
 
@@ -965,7 +1121,7 @@ qqnorm(lmspruce$residuals)
 qqline(lmspruce$residuals, col = 'red')
 ```
 
-![](cuttings_files/figure-markdown_github/unnamed-chunk-31-1.png) \#####
+![](cuttings_files/figure-markdown_github/unnamed-chunk-41-1.png) \#####
 Testing the model
 
 ``` r
@@ -986,7 +1142,7 @@ lines(sprce$sprce_height, sprce_dbh,
 points(spruce2$height, spruce2$dbh)
 ```
 
-![](cuttings_files/figure-markdown_github/unnamed-chunk-33-1.png)
+![](cuttings_files/figure-markdown_github/unnamed-chunk-43-1.png)
 
 [Previous Page](fertilizer.md) <br>
 
