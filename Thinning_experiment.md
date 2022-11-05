@@ -1,5 +1,13 @@
 # Thinning Experiment in Scot Pine
 
+<br> Thinning is one of the important silvicultural tools used to
+achieve management objectives. Swedish forestry has used this tool to
+produce trees of desired qualities. Various thinning experiments have
+been conducted relating to different tree species in Sweden. An example
+is Nilsson et al., (2010), which is a robust thinning experiment of
+Norway Spruce and Scots Pine. There are various experiments spread
+across the country in Sweden, each treatment with different treatments
+and site conditions. This experiment is one of such. <br>
 ![](https://www.researchgate.net/publication/277816997/figure/fig3/AS:669410054385680@1536611202808/Schematic-showing-the-principles-of-thinning-to-reduce-stand-level-hazard.png)
 
 This is an experiment to determine how thinning grade, intensity and
@@ -56,6 +64,16 @@ first remeasurement after the first thinning. The initial age at
 revision 1 and treatments, varies for the sites (between 32 and 48
 years) and so does the time between revision 1 and 2 (7-15 years).
 
+``` r
+library(doBy)
+library(dplyr)
+library(lattice)
+library(ggplot2)
+library(car)
+library(data.table)
+library(TukeyC)
+```
+
 **Importing data**
 
 ``` r
@@ -65,16 +83,6 @@ scot_a <- read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/m
                     header = T,
                     na.strings = 'NA',
                     dec = '.')
-```
-
-``` r
-library(doBy)
-library(dplyr)
-library(lattice)
-library(ggplot2)
-library(car)
-library(data.table)
-library(TukeyC)
 ```
 
 ``` r
@@ -213,13 +221,14 @@ barplot(scot_b$dbh, names.arg = scot_b$site,
         ylim = c(0, 30))
 ```
 
-![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-12-1.png)
+![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-11-1.png)
 
 ``` r
 plot(scot_b$dbh,scot_b$standingvol)
 ```
 
-![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-12-1.png)
+
 **Experimental design** A quick preview of the experimental design
 
 ``` r
@@ -306,7 +315,7 @@ barchart(tot_vol~treatment,
          auto.key = list(column = 4))
 ```
 
-![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
 ``` r
 barchart(tot_vol~treatment,
@@ -319,7 +328,7 @@ barchart(tot_vol~treatment,
          box.ratio = 2,)
 ```
 
-![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-21-1.png)
+![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 ``` r
 xyplot(tot_vol~dbh | treatment,
@@ -331,13 +340,13 @@ xyplot(tot_vol~dbh | treatment,
          auto.key = list(columns = 3, cex = 0.9))
 ```
 
-![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-22-1.png)
+![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
 ``` r
 barchart(tot_vol~treatment|site, data = scot_b)
 ```
 
-![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-22-1.png)
 
 ``` r
 bwplot(tot_vol~treatment, data = scot_b,
@@ -346,7 +355,7 @@ bwplot(tot_vol~treatment, data = scot_b,
        main = 'Distribution of Treatment')
 ```
 
-![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-24-1.png)
+![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
 ``` r
 bwplot(dbh~treatment, data = scot_b,
@@ -355,7 +364,7 @@ bwplot(dbh~treatment, data = scot_b,
        main = 'Distribution of DBH')
 ```
 
-![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-25-1.png)
+![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
 ``` r
 bwplot(paiha~treatment, data = scot_b,
@@ -364,7 +373,7 @@ bwplot(paiha~treatment, data = scot_b,
        main = 'Distribution of Periodic annual increment')
 ```
 
-![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-26-1.png)
+![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
 ``` r
 summaryBy(tot_vol + paiha + dbh ~ treatment,
@@ -407,7 +416,7 @@ sa_dbh <- lm(dbh~site+treatment, data = scot_a)
 plot(sa_tvol)
 ```
 
-![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-30-1.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-30-2.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-30-3.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-30-4.png)
+![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-29-1.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-29-2.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-29-3.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-29-4.png)
 
 ``` r
 ## pai
@@ -426,13 +435,13 @@ sb_dbh <- lm(dbh~site+treatment, data = scot_b)
 plot(sb_paiha)
 ```
 
-![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-33-1.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-33-2.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-33-3.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-33-4.png)
+![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-32-1.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-32-2.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-32-3.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-32-4.png)
 
 ``` r
 plot(sb_dbh)
 ```
 
-![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-34-1.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-34-2.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-34-3.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-34-4.png)
+![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-33-1.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-33-2.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-33-3.png)![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-33-4.png)
 
 ``` r
 plot(sb_tvol$fitted.values, sb_tvol$residuals,
@@ -441,7 +450,7 @@ plot(sb_tvol$fitted.values, sb_tvol$residuals,
 abline(c(0,0), col='red')
 ```
 
-![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-35-1.png)
+![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
 ``` r
 ## tot_vol
@@ -698,7 +707,7 @@ plot(summary(TukeyC(sb_dbh, which = 'treatment')))
     ## A 0.000 0.018 0.000 2.160
     ## I 0.000 0.000 0.001 0.000
 
-![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-45-1.png)
+![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-44-1.png)
 
 [Previous page](spacing_experiment.md) <br>
 

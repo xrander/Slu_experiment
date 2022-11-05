@@ -1,5 +1,25 @@
 # Spacing Experiment of Scotch Pine - Exp II
 
+<br> In forestry after the species to be planted has been decided, the
+number of trees to be planted is the next important thing to be
+discussed and this determines the initial stocking density of the
+plantation. According to West (2009), this determines:
+
+-   the amount of wood available from the plantation when it is
+    harvested ultimately
+
+-   the average sizes of the trees in the stand, and
+
+-   the branch sizes.
+
+The next important thing is how the trees in the forest will be
+spatially arranged. The choice of spacing between trees both within and
+between the rows determine the rectangularity of the initial spacing.
+The rectangulaity is the ratio between-rows to within-rows spacing
+(West, 2007). This generally affects the stand density and subsequent
+tree development.
+
+<br>
 ![](https://www.orangepippintrees.co.uk/zimages/spacings/vdwarf.gif)
 
 Numerous experiment have been executed to check the effect of spacing on
@@ -9,9 +29,10 @@ effect of spacing on Scotch pine and determine if there are differences
 between the spacing treatments.
 
 This experiment is a long-term experiment to test the effect of four
-different spacing treatments 1m, 1.5m, 2m, and 2.5m across eight plots.
-The experiment is designed such that two plots are assigned a treatment,
-in this case the plots. The plots are also of varying sizes.
+different spacing treatments 1m, 1.5m, 2m, and 2.5m across eight plots
+on basal area produced average diameter of stems in the stand. The
+experiment is designed such that two plots are assigned a treatment, in
+this case the plots. The plots are also of varying sizes.
 
 *The Design of the experiment using R*
 
@@ -205,8 +226,6 @@ legend('right',
 ```
 
 ![](spacing_experiment_files/figure-markdown_github/unnamed-chunk-8-1.png)
-
-------------------------------------------------------------------------
 
 ### Stand Density Estimation
 

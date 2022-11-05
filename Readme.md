@@ -113,17 +113,38 @@ intensities in fertilization
     -  C:   Control without Fertilzation.
 
 -   **[Cuttings Experiment](cuttings.md)**:
+    ![](https://www.sgaonline.org.au/images/pics/hardwoodcuttings.jpg)
+    <br> Cuttings are one of the ways to propagate tree seedlings,
+    another is through seeding. The later is the common in Sweden’s
+    nursery. This experiment test the effect of fertilization on
+    different clones of poplar cuttings.
 
--   **[Precommercial Thinning and Thinning Experiment](pct.md)**
+-   **[Thinning Frequency and Intensity Experiment](pct.md)**: Basic
+    data exploration and data visualization on a stand after being
+    thinned giving insight on the influence of thinning frequency and/or
+    intensity on some growth yield parameters.
 
--   **[Clone Trial Experiment](clone.md)**
+-   **[Clone Trial Experiment](clone.md)**: Experiment to test the
+    effect of fertilization on the performance of different clones.
 
--   **[Growth Experiment](growth_experiment.md)**
+-   **[Growth Experiment](growth_experiment.md)**: Estimation of some
+    forestry growth parameters.
 
--   **[Spacing Experiment](spacing_experiment.md)**
+-   **[Spacing Experiment](spacing_experiment.md)**: Experiment to test
+    the effect of spacing density on the diameter and basal of a stand.
 
--   **[Thinning Experiment](Thinning_experiment.md)**
+-   **[Thinning Experiment on Scots Pine](Thinning_experiment.md)**:
+    ![](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5O_EthfXgRFnxQrU2yVt2ESZcXRCQrvmaVg&usqp=CAU)
 
--   **[Mixed Forest Experiment](mixed_forest.md)**
+An experiment to evaluate the effect of three different thinning regimes
+on the total volume produced in a stand.
+
+-   **[Mixed Forest Experiment](mixed_forest.md)**: Volume estimation
+    between pure monoculture and a mixed forest of 80:20 of monoculture
+    and 50:50 of monoculture
+
+-   **[Site Preparation Experiment](lodgepole.md)**: A site preparation
+    experiment to evaluate the growth and survival of lodgepole pine
+    under scarified and unscarified site. <br>
 
 [Portfolio Page](https://xrander.github.io)
