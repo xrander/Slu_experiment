@@ -157,3 +157,11 @@ legend('topright',
 
 It is evident that the fertilized are performing than the control, with
 the B clone class being the highest performing either fertilized or not.
+
+[Previous page](pct.md) <br>
+
+[Homepage](Readme.md) <br>
+
+[Next Page](growth_experiment.md) <br>
+
+[Back to portfolio](https://xrander.github.io)
