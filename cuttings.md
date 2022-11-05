@@ -1,12 +1,32 @@
 # Poplar Cutting Experiment - Exp V
 
+Some tree species have the abilities to be propagated vegetatively. Some
+fruit trees like apples and pears can be grown from cuttings, as other
+some hardwood tree species such as maples, poplar and willow can be
+grown from cuttings.
+
+Poplar trees produce their rooting hormones, and can their ability to
+sprout roots from twigs can be tested by placing them in a water. In
+Sweden it is advised to establish poplar on old agricultural lands
+having fertile and well-drained soil.
+
+![Hybrid
+poplar](https://www.bowhayestrees.co.uk/media/catalog/product/cache/1/image/1200x1200/9df78eab33525d08d6e5fb8d27136e95/p/o/poplar_cuttings_60cm_planted_4.jpg)
+
+## The Experiment
+
+An experiment was carried out to test the effect of fertilizer on the
+growth of three poplar clone cuttings separated into different blocks.
+
 ![](https://www.lignoplant.com/uploads/pics/Lignoplant_Pappelruten_Max.png)
 
 ## Question:
 
-    -   Investigate if the volume of 12 weeks seedlings is related to the initial cutting weight.
+    -   check if there's an effect of the clones and fertilization treatment on the diameter and height of the seedlings
 
-    -   Make a regression of height and dbh,then determine if dbh can be used to predict height if height data is missing.
+    -   Investigate if the volume of 12 weeks seedlings is related to the initial cutting weight (poplar data).
+
+    -   Make a regression of height and dbh,then determine if dbh can be used to predict height if height data is missing (spruce data).
 
 ``` r
 library(doBy)
@@ -50,7 +70,7 @@ spruce2 <- read.table("https://raw.githubusercontent.com/xrander/Slu_experiment/
 
 -   block:1-5
 
--   cutw:total dryweight biomass (g)
+-   cutw:cuttings width (g)
 
 -   height:aboveground height (mm)
 
@@ -83,35 +103,42 @@ str(pop2)
     ##  $ clone : chr  "A" "A" "A" "A" ...
     ##  $ fert  : int  3 3 3 3 3 3 3 3 3 3 ...
 
+block , clone and fert columns are factor data type but is given as
+integers and characters, thus, they have to be changed.
+
+``` r
+pop2$block <- as.factor(pop2$block)
+pop2$fert <- as.factor(pop2$fert)
+pop2$clone <- as.factor(pop2$clone)
+```
+
 ``` r
 summary(pop2)
 ```
 
-    ##      block            cutw           height           dia        
-    ##  Min.   :1.000   Min.   : 0.10   Min.   : 22.0   Min.   : 0.600  
-    ##  1st Qu.:2.000   1st Qu.: 1.10   1st Qu.:100.5   1st Qu.: 2.000  
-    ##  Median :3.000   Median : 2.20   Median :262.5   Median : 3.200  
-    ##  Mean   :3.011   Mean   : 3.78   Mean   :248.5   Mean   : 3.046  
-    ##  3rd Qu.:4.000   3rd Qu.: 5.80   3rd Qu.:365.2   3rd Qu.: 3.600  
-    ##  Max.   :5.000   Max.   :19.70   Max.   :506.0   Max.   :39.000  
-    ##                                  NA's   :1                       
-    ##     clone                fert      
-    ##  Length:189         Min.   :1.000  
-    ##  Class :character   1st Qu.:1.000  
-    ##  Mode  :character   Median :1.000  
-    ##                     Mean   :1.963  
-    ##                     3rd Qu.:3.000  
-    ##                     Max.   :3.000  
-    ## 
+    ##  block       cutw           height           dia         clone  fert  
+    ##  1:37   Min.   : 0.10   Min.   : 22.0   Min.   : 0.600   A:51   1:98  
+    ##  2:39   1st Qu.: 1.10   1st Qu.:100.5   1st Qu.: 2.000   B:68   3:91  
+    ##  3:37   Median : 2.20   Median :262.5   Median : 3.200   C:70         
+    ##  4:37   Mean   : 3.78   Mean   :248.5   Mean   : 3.046                
+    ##  5:39   3rd Qu.: 5.80   3rd Qu.:365.2   3rd Qu.: 3.600                
+    ##         Max.   :19.70   Max.   :506.0   Max.   :39.000                
+    ##                         NA's   :1
 
 ``` r
-plot (pop2$dia)
+plot (pop2$dia, pop2$height,
+      xlab = 'diameter(mm)',
+      ylab = 'height (mm)',
+      main = 'Height vs Diameter',
+      col = 'blue')
 ```
 
 ![](cuttings_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
-There is a wrong diameter value that is far from the average mean.Also,
-we have missing value in the height variable.
+After exploration, an exaggerated or wrong diameter value was found that
+is way far from the mean.Also, a missing value was found in the height
+variable when under the basic statistics summary. This is a common
+occurrence during data collection and recording.
 
 #### Dealing with Missing Data
 
@@ -125,7 +152,7 @@ pop2[is.na(pop2$height), ]
 ``` r
 ## This shows we have one Na Value and it is in row 109
 
-pop2[complete.cases(pop2), ] ## can be written as 
+pop2[complete.cases(pop2), ] ## this shows all rows without missing values
 ```
 
     ##     block cutw height  dia clone fert
@@ -319,7 +346,7 @@ pop2[complete.cases(pop2), ] ## can be written as
     ## 189     5  6.0    339  3.8     C    1
 
 ``` r
-pop2[complete.cases(pop2$height), ]## still the same.
+pop2[complete.cases(pop2$height), ]## Another way to right the code above, but focusing more on the height's column.
 ```
 
     ##     block cutw height  dia clone fert
@@ -512,29 +539,33 @@ pop2[complete.cases(pop2$height), ]## still the same.
     ## 188     5  1.3    393  3.1     C    1
     ## 189     5  6.0    339  3.8     C    1
 
-``` r
-## This shows only the complete cases or rows without missing values
-```
-
-Let’s say we found the value where we recorded the data we can simply
-replace it using the chunk below
+The value for the missing data was found on the sheets where data
+collected were written. We can simply replace the missing data using the
+chunk below.
 
 ``` r
-pop2[is.na(pop2$height), ] <- 331
+pop2[is.na(pop2$height), 3] <- 331
 ```
 
 Now we run the summary again to see if there’s a missing data
 
 ``` r
-is.na(pop2)
+pop2[is.na(pop2), ]
 ```
 
-The result is false all through
+``` r
+pop2$fert_name<- ifelse(pop2$fert == 1, 'fertilized', 'control')
+```
+
+The result returns no values, this implies that we’ve fixed the missing
+data.
 
 #### Dealing with Outliers
 
-With outliers we need to careful as they can sometime be true and not
-errors.
+Outliers are observations that is distant from other observations. This
+observations have values that are significantly different from other
+observation values. With outliers we need to careful as they are not
+errors sometimes.
 
 **Identifying the outlier**
 
@@ -542,47 +573,396 @@ errors.
 summary(pop2)
 ```
 
-    ##      block              cutw             height           dia         
-    ##  Min.   :  1.000   Min.   :  0.100   Min.   : 22.0   Min.   :  0.600  
-    ##  1st Qu.:  2.000   1st Qu.:  1.100   1st Qu.:101.0   1st Qu.:  2.000  
-    ##  Median :  3.000   Median :  2.200   Median :263.0   Median :  3.200  
-    ##  Mean   :  4.741   Mean   :  5.529   Mean   :248.9   Mean   :  4.781  
-    ##  3rd Qu.:  4.000   3rd Qu.:  6.000   3rd Qu.:365.0   3rd Qu.:  3.600  
-    ##  Max.   :331.000   Max.   :331.000   Max.   :506.0   Max.   :331.000  
-    ##     clone                fert        
-    ##  Length:189         Min.   :  1.000  
-    ##  Class :character   1st Qu.:  1.000  
-    ##  Mode  :character   Median :  1.000  
-    ##                     Mean   :  3.709  
-    ##                     3rd Qu.:  3.000  
-    ##                     Max.   :331.000
+    ##  block       cutw           height           dia         clone  fert  
+    ##  1:37   Min.   : 0.10   Min.   : 22.0   Min.   : 0.600   A:51   1:98  
+    ##  2:39   1st Qu.: 1.10   1st Qu.:101.0   1st Qu.: 2.000   B:68   3:91  
+    ##  3:37   Median : 2.20   Median :263.0   Median : 3.200   C:70         
+    ##  4:37   Mean   : 3.78   Mean   :248.9   Mean   : 3.046                
+    ##  5:39   3rd Qu.: 5.80   3rd Qu.:365.0   3rd Qu.: 3.600                
+    ##         Max.   :19.70   Max.   :506.0   Max.   :39.000                
+    ##   fert_name        
+    ##  Length:189        
+    ##  Class :character  
+    ##  Mode  :character  
+    ##                    
+    ##                    
+    ## 
 
-We check the mean, quantiles, min, and max value to see where the
-outlier exist. dia is having an outlier
+We check the mean, quantiles, min, and max value to get an idea of the
+range of the data within a normal distribution. The min and max are the
+main values of interest. There is a common rule that says that a data
+point is an outlier if it is more than 1.5 \* IQR(Interquartile Range)
+above the third quartile or below the first quartile. This implies that
+low outliers are below the ‘1st quarter - (1.5 multipied by IQR)’ and
+the high outliers are above ‘3rd quarter + (1.5 \* IQR)’. Remember IQR
+is the difference between the 1st and 3rd quarter. We can also draw
+boxplot or histogram to see the distribution and identify where the
+outlier is.
+
+**Using a histogram**
+
+``` r
+hist(pop2$dia,
+     col = 'red',
+     main = 'Histogram of diameter',
+     xlab = 'diameter')
+```
+
+![](cuttings_files/figure-markdown_github/unnamed-chunk-9-1.png) **Using
+a boxplot**
+
+``` r
+bwplot(dia~block, data = pop2,
+       xlab = 'block',
+       ylab = 'diameter (cm)',
+       main = 'Diameter distribution across Blocks') #bwplot is the lattice package boxplot function
+```
+
+![](cuttings_files/figure-markdown_github/unnamed-chunk-10-1.png)
+another approach is to look for the data above or below the outlier
+common rule that uses IQR.
 
 ``` r
 pop2[(pop2$dia> 5),]
 ```
 
-    ##     block  cutw height dia clone fert
-    ## 98      2   7.3    407  39     A    1
-    ## 109   331 331.0    331 331   331  331
+    ##    block cutw height dia clone fert  fert_name
+    ## 98     2  7.3    407  39     A    1 fertilized
 
-row 98 is having the data with an outlier. On checking the original data
-written from the field, the result was 38
+row 98 is having the data with an outlier with a value of 39. On
+checking the original data written from the field, the result was 3.9
 
 ``` r
 ## changing data
 pop2$dia <- ifelse(pop2$dia > 38, 3.9, pop2$dia)
 ```
 
-### Fitting the Linear Model
+**Experimental Design** To check the experimental design we use the
+ftable funtion
+
+``` r
+ftable(pop2$block, pop2$fert, pop2$clone)
+```
+
+    ##      A B C
+    ##           
+    ## 1 1  4 8 8
+    ##   3  4 8 5
+    ## 2 1  6 7 6
+    ##   3  7 5 8
+    ## 3 1  5 7 7
+    ##   3  5 5 8
+    ## 4 1  5 7 7
+    ##   3  4 7 7
+    ## 5 1  7 8 6
+    ##   3  4 6 8
+
+**Height performance**
+
+``` r
+bwplot(height~clone|fert_name,
+       data = pop2,
+       ylab = 'Height(mm)',
+       xlab = 'Clone')
+```
+
+![](cuttings_files/figure-markdown_github/height%20performance%20for%20clone%20and%20treatment-1.png)
+**Diameter performance**
+
+``` r
+bwplot(dia~clone|fert_name,
+       data = pop2,
+       ylab = 'diameter(mm)',
+       xlab = 'Clone')
+```
+
+![](cuttings_files/figure-markdown_github/diameter%20performance%20for%20clone%20and%20treatment-1.png)
+
+### Analysis of Variance for Height
+
+Test of difference with post-hoc to see the effect of the clones and
+fertilizer on height \#### **Clone**
+
+``` r
+pophd <- lm(height ~ block + clone, data = pop2)
+```
+
+**anova**
+
+``` r
+anova (pophd)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: height
+    ##            Df  Sum Sq Mean Sq F value Pr(>F)
+    ## block       4  104269   26067  1.4851 0.2085
+    ## clone       2   58674   29337  1.6715 0.1908
+    ## Residuals 182 3194450   17552
+
+Result of anova shows that the clone variants is having no effect on the
+height growth of the seedlings propagated through cuttings. Thus, there
+is no need for a post-hoc test, as the clone effects are more or less
+the same.
+
+#### **Fertilizer**
+
+``` r
+pophdf <- lm(height~fert_name+block, data = pop2)
+```
+
+**anova**
+
+``` r
+anova(pophdf)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: height
+    ##            Df  Sum Sq Mean Sq  F value    Pr(>F)    
+    ## fert_name   1 2191675 2191675 383.7363 < 2.2e-16 ***
+    ## block       4  120530   30132   5.2758 0.0004814 ***
+    ## Residuals 183 1045188    5711                       
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Result of anova shows that there’s a significant effect of fertilizer on
+the height growth of poplar cuttings. However, we don’t have to perform
+a post-hoc test because there’s just one degree of freedom for fert. If
+the test is to be conducted anyways the control is lower.
+
+``` r
+summary(TukeyC(pophdf, where = fert_name))
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##             Means G1 G2
+    ## fertilized 353.29  a   
+    ## control    136.81     b
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##            fertilized control
+    ## fertilized          0 216.486
+    ## control             0   0.000
+
+#### **Clone and Fertilizer Interaction**
+
+``` r
+pop_cf <- lm(height ~clone*fert+block, data = pop2)
+```
+
+**anova**
+
+``` r
+anova(pop_cf)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: height
+    ##             Df  Sum Sq Mean Sq  F value    Pr(>F)    
+    ## clone        2   62644   31322   5.7041 0.0039671 ** 
+    ## fert         1 2177491 2177491 396.5475 < 2.2e-16 ***
+    ## block        4  119244   29811   5.4289 0.0003784 ***
+    ## clone:fert   2   15103    7552   1.3752 0.2554346    
+    ## Residuals  179  982911    5491                       
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Result of anova shows that fertilizer has a large of effect on the
+height of poplar cuttings seedlings, as clone is having little effect on
+the height performance of the cuttings seedlings.
+
+**post-hoc**
+
+``` r
+summary(TukeyC(pop_cf))
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##    Means G1 G2
+    ## B 263.38  a   
+    ## C 245.11  a  b
+    ## A 222.11     b
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##       B      C      A
+    ## B 0.000 18.276 41.277
+    ## C 0.318  0.000 23.001
+    ## A 0.008  0.213  0.000
+
+The post-hoc shows the clear difference on the clone performance, with
+clone B producing having greater effect when fertilizer is added.
+
+### Analysis of Variance for Diameter
+
+Test of difference with post-hoc to see the effect of the clones and
+fertilizer on diameter \#### **Clone**
+
+``` r
+popd <- lm(dia ~ block + clone, data = pop2)
+```
+
+**anova**
+
+``` r
+anova (popd)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: dia
+    ##            Df  Sum Sq Mean Sq F value Pr(>F)
+    ## block       4   2.411 0.60272  0.5706 0.6843
+    ## clone       2   1.679 0.83928  0.7945 0.4534
+    ## Residuals 182 192.263 1.05639
+
+Result of anova shows that the clone variants is having no effect on the
+diameter development of the seedlings propagated through cuttings. Thus,
+there is no need for a post-hoc test, as the clone effects are more or
+less the same.
+
+#### **Fertilizer**
+
+``` r
+popdf <- lm(dia~fert_name+block, data = pop2)
+```
+
+**anova**
+
+``` r
+anova(popdf)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: dia
+    ##            Df  Sum Sq Mean Sq  F value Pr(>F)    
+    ## fert_name   1  85.695  85.695 146.3392 <2e-16 ***
+    ## block       4   3.494   0.873   1.4914 0.2066    
+    ## Residuals 183 107.164   0.586                    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Result of anova shows that there’s a significant effect of fertilizer on
+the development of diameter of poplar cuttings. However, we don’t have
+to perform a post-hoc test because there’s just one degree of freedom
+for fert. If the test is to be conducted anyways the control is lower.
+
+``` r
+summary(TukeyC(popdf, where = fert_name))
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##            Means G1 G2
+    ## fertilized  3.51  a   
+    ## control     2.16     b
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##            fertilized control
+    ## fertilized          0   1.357
+    ## control             0   0.000
+
+#### **Clone and Fertilizer Interaction**
+
+``` r
+pop_dcf <- lm(dia ~fert_name*clone+block, data = pop2)
+```
+
+``` r
+pop_dcf2 <- lm(dia ~clone+fert_name+block, data = pop2)
+```
+
+**anova**
+
+``` r
+anova(pop_dcf)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: dia
+    ##                  Df  Sum Sq Mean Sq  F value  Pr(>F)    
+    ## fert_name         1  85.695  85.695 150.8916 < 2e-16 ***
+    ## clone             2   2.189   1.094   1.9268 0.14862    
+    ## block             4   3.627   0.907   1.5966 0.17716    
+    ## fert_name:clone   2   3.183   1.591   2.8021 0.06335 .  
+    ## Residuals       179 101.659   0.568                     
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Result of anova shows that fertilizer has a large of effect on the
+diameter development of the poplar cuttings seedlings, as other factors
+or interaction of factors have no effect.
+
+``` r
+anova(pop_dcf2)
+```
+
+    ## Analysis of Variance Table
+    ## 
+    ## Response: dia
+    ##            Df  Sum Sq Mean Sq  F value Pr(>F)    
+    ## clone       2   1.553   0.777   1.3406 0.2643    
+    ## fert_name   1  86.331  86.331 149.0427 <2e-16 ***
+    ## block       4   3.627   0.907   1.5655 0.1854    
+    ## Residuals 181 104.842   0.579                    
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+**post-hoc**
+
+``` r
+summary(TukeyC(pop_dcf, where = fert_name))
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##            Means G1 G2
+    ## fertilized  3.50  a   
+    ## control     2.15     b
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##            fertilized control
+    ## fertilized          0   1.349
+    ## control             0   0.000
+
+The post-hoc shows the clear difference on the clone performance, with
+clone B producing having greater effect when fertilizer is added.
+
+``` r
+summary(TukeyC(pop_dcf2, where = clone))
+```
+
+    ## Goups of means at sig.level = 0.05 
+    ##   Means G1
+    ## C  2.94  a
+    ## B  2.86  a
+    ## A  2.66  a
+    ## 
+    ## Matrix of the difference of means above diagonal and
+    ## respective p-values of the Tukey test below diagonal values
+    ##       C     B     A
+    ## C 0.000 0.084 0.278
+    ## B 0.795 0.000 0.195
+    ## A 0.118 0.353 0.000
+
+No difference in the effect of the clones.
+
+# Poplar
+
+## Linear Model for Poplar
 
 ``` r
 plot(poplar$cutw, poplar$vol)
 ```
 
-![](cuttings_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](cuttings_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
 ``` r
 # Linear model
@@ -606,7 +986,7 @@ anova (lmpop)
 hist(lmpop$residuals)
 ```
 
-![](cuttings_files/figure-markdown_github/unnamed-chunk-11-1.png)
+![](cuttings_files/figure-markdown_github/unnamed-chunk-31-1.png)
 
 Checking for homoscedactisity, i.e, the assumption for similar variance
 for a group being compared.
@@ -618,7 +998,7 @@ plot(lmpop$fitted.values, lmpop$residuals,
 abline(c(0,0), col = 2)
 ```
 
-![](cuttings_files/figure-markdown_github/unnamed-chunk-12-1.png)
+![](cuttings_files/figure-markdown_github/unnamed-chunk-32-1.png)
 
 Making a **qqplot** (quantile-quantile plot) to check for normal
 distribution
@@ -628,10 +1008,10 @@ qqnorm(lmpop$residuals)
 qqline(lmpop$residuals, col = 'red')
 ```
 
-![](cuttings_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](cuttings_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
 Now we can use the predicted values of the linear model as a function to
-estimat4e a value when we have the cutting weight available. Let’s use
+estimate a value when we have the cutting weight available. Let’s use
 the function which we have To get the value for the function, we extract
 the intercept and slope
 
@@ -673,9 +1053,9 @@ points(poplar$cutw, poplar$vol,
        col = 'black')
 ```
 
-![](cuttings_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](cuttings_files/figure-markdown_github/unnamed-chunk-36-1.png)
 
-## SPruce Stand
+## Spruce Stand Linear Model
 
 **Data exploration**
 
@@ -696,7 +1076,7 @@ summary(spruce2)
 plot(spruce2$height, spruce2$dbh)
 ```
 
-![](cuttings_files/figure-markdown_github/unnamed-chunk-17-1.png)
+![](cuttings_files/figure-markdown_github/unnamed-chunk-37-1.png)
 Fitting linear model
 
 ``` r
@@ -720,7 +1100,7 @@ Checking the distribution of the residuals
 hist(lmspruce$residuals)
 ```
 
-![](cuttings_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](cuttings_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
 Checking for homoscedactisity,i.e the assumption for similar variance
 for a group being compared.
@@ -732,16 +1112,16 @@ plot(lmspruce$fitted.values, lmspruce$residuals,
 abline(c(0,0), col = 'red')
 ```
 
-![](cuttings_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](cuttings_files/figure-markdown_github/unnamed-chunk-40-1.png)
 
 **QQplot**
 
 ``` r
 qqnorm(lmspruce$residuals)
-qqline(lmspruce$residuals, col = 'green')
+qqline(lmspruce$residuals, col = 'red')
 ```
 
-![](cuttings_files/figure-markdown_github/unnamed-chunk-21-1.png) \#####
+![](cuttings_files/figure-markdown_github/unnamed-chunk-41-1.png) \#####
 Testing the model
 
 ``` r
@@ -762,7 +1142,7 @@ lines(sprce$sprce_height, sprce_dbh,
 points(spruce2$height, spruce2$dbh)
 ```
 
-![](cuttings_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](cuttings_files/figure-markdown_github/unnamed-chunk-43-1.png)
 
 [Previous Page](fertilizer.md) <br>
 

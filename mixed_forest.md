@@ -1,23 +1,26 @@
 # Mixed Forest Experiment
 
-This an experiment on the site 8556.Is there a significant difference in
-net and gross production between the monoculture and mixtures? Does the
-Norway spruce trees in the treatments differ in mean diameter? This is
-one of the common questions in Southern Sweden. Many forests in southern
-Sweden is managed as mixtures of Norway spruce and birch. This is a 38-
-year old stand where an experiment has been established in the
-precommercial thinning stage. The purpose of the experiment has been,
-and is, to evaluate this different forest types over time, where one of
-the species (birch) is fast growing in the establishment phase and the
-other tree species (Norway spruce) is expected to catch up in growth in
-the more mature phase. One of the questions for forest owners that want
-to use the mixture of Norway spruce and birch is how to manage the
-difference in growth rhythm and how to keep both species during the full
-rotation of the stand.
+Experiment site 8556 is a mixed forest part of the large scale forest
+experiments in Sweden. For this analysis we seek to know if there are
+significant differences in net and gross production between the
+monoculture and mixtures? Does the Norway spruce trees in the treatments
+differ in mean diameter? This is one of the common questions in Southern
+Sweden. Many forests in southern Sweden is managed as mixtures of Norway
+spruce and birch. This is a 38- year old stand where an experiment has
+been established in the precommercial thinning stage. The purpose of the
+experiment has been, and is, to evaluate this different forest types
+over time, where one of the species (birch) is fast growing in the
+establishment phase and the other tree species (Norway spruce) is
+expected to catch up in growth in the more mature phase. One of the
+questions for forest owners that want to use the mixture of Norway
+spruce and birch is how to manage the difference in growth rhythm and
+how to keep both species during the full rotation of the stand. <br>
 
-**Experimental design** The experiment is organized in three blocks and
-the treatments were randomly assigned to plots of about 0.1 ha each, one
-treatment plot in each block.
+![](https://www.umu.se/globalassets/qbank/blandskog-3.jpg?width=1280)
+
+<br> **Experimental design** The experiment is organized in three blocks
+and the treatments were randomly assigned to plots of about 0.1 ha each,
+one treatment plot in each block.
 
 -   Monoculture: 100 % Norway spruce (NS)
 
@@ -291,5 +294,7 @@ summary(TukeyC(mix_dbh, which = 'treatment'))
 [Previous page](Thinning_experiment.md) <br>
 
 [Homepage](Readme.md) <br>
+
+[Next page](lodgepole.md) <br>
 
 [Back to portfolio](https://xrander.github.io)

@@ -1,5 +1,13 @@
 # Growth Measures - Exp III
 
+<br> Forestry is a long time business that requires patience and careful
+management. For forest landowners, the tree in the forest is the return
+in investment, and as businessmen, it is important to track how our
+investments are performing. Growth measurements are important to telling
+us how our investments are performing as well as gives insight into how
+our forest should be managed. Growth measures also gives us information
+on the optimal time to harvest, as it also shows how the forest performs
+after tending operation. <br>
 [](https://serc.si.edu/sites/default/files/styles/slideshow-wide/public/pictures/QuantitativeEcologyLab/chris_carya_alba_crop.jpg?itok=yzN5!kN_i&timestamp=1663276331)
 
 There are various characteristics of a stand that can affect the growth
@@ -26,17 +34,21 @@ volume, quality or value of individual tree crops during a given period.
 There are some terminologies and measures associated with tree
 increment.
 
-    -   Yield: this is the usable wood fiber per unit area at a particular age
+-   Yield: this is the usable wood fiber per unit area at a particular
+    age
 
-    -   Annual increment
+-   Annual increment
 
 *G*<sub>*a*</sub> = *Y*<sub>*a*</sub> − *Y*<sub>*a* − 1</sub>
 
-    -   Periodic Annual Increment: This measures the average productivity of the stand over certain period. Can sometimes be referred to CAI if it's between increment between current year and  previous year.
+-   Periodic Annual Increment: This measures the average productivity of
+    the stand over certain period. Can sometimes be referred to CAI if
+    it’s between increment between current year and previous year.
 
 *P**A**I*<sub>*a*1, *a*2</sub> = *Y*<sub>*a*2</sub> − *Y*<sub>*a*1</sub>/*a*<sub>2</sub> − *a*<sub>1</sub>
 
-    -   Mean Annual Increment: This measures the average productivity of the stand over its lifetime.
+-   Mean Annual Increment: This measures the average productivity of the
+    stand over its lifetime.
 
 *M**A**I*<sub>*a*</sub> = *Y*<sub>*a*</sub>/*a*
 G = growth Y = Volume for year a a = year (2 is current and 1 is
