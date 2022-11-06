@@ -97,7 +97,9 @@ development stage. The experiments are:
 2017, according to the MATCH model \[37\]. The black dots are the three
 modeling sites: Högbränna in Northern Sweden, Södra Averstad in Central
 Sweden and Västra Torup in Southern Sweden. Source: Lucander et
-al. (2021)* <br> Fertilization of plantations in Sweden is area
+al. (2021)* <br> 
+
+Fertilization of plantations in Sweden is area
 specific. In the Northern part of Sweden the use of fertilizer is
 common, while in the Southern region its use is prohibited. The Southern
 part is having rich soil and have no need to fertilize the soil. Swedish
@@ -127,6 +129,7 @@ intensities in fertilization
     <br>
     *source: Sustainable Gardening Australia*
     <br>
+    
     Cuttings are one of the ways to propagate tree seedlings, another is through seeding.
     The later is the common in Sweden’s nursery. This experiment test the effect of fertilization on different clones of poplar cuttings.
 
