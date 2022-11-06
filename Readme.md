@@ -145,10 +145,13 @@ intensities in fertilization
     the effect of spacing density on the diameter and basal of a stand.
 
 -   **[Thinning Experiment on Scots Pine](Thinning_experiment.md)**:
+    <br>
+    
     ![](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5O_EthfXgRFnxQrU2yVt2ESZcXRCQrvmaVg&usqp=CAU)
-
-An experiment to evaluate the effect of three different thinning regimes
-on the total volume produced in a stand.
+    
+    <br>
+    
+    An experiment to evaluate the effect of three different thinning regimes on the total volume produced in a stand.
 
 -   **[Mixed Forest Experiment](mixed_forest.md)**: Volume estimation
     between pure monoculture and a mixed forest of 80:20 of monoculture
