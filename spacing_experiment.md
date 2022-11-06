@@ -22,11 +22,12 @@ tree development.
 <br>
 ![](https://www.orangepippintrees.co.uk/zimages/spacings/vdwarf.gif)
 
-Numerous experiment have been executed to check the effect of spacing on
-the productivity of a stand. Without drawing into conclusion and relying
-on facts from already established truths. I’ll explore the to see the
-effect of spacing on Scotch pine and determine if there are differences
-between the spacing treatments.
+<br> *source: orangepippintrees.co.uk* <br> Numerous experiment have
+been executed to check the effect of spacing on the productivity of a
+stand. Without drawing into conclusion and relying on facts from already
+established truths. I’ll explore the to see the effect of spacing on
+Scotch pine and determine if there are differences between the spacing
+treatments.
 
 This experiment is a long-term experiment to test the effect of four
 different spacing treatments 1m, 1.5m, 2m, and 2.5m across eight plots
@@ -364,10 +365,10 @@ ggplot(data = amd_qmd, aes(x = as.character(plot), y = diameter, fill = measures
 
 ![](spacing_experiment_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
-[Previous page](growth_experiment.md) <br>
+[Growth Measures Test](growth_experiment.md) <br>
 
 [Homepage](Readme.md) <br>
 
-[Next Page](Thinning_experiment.md) <br>
+[Thinning Experiment](Thinning_experiment.md) <br>
 
 [Back to portfolio](https://xrander.github.io)

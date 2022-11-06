@@ -8,20 +8,20 @@ is Nilsson et al., (2010), which is a robust thinning experiment of
 Norway Spruce and Scots Pine. There are various experiments spread
 across the country in Sweden, each treatment with different treatments
 and site conditions. This experiment is one of such. <br>
-![](https://www.researchgate.net/publication/277816997/figure/fig3/AS:669410054385680@1536611202808/Schematic-showing-the-principles-of-thinning-to-reduce-stand-level-hazard.png)
+![](https://www.researchgate.net/profile/Bruce-Blackwell/publication/277816997/figure/fig3/AS:669410054385680@1536611202808/Schematic-showing-the-principles-of-thinning-to-reduce-stand-level-hazard.png)
 
-This is an experiment to determine how thinning grade, intensity and
-thinning form affects stem volume, production and tree dimensions. The
-thinning program is a compromise between several factors but the most
-important are e.g., stem volume production, economy and risk. In this
-experiment established in the 1960s, 1970s and 1980s, the effect of
-various thinning programs on stem volume production and mortality was
-test. The experiment includes in total 46 sites in Scots Pine but to
-make it a little easier, 15 sites have been chosen for this assignment.
-Also, the original experiment includes up to 14 different treatments but
-the data for this analysis include only four main treatments. The
-thinning treatments are A, C, D and I. The overall thinning treatments
-in this assignment were:
+<br> *Image by Bruce A. Blackwell* <br> This is an experiment to
+determine how thinning grade, intensity and thinning form affects stem
+volume, production and tree dimensions. The thinning program is a
+compromise between several factors but the most important are e.g., stem
+volume production, economy and risk. In this experiment established in
+the 1960s, 1970s and 1980s, the effect of various thinning programs on
+stem volume production and mortality was test. The experiment includes
+in total 46 sites in Scots Pine but to make it a little easier, 15 sites
+have been chosen for this assignment. Also, the original experiment
+includes up to 14 different treatments but the data for this analysis
+include only four main treatments. The thinning treatments are A, C, D
+and I. The overall thinning treatments in this assignment were:
 
 -   A. **Normal thinning program**: Three thinnings from below. Average
     basal area after first thinning in these six sites was 16.7 m2 ha-1
@@ -688,31 +688,10 @@ T_dbh <- summary(TukeyC(sb_dbh, which = 'treatment'))
     ## A 0.000 0.018 0.000 2.160
     ## I 0.000 0.000 0.001 0.000
 
-``` r
-plot(summary(TukeyC(sb_dbh, which = 'treatment')))
-```
-
-    ## Goups of means at sig.level = 0.05 
-    ##   Means G1 G2 G3 G4
-    ## C 20.03  a         
-    ## D 18.21     b      
-    ## A 16.65        c   
-    ## I 14.49           d
-    ## 
-    ## Matrix of the difference of means above diagonal and
-    ## respective p-values of the Tukey test below diagonal values
-    ##       C     D     A     I
-    ## C 0.000 1.821 3.378 5.538
-    ## D 0.005 0.000 1.557 3.717
-    ## A 0.000 0.018 0.000 2.160
-    ## I 0.000 0.000 0.001 0.000
-
-![](Thinning_experiment_files/figure-markdown_github/unnamed-chunk-44-1.png)
-
-[Previous page](spacing_experiment.md) <br>
+[Spacing Experiment](spacing_experiment.md) <br>
 
 [Homepage](Readme.md) <br>
 
-[Next Page](mixed_forest.md) <br>
+[Mixed Forest Experiment](mixed_forest.md) <br>
 
 [Back to portfolio](https://xrander.github.io)

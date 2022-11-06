@@ -1,9 +1,12 @@
-# Thinning Experiment of Birch and Scotch Pine - Exp IV
+# Thinning Intensity and Frequency Experiment of Birch and Scotch Pine - Exp IV
 
-Data used in this experiment are from different pre-commercial thinning
-treatments (PCT) which are thereafter simulated in Heureka (Swedish
-support decision system). The stand development was simulated with some
-thinning operations included. Data provided is from every 5 year period.
+<br>
+![](https://i0.wp.com/forestrypedia.com/wp-content/uploads/2018/06/Thinning-1.jpg?fit=700%2C350&ssl=1)
+<br> *source: forestrypedia.com* <br> Data used in this experiment are
+from different pre-commercial thinning treatments (PCT) which are
+thereafter simulated in Heureka (Swedish support decision system). The
+stand development was simulated with some thinning operations included.
+Data provided is from every 5 year period.
 
 **Data Description**
 
@@ -570,10 +573,10 @@ mean_1$st_err <- mean_1$density.sd/sqrt(mean_1$density.length)
 mean_2$str_err <- mean_2$density.sd/sqrt(mean_2$density.length)
 ```
 
-[Previous page](cuttings.md) <br>
+[Poplar Cuttings Experiment](cuttings.md) <br>
 
 [Homepage](Readme.md) <br>
 
-[Next Page](clone.md) <br>
+[Clone Performance Experiment](clone.md) <br>
 
 [Back to portfolio](https://xrander.github.io)

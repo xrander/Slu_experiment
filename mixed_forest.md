@@ -18,6 +18,8 @@ how to keep both species during the full rotation of the stand. <br>
 
 ![](https://www.umu.se/globalassets/qbank/blandskog-3.jpg?width=1280)
 
+<br> *source: umu.se*
+
 <br> **Experimental design** The experiment is organized in three blocks
 and the treatments were randomly assigned to plots of about 0.1 ha each,
 one treatment plot in each block.
@@ -291,10 +293,10 @@ summary(TukeyC(mix_dbh, which = 'treatment'))
     ## NS80  0.094 0.000 0.833
     ## NS50  0.033 0.515 0.000
 
-[Previous page](Thinning_experiment.md) <br>
+[Thinning Experiment](Thinning_experiment.md) <br>
 
 [Homepage](Readme.md) <br>
 
-[Next page](lodgepole.md) <br>
+[Site Preparation Experiment](lodgepole.md) <br>
 
 [Back to portfolio](https://xrander.github.io)

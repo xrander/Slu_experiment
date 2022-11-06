@@ -12,15 +12,12 @@ having fertile and well-drained soil.
 
 ![Hybrid
 poplar](https://www.bowhayestrees.co.uk/media/catalog/product/cache/1/image/1200x1200/9df78eab33525d08d6e5fb8d27136e95/p/o/poplar_cuttings_60cm_planted_4.jpg)
-
-## The Experiment
-
-An experiment was carried out to test the effect of fertilizer on the
-growth of three poplar clone cuttings separated into different blocks.
+<br> *source: bowhayestress.co.uk* <br> \## The Experiment An experiment
+was carried out to test the effect of fertilizer on the growth of three
+poplar clone cuttings separated into different blocks.
 
 ![](https://www.lignoplant.com/uploads/pics/Lignoplant_Pappelruten_Max.png)
-
-## Question:
+<br> *source: lignoplant.com* <br> \## Question:
 
     -   check if there's an effect of the clones and fertilization treatment on the diameter and height of the seedlings
 
@@ -1144,10 +1141,10 @@ points(spruce2$height, spruce2$dbh)
 
 ![](cuttings_files/figure-markdown_github/unnamed-chunk-43-1.png)
 
-[Previous Page](fertilizer.md) <br>
+[Fertilization Experiment](fertilizer.md) <br>
 
 [Homepage](Readme.md) <br>
 
-[Next Page](pct.md) <br>
+[Thinning Intensity and Frequency Experiment](pct.md) <br>
 
 [Back to Portfolio](https://xrander.github.io)

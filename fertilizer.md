@@ -1,15 +1,16 @@
 # Fertilizer Regime Experiment - Exp VI
 
 ![](https://www.vmcdn.ca/f/files/piquenewsmagazine/import/2020-02_news_seatosky2-46e8bfa3e301c696.jpg)
-Fertilization of plantations in Sweden is region specific. In the
-Northern part of Sweden the use of fertilizer is common, while in the
-Southern region its use is prohibited. The Southern part is having rich
-soil and have no need to fertilize the soil. Swedish forest
-fertilization mainly involves the application of Nitrogen which is
-normally the limiting nutrient for high stand growth. Different
-fertilization experiments have been set to either see the effect of
-different fertilizers on stand development or see the effect of
-fertilization application frequency on the stand development.
+<br> *source: Pique Newsmagazine* <br> Fertilization of plantations in
+Sweden is region specific. In the Northern part of Sweden the use of
+fertilizer is common, while in the Southern region its use is
+prohibited. The Southern part is having rich soil and have no need to
+fertilize the soil. Swedish forest fertilization mainly involves the
+application of Nitrogen which is normally the limiting nutrient for high
+stand growth. Different fertilization experiments have been set to
+either see the effect of different fertilizers on stand development or
+see the effect of fertilization application frequency on the stand
+development.
 
 This experiment is set to see the effect of fertilization frequency on
 the growth of a stand. The experiment is a young Norway Spruce stands
@@ -662,6 +663,6 @@ lm(volume~treatment, data = poptr)
 
 [Back to homepage](Readme.md) <br>
 
-[Next Page](cuttings.md) <br>
+[Poplar Cuttings Experiment](cuttings.md) <br>
 
 [Back to Portfolio](https://xrander.github.io)

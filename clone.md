@@ -2,6 +2,8 @@
 
 ![](https://ichef.bbci.co.uk/news/304/mcs/media/images/48772000/jpg/_48772031_aspen.jpg)
 
+<br> *source: BBC* <br>
+
 The first experiment will be a clone performance experiment. The data
 used is the ‘popdata’ which is accessible
 [here](https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/popdata.txt).
@@ -158,10 +160,10 @@ legend('topright',
 It is evident that the fertilized are performing than the control, with
 the B clone class being the highest performing either fertilized or not.
 
-[Previous page](pct.md) <br>
+[Thinning Intensity and Frequency Experiment](pct.md) <br>
 
 [Homepage](Readme.md) <br>
 
-[Next Page](growth_experiment.md) <br>
+[Growth Measure Test](growth_experiment.md) <br>
 
 [Back to portfolio](https://xrander.github.io)

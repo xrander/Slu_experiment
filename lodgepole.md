@@ -1,4 +1,4 @@
-# LodgePole Pine - Experiment (VII) (2)
+# Site Preparation Experiment on LodgePole Pine - Experiment (VII) (2)
 
 This experiment is a soil scarification experiment with Lodegepole Pine
 in Västerbotten, Sweden. The treatments were either planting after soil
@@ -286,10 +286,8 @@ has no significant difference in stem density indicating that the
 primary reason to the good response of the deep plowing has brrn on
 growth more than on survival.
 
-[Previous page](pct.md) <br>
+<br> [Mixed Forest Experiment](mixed_forest.md) <br>
 
 [Homepage](Readme.md) <br>
-
-[Next Page](growth_experiment.md) <br>
 
 [Back to portfolio](https://xrander.github.io)
