@@ -119,12 +119,16 @@ intensities in fertilization
     -  C:   Control without Fertilzation.
 
 -   **[Cuttings Experiment](cuttings.md)**:
-<br>
+
+     <br>
+    
     ![](https://www.sgaonline.org.au/images/pics/hardwoodcuttings.jpg)
-    <br> *source: Sustainable Gardening Australia* <br> Cuttings are one
-    of the ways to propagate tree seedlings, another is through seeding.
-    The later is the common in Sweden’s nursery. This experiment test
-    the effect of fertilization on different clones of poplar cuttings.
+    
+    <br>
+    *source: Sustainable Gardening Australia*
+    <br>
+    Cuttings are one of the ways to propagate tree seedlings, another is through seeding.
+    The later is the common in Sweden’s nursery. This experiment test the effect of fertilization on different clones of poplar cuttings.
 
 -   **[Thinning Frequency and Intensity Experiment](pct.md)**: Basic
     data exploration and data visualization on a stand after being
