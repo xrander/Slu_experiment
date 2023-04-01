@@ -1,0 +1,266 @@
+---
+title: "Growth Measures - Exp III"
+author: "Olamide Adu"
+date: "2023-03-25"
+output:
+   prettydoc::html_pretty:
+    theme: Cayman
+    toc: true
+    toc_float: false
+    highlight: github
+    code_theme: zenburn
+    keep_md: true
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+Forestry is a long time business that requires patience and careful
+management. For forest landowners, the tree in the forest is the return
+in investment, and as businessmen, it is important to track how our
+investments are performing. Growth measurements are important to telling
+us how our investments are performing as well as gives insight into how
+our forest should be managed. Growth measures also gives us information
+on the optimal time to harvest, as it also shows how the forest performs
+after tending operation.
+
+
+There are various characteristics of a stand that can affect the growth
+of the stand. Those characteristics include:
+
+
+```         
+-   species composition
+
+-   age
+
+-   site quality
+
+-   stand density or stocking
+
+-   competition
+
+-   silvicultural treatment
+
+-   climatic conditions
+```
+
+## Increment
+
+Increment is the increase in growth, diameter, basal area, height, volume, quality or value of individual tree crops during a given period. There are some terminologies and measures associated with tree increment.
+
+-   Yield: this is the usable wood fiber per unit area at a particular age
+
+-   Annual increment
+
+$$G_a = Y_a− Y_{a-1}$$
+
+-   Periodic Annual Increment: This measures the average productivity of the stand over certain period. Can sometimes be referred to CAI if it's between increment between current year and previous year.
+
+$$PAI{a1,a2} = (Y_{a2} - Y_{a1})/a2 − a1$$
+
+-   Mean Annual Increment: This measures the average productivity of the stand over its lifetime. 
+$$MAI_a= Y_a/a$$
+```
+G = growth
+Y = Volume for year a
+a = year (2 is current and 1 is previous)
+```
+## Questions
+
+We'll try to:
+       
+-   evaluate the volume growth for individual trees
+
+-   estimate the periodic annual increment (PAI),
+
+-   estimate the annual or yearly increment and
+
+-   estimate the plot and treatment volume growth"
+
+
+To do this we use the [tvol1012 data]('https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/Lab3/tvol1012.txt') which consists of a revised data from 2 separate years, year 1980 and 1987 will be imported.
+
+``` {r}
+library(doBy)
+library(dplyr)
+library(lattice)
+library(ggplot2)
+library(car)
+library(data.table)
+library(TukeyC)
+library('plotly')
+```
+
+## Reading the data*
+
+``` {r}
+tvol1012 <- read.table('https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/Lab3/tvol1012.txt', header = T, sep = '\t', na.strings = 'NA', dec = '.', strip.white = T)
+
+head(tvol1012)
+```
+
+**Importing Site Information Data**
+
+``` {r}
+site1012 <- read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab3/site1012export.txt',
+                       header = T,
+                       na.strings = 'NA',
+                       strip.white = T,
+                       dec = '.',
+                       sep = '\t')
+head(site1012)
+```
+
+### Estimating the PAI**
+
+``` {r}
+tvol1012$pai <- (tvol1012$voldm3.1987 - tvol1012$voldm3.1980)/7  # we divide by 7 because that's the difference between 1987 and 1980
+
+#we can estimate the annual increment
+tvol1012$ai <- tvol1012$pai/7 #since this is 7 years interval and don't have the value for the immediate previous year, we estimate the average annual increment within that period.
+head(tvol1012)
+```
+
+Next we sum pai, mean volume for 1980 and 1987 for each plots and merge it with the site information data (site1012)
+
+``` {r}
+plotvol <- summaryBy(voldm3.1980 +
+            voldm3.1987 +
+            pai~plot,
+          data = tvol1012, FUN = sum)
+a_incrment <- summaryBy(ai~plot, data = tvol1012, FUN = sum)
+```
+
+Merging data with the data table 'site1012' from RLab2
+
+``` {r}
+site1012 <- merge(site1012, plotvol, all = T)
+site1012 <- merge(site1012, a_incrment, all = T)
+```
+
+Evaluating the per hectare values
+
+``` {r}
+site1012$volm80ha <- site1012$voldm3.1980.sum/(site1012$areaha *1000)
+
+site1012$volm87ha <- site1012$voldm3.1987.sum/(site1012$areaha*1000)
+ 
+site1012$paiha <- round(site1012$pai.sum/(site1012$areaha*1000), 2)
+
+site1012$ai <- round(site1012$ai.sum/(site1012$areaha*1000), 2)
+
+head(site1012)
+```
+
+
+````{r}
+paiviz <- ggplot(site1012, aes(as.factor(plot), paiha, fill = as.factor(treatment))) +
+  geom_bar(stat = 'identity')+
+  labs(title = 'Periodic Annual Increment',
+       x = 'plots',
+       y ='m3/ ha /yr ',
+       fill = 'Spacing treatments') +
+  theme(plot.title = element_text(face = 'bold'),
+        axis.title.x = element_text(face = 'bold'),
+        axis.title.y = element_text(face = 'bold'))
+
+ggplotly(paiviz)
+  
+````
+
+The plot shows the PAI of each plots for the different spacing treatment while showing the annual increment of each plots.
+
+````{r}
+dens <- ggplot(site1012, aes(as.factor(plot), densha, fill = as.factor(treatment)))+
+  geom_bar(stat = 'identity')+
+  labs(title = 'Density Per Hectare',
+       x = 'plots',
+       y = 'stand density',
+       fill = 'Space treatment') +
+  theme(plot.title = element_text(face = 'bold'),
+        axis.title.x = element_text(face = 'bold'),
+        axis.title.y = element_text(face = 'bold'))
+
+ggplotly(dens)
+````
+
+
+### Percentage of Thinnings Removed
+
+We can estimate the percentage of stand removed from thinning operation
+
+``` {r}
+##first we estimate the density after thinning which is provided in site1012
+density <- summaryBy(densha~treatment,
+          data = site1012,
+          FUN = mean)
+ 
+## dens_ha.mean is the density after thinning, so we rename to 'after_thinning'
+names(density)[2] <- 'after_thinning'
+
+##now we estimate the density before thinning
+density$before_thinning <- 10000/(density$treatment^2)
+
+##percentage change in the stand can be estimated now.
+## percentage change = (old - new)/old *100
+density$percent_removed <- (density$before_thinning-
+                              density$after_thinning)/density$before_thinning * 100
+head(density)
+```
+
+
+### Effect of treatment on stem density, quadratic mean diameter,and Periodic Annual Increment (PAI)
+
+#### Stem density and treatment(spacing) design effect
+
+``` {r}
+barplot(tapply(site1012$densha,
+               site1012$treatment,
+               FUN = mean),
+        xlab = substitute(paste(bold('treatment(spacing)'))),
+        ylab = substitute(paste(bold(('stem density')))),
+        main = 'Treatment Effect on Stem Density',
+        col = c(5:9))
+```
+
+The space is having an effect on the diameter, the smaller the spacing,
+the greater the stem/stand density
+
+#### Treatment(spacing) effect on QMD
+
+``` {r}
+barplot(tapply (site1012$qmd,
+                site1012$treatment,
+                FUN = mean),
+        xlab = substitute(paste(bold('treatment(spacing)'))),
+        ylim = c(0, 20),
+        ylab = substitute(paste(bold('mean diameter(qmd)'))),
+        main = 'treatment effect on QMD',
+        col = c(10:13))
+```
+
+QMD increases with spacing effect according to the bar plot, the effect
+might diminish if spacing increases
+
+#### Treatment(spacing) effect on Periodic annual increment(PAI)
+
+``` {r}
+barplot(tapply(site1012$paiha,
+               site1012$treatment,
+               FUN = mean),
+        xlab = substitute(paste(bold("Initial Spacing Treatment"))),
+        ylab = substitute(paste(bold("PAI, m3/ha & year"))),
+        col = c(2,13,15,20),
+        ylim = c(0, 20),
+        main = "Effect of Spacing on PAI")
+```
+
+
+[Clone Performance Test](clone.html) <br>
+
+[Homepage](index.html) <br>
+
+[Specing Experiment](spacing_experiment.html) <br>
+
+[Back to portfolio](http://olamideadu.com)

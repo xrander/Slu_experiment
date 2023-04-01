@@ -1,0 +1,205 @@
+---
+title: "Site Preparation Effect Experiment on Lodgepole Pine - Experiment VII (2)"
+author: "Olamide Adu"
+date: "2023-03-25"
+output:
+   prettydoc::html_pretty:
+    theme: Cayman
+    toc: true
+    toc_float: false
+    highlight: github
+    code_theme: zenburn
+    keep_md: true
+---
+
+# Site Preparation Experiment on LodgePole Pine - Experiment (VII) (2)
+
+This experiment is a soil scarification experiment with Lodegepole Pine in Västerbotten, Sweden. The treatments were either planting after soil scarification using deep plowing (deep), or planting without any site preparation (control). The size of the treatment plots were 30*30 m and
+the experiment was replicated in 4 blocks. The plantation was made in 1988 and the experiment was remeasured after several years, to 2012, when all trees in the treatment plots were cross calipered at dbh (mm).
+
+## Questions
+
+For this data, I’ll be exploring the data and then calculating the basal_area/ha and stem_density/ha for every block and treatment. I seek to answer the following:
+
+-   What effect have a radical soil scarification method such as deep
+    plowing on:
+
+    -   survival and
+
+    -   growth of lodgepole pine on the site
+
+In other words: Is there a significant effect of treatment if we test
+for:
+
+-   stem density and
+
+-   basal area.
+
+``` {r}
+# loading libraries
+
+library(doBy)
+library(dplyr)
+library(lattice)
+library(ggplot2)
+library(car)
+library(data.table)
+library(TukeyC)
+```
+
+**Importing the data**
+
+``` {r}
+L_pine <- read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab%207/deepcult_lodgepolepine.txt',
+           header = T,
+           sep = '\t',
+           na.strings = 'NA',
+           dec = '.',
+           strip.white = T)
+head(L_pine)
+```
+
+
+**Little Data Exploration**
+
+``` {r}
+str(L_pine)
+```
+
+I will change the data types of ‘plot’, ‘block’, and ‘treatment’ into factor data type
+
+``` {r}
+plot(L_pine$dbh1, L_pine$dbh2,
+     col = 'purple',
+     xlab = 'dbh1',
+     ylab = 'dbh2',
+     main = 'DBH vs DBH')
+```
+
+
+``` {r}
+L_pine$plot <- as.factor(L_pine$plot)
+L_pine$block <- as.factor(L_pine$block)
+L_pine$treatment <- as.factor(L_pine$treatment)
+```
+
+### Survival
+
+``` {r}
+with(L_pine, table(treatment, dead))
+```
+
+
+**subsetting only living trees**
+
+``` {r}
+L_pine$dead <- ifelse(is.na(L_pine$dead) == TRUE,0 , L_pine$dead)
+```
+
+``` {r}
+L_pine1 <- subset(L_pine, dead== 0) # this returns values for only living trees, 1 means dead and 0 means alive
+```
+
+``` {r}
+summary(L_pine1)
+```
+
+
+``` {r}
+bwplot(dbh1~plot | treatment, data = L_pine1,
+       main = 'Dbh across plots for Treatments',
+       ylab = 'dbh(cm)',
+       xlab = 'plots')
+```
+
+
+**getting the mean dbh**
+
+``` {r}
+L_pine1$dbh <- (L_pine1$dbh1 + L_pine1$dbh2)/2000
+```
+
+**Evaluating basal area**
+
+``` {r}
+L_pine1$ba <- (L_pine1$dbh/2)^2 * pi
+```
+
+``` {r}
+summary(L_pine1)
+```
+
+**Basal area of only living trees**
+
+``` {r}
+L_pineba <- summaryBy (ba + dbh ~plot+block+treatment,
+data = L_pine1,
+na.rm = T,
+keep.names = T,
+FUN = sum)
+
+head(L_pineba)
+```
+
+**Estimating basal area per hectare**
+
+``` {r}
+L_pineba$baha <- L_pineba$ba * 10000/(30*30)
+```
+
+**Visualizing basal area per hectare**
+
+``` {r}
+barchart(baha~block,
+         group = treatment,
+         data = L_pineba,
+         ylab = 'basal area per hectare (m3 ha-1)',
+         xlab = 'plots',
+         ylim = c(0, 30),
+         main = 'Basal area per hectare across plots',
+         auto.key = list(corners = c(0.05, 0.95)))
+```
+
+
+### Stem Density
+
+``` {r}
+L_pinedens <- summaryBy(ba~plot+block+treatment,
+                        data = L_pine1, FUN = length)
+L_pinedens$dens_ha <- L_pinedens$ba.length * 10000 / (30*30) 
+```
+
+``` {r}
+barchart(dens_ha~block,
+         group = treatment,
+         data = L_pinedens,
+         ylab = 'Density per Hectare',
+         xlab = 'plots',
+         ylim = c(0, 3000),
+         main = 'Density of Stand',
+         auto.key = list(corner = c(0.1, 0.95)))
+```
+
+
+## Analysis of Variance
+
+``` {r}
+M_ba <- lm(baha~block+treatment,
+   data = L_pineba)
+Anova(M_ba)
+```
+
+
+``` {r}
+M_dens <- lm(dens_ha~block+treatment,
+   data = L_pinedens)
+Anova(M_dens)
+```
+
+Basal area was significantly higher in the deep plowing treatment but has no significant difference in stem density indicating that the primary reason to the good response of the deep plowing has been on growth more than on survival
+
+<br> [Mixed Forest Experiment](mixed_forest.html)
+<br>
+[Homepage](index.html) <br>
+
+[Back to portfolio](https://olamideadu.com)

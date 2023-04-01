@@ -1,0 +1,191 @@
+---
+title: "Mixed Forest Experiment - Experiment IX"
+author: "Olamide Adu"
+date: "2023-03-25"
+output:
+   prettydoc::html_pretty:
+    theme: Cayman
+    toc: true
+    toc_float: false
+    highlight: github
+    code_theme: zenburn
+    keep_md: true
+---
+
+# Mixed Forest Experiment
+
+Experiment site 8556 is a mixed forest part of the large scale forest experiments in Sweden. For this analysis we seek to know if there are significant differences in net and gross production between the monoculture and mixtures? Does the Norway spruce trees in the treatments differ in mean diameter? This is one of the common questions in Southern Sweden. Many forests in southern Sweden is managed as mixtures of Norway spruce and birch. This is a 38- year old stand where an experiment has been established in the precommercial thinning stage. The purpose of the experiment has been, and is, to evaluate this different forest types over time, where one of the species (birch) is fast growing in the establishment phase and the other tree species (Norway spruce) is expected to catch up in growth in the more mature phase. One of the questions for forest owners that want to use the mixture of Norway spruce and birch is how to manage the difference in growth rhythm and how to keep both species during the full rotation of the stand. <br> 
+![](https://www.umu.se/globalassets/qbank/blandskog-3.jpg?width=1280)
+
+<br> *source: umu.se*
+
+<br> **Experimental design** The experiment is organized in three blocks and the treatments were randomly assigned to plots of about 0.1 ha each, one treatment plot in each block.
+
+-   Monoculture: 100 % Norway spruce (NS)
+
+-   Admixture: 80 % Norway spruce and 20 % birch (NS80)
+
+-   Mixed: 50 % Norway spruce and 50 % birch (NS50)
+
+The experiment has been revised 5 times (including thinning 3 times) after the beginning of the experiment. In every thinning the mixture percentage in basal area, has been retained. In the data-set that I will be working with, I have a sample plot data at the time of second revision, which is the first remeasurement after the first thinning. The initial age at revision 1 and treatments, varies for the sites (between 32 and 48 years) and so do the time between revision 1 and 2 (7-15 years).
+
+``` {r}
+#loading libraries
+library(doBy)
+library(dplyr)
+library(lattice)
+library(ggplot2)
+library(car)
+library(data.table)
+library(TukeyC)
+```
+
+**Importing the data**
+
+``` {r}
+mix <- read.table('https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Last%20straw/TaskE_mix.txt',
+           header = T,sep = '\t',
+           na.strings = 'NA',
+           strip.white = T,
+           dec = '.')
+mix
+```
+**Data Description** The data-set includes data from revision 2:
+
+-   Block: block
+
+-   Plotno: plot number
+
+-   Treatment: treatment code (same as listed above)
+
+-   Standingvol: standing volume per hectare (m3 ha-1)
+
+-   Harvestvol: harvested volume in thinnings and measured dead volume (m3 ha-1)
+
+-   Paiha: Measured periodic annual increment at latest revision (m3 ha-1 year-1)
+
+-   Dbh: Mean dbh of Norway spruce at latest revision, age 38 (cm)
+
+**Questions** - What is total volume production at the last revision?
+
+-   Can you find any statistical differences between the selected treatments at this time, in terms of total volume production, PAI, dbh?
+
+-   Show with some figures that you understand the data and your
+    results.The data-set includes data from revision 2:
+
+**A Little Exploration**
+
+``` {r}
+str(mix)
+```
+
+
+
+``` {r}
+summary(mix)
+```
+
+
+Changing the data type of plot no, block and treatment
+
+``` {r}
+mix$plotno <- as.factor(mix$plotno)
+mix$block <- as.factor(mix$block)
+mix$treatment <- as.factor(mix$treatment)
+```
+
+## Total Volume Produced
+
+``` {r}
+mix$total_vol <- mix$standingvol + mix$harvestvol + mix$dbh
+```
+
+**VOlume Produced according to the treatments**
+
+``` {r}
+Total_vol_mix <- summaryBy(total_vol~treatment, data = mix, FUN = sum)
+Total_vol_mix
+```
+
+
+**Visualizing the result**
+
+``` {r}
+mixb <- barplot(total_vol.sum~treatment,
+         data = Total_vol_mix,
+         ylab = substitute(paste(bold('Total Volume (m3)'))),
+         col = c(3:5),
+         xlab = substitute(paste(bold('Treatments'))),
+         main = 'Total Volume produced by each treatments',
+         ylim = c(0, 1600))
+text (x = mixb, y = Total_vol_mix$total_vol.sum, label = Total_vol_mix$total_vol.sum, pos = 3, cex = 0.45)
+```
+
+
+``` {r}
+barchart(total_vol~treatment | block,
+         data = mix,
+         ylab = substitute(paste(bold('Total Volume (m3)'))),
+         group = block,
+         xlab = substitute(paste(bold('Treatments'))),
+         main = 'Total Volume produced by each treatments at the different Blocks',
+         box.ratio = 2,)
+```
+
+
+``` {r}
+#Experiment design
+ftable(mix$block, mix$treatment)
+```
+
+
+## Analysis of Variance
+
+``` {r}
+## pai
+mix_paiha <- lm(paiha ~ block+treatment , data = mix)
+
+##tot_vol
+mix_tvol <- lm(total_vol ~ block+treatment , data = mix)
+
+##dbh
+mix_dbh <- lm(dbh~block+treatment, data = mix)
+```
+
+``` {r}
+## tot_vol
+anova(mix_tvol)
+```
+
+    
+``` {r}
+##dbh
+anova(mix_dbh)
+```
+
+
+``` {r}
+##pai
+anova(mix_paiha)
+```
+
+
+### Post Hoc Test
+
+``` {r}
+summary(TukeyC(mix_paiha, which = 'treatment'))
+```
+
+
+``` {r}
+summary(TukeyC(mix_dbh, which = 'treatment'))
+```
+
+
+[Thinning Experiment](Thinning_experiment.html) <br>
+
+[Homepage](Readme.html) <br>
+
+[Site Preparation Experiment](lodgepole.html) <br>
+
+[Back to portfolio](https://olamideadu.com)
