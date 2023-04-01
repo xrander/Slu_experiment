@@ -1,0 +1,524 @@
+---
+title: "Poplar Cutting Experiment - Experiment V"
+author: "Olamide Adu"
+date: "2023-03-25"
+output:
+   prettydoc::html_pretty:
+    theme: Cayman
+    toc: true
+    toc_float: false
+    highlight: github
+    code_theme: zenburn
+    keep_md: true
+---
+
+
+# Poplar Cutting Experiment - Exp V
+
+Some tree species have the abilities to be propagated asexually. Some fruit trees like apples and pears can be grown from cuttings, as other some hardwood tree species such as maples, poplar and willow can be grown from cuttings. 
+Poplar trees produce their rooting hormones, and can their ability to sprout roots from twigs can be tested by placing them in a water. In Sweden it is advised to establish poplar on old agricultural lands having fertile and well-drained soil.
+
+<img src = 'https://www.bowhayestrees.co.uk/media/catalog/product/cache/1/image/1200x1200/9df78eab33525d08d6e5fb8d27136e95/p/o/poplar_cuttings_60cm_planted_4.jpg' height = '200' width = '300'>
+
+<br> *source: bowhayestress.co.uk* <br> 
+
+## The Experiment
+An experiment was carried out to test the effect of fertilizer on the growth of three poplar clone cuttings separated into different blocks.
+
+<img src = 'https://www.lignoplant.com/uploads/pics/Lignoplant_Pappelruten_Max.png'>
+<br>
+*source: lignoplant.com* <br> 
+
+## Questions
+
+-   check if there's an effect of the clones and fertilization treatment on the diameter and height of the seedlings
+
+-   Investigate if the volume of 12 weeks seedlings is related to the initial cutting weight (poplar data).
+
+-   Make a regression of height and dbh,then determine if dbh can be used to predict height if height data is missing (spruce data).
+
+
+``` {r}
+library(doBy)
+library(dplyr)
+library(lattice)
+library(ggplot2)
+library(car)
+library(data.table)
+library(TukeyC)
+library(plotly)
+```
+
+**Importing data**
+
+``` {r}
+# Importing data
+pop2 <- read.table("https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab%205/pop2.txt",
+                   header = T,
+                   sep = '\t',
+                   dec = '.',
+                   na.strings = 'NA',
+                   strip.white = T)
+
+poplar <- read.table("https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab%205/poplar.txt",
+                     header = T,
+                     sep = '\t',
+                     dec = '.',
+                     na.strings = 'NA',
+                     strip.white = T)
+
+spruce2 <- read.table("https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab%205/spruce.txt",
+                      header = T,
+                      sep = '\t',
+                      dec = '.',
+                      na.strings = 'NA',
+                      strip.white = T)
+```
+
+**Data description**
+
+***pop2 and poplar***
+
+-   block:1-5
+
+-   cutw:cuttings width (g)
+
+-   height:aboveground height (mm)
+
+-   dia:root collar diameter (mm)
+
+-   clone: A,B,C
+
+-   fert: 1=fertilized, 3= control
+
+***Spruce***
+
+The data is just a short list of sampled saplings of Norway spruce with dbh (mm) and height (dm). The data is taken from a short interval of heights and the relation between height and diameter is still linear (compared to the range that you usually have in a stand). That is why, we are interested in testing whether we could use a linear model to fit
+a regression line of the relationship of height and dbh. 
+
+** Data exploration**
+
+``` {r}
+str(pop2)
+```
+
+`block` , `clone` and `fert` columns are factor data type but it is currently an integers and  character data type, thus, they have to be coerced to factor data type.
+
+``` {r}
+pop2$block <- as.factor(pop2$block)
+pop2$fert <- as.factor(pop2$fert)
+pop2$clone <- as.factor(pop2$clone)
+```
+
+``` {r}
+summary(pop2)
+```
+
+    
+``` {r}
+plot (pop2$dia, pop2$height,
+      xlab = 'diameter(mm)',
+      ylab = 'height (mm)',
+      main = 'Height vs Diameter',
+      col = pop2$fert)
+```
+
+After exploration, an exaggerated or wrong diameter value was found that is way far from the mean.Also, a missing value was found in the height variable when under the basic statistics summary. This is a common occurrence during data collection and recording.
+
+#### Dealing with Missing Data
+
+``` {r}
+pop2[is.na(pop2$height), ]
+```
+
+    
+``` {r}
+## This shows we have one Na Value and it is in row 109
+
+pop2[complete.cases(pop2), ] ## this shows all rows without missing values
+```
+
+``` {r}
+pop2[complete.cases(pop2$height), ]## Another way to right the code above, but focusing more on the height's column.
+```
+
+   
+The value for the missing data was found on the sheets where data
+collected were written. We can simply replace the missing data using the
+chunk below.
+
+``` {r}
+pop2[is.na(pop2$height), 3] <- 331
+```
+
+Now we run the summary again to see if there’s a missing data
+
+``` {r}
+pop2[is.na(pop2), ]
+```
+
+``` {r}
+pop2$fert_name<- ifelse(pop2$fert == 1, 'fertilized', 'control')
+```
+
+The result returns no values, this implies that we’ve fixed the missing data.
+
+#### Dealing with Outliers
+
+Outliers are observations that is distant from other observations. This observations have values that are significantly different from other observation values. With outliers we need to careful as they are not
+errors sometimes.
+
+**Identifying the outlier**
+
+``` {r}
+summary(pop2)
+```
+
+
+We check the mean, quantiles, min, and max value to get an idea of the range of the data within a normal distribution. The min and max are the main values of interest. There is a common rule that says that a data point is an outlier if it is more than 1.5 IQR(Interquartile Range) above the third quartile or below the first quartile. This implies that low outliers are below the ‘1st quarter - (1.5 multipied by IQR)’ and the high outliers are above ‘3rd quarter + (1.5 * IQR)’. Remember IQR is the difference between the 1st and 3rd quarter. We can also draw boxplot or histogram to see the distribution and identify where the outlier is.
+
+**Using a histogram**
+
+``` {r}
+diahist<- ggplot(pop2, aes(dia)) +
+  geom_histogram(binwidth = 0.45,
+                 show.legend = F)+
+  labs(title = 'Histogram of diameter',
+       xlab = 'diameter')
+ggplotly(diahist)
+```
+
+**Using a boxplot**
+
+``` {r}
+bwplot(dia~block, data = pop2,
+       xlab = 'block',
+       ylab = 'diameter (cm)',
+       main = 'Diameter distribution across Blocks') #bwplot is the lattice package boxplot function
+```
+
+another approach is to look for the data above or below the outlier common rule that uses IQR.
+
+``` {r}
+pop2[(pop2$dia> 5),]
+```
+
+
+row 98 is having the data with an outlier with a value of 39. On checking the original data written from the field, the result was 3.9
+
+``` {r}
+## changing data
+pop2$dia <- ifelse(pop2$dia > 38, 3.9, pop2$dia)
+```
+
+**Experimental Design**
+To check the experimental design we use the ftable funtion
+
+``` {r}
+ftable(pop2$block, pop2$fert, pop2$clone)
+```
+
+**Height performance**
+
+``` {r}
+bwplot(height~clone|fert_name,
+       data = pop2,
+       ylab = 'Height(mm)',
+       xlab = 'Clone')
+```
+
+**Diameter performance**
+
+```{r}
+diapor <- ggplot(pop2, aes(clone, dia, col = fert_name))+
+  geom_boxplot()+
+  labs(x = 'clone',
+       y = 'diameter')+
+  facet_wrap(~fert_name)+
+  labs(title = 'Diameter performance')
+ggplotly(diapor)
+```
+
+
+### Analysis of Variance for Height
+
+Test of difference with post-hoc to see the effect of the clones and fertilizer on height
+
+#### **Clone**
+
+``` {r}
+pophd <- lm(height ~ block + clone, data = pop2)
+```
+
+**anova**
+
+``` {r}
+anova (pophd)
+```
+
+Result of anova shows that the clone variants is having no effect on the height growth of the seedlings propagated through cuttings. Thus, there is no need for a post-hoc test, as the clone effects are more or less the same.
+
+#### **Fertilizer**
+
+``` {r}
+pophdf <- lm(height~fert_name+block, data = pop2)
+```
+
+**anova**
+
+``` {r}
+anova(pophdf)
+```
+
+
+Result of anova shows that there’s a significant effect of fertilizer on the height growth of poplar cuttings. However, we don’t have to perform a post-hoc test because there’s just one degree of freedom for fert. If the test is to be conducted anyways the control is lower.
+
+``` {r}
+summary(TukeyC(pophdf, where = fert_name))
+```
+
+    
+#### **Clone and Fertilizer Interaction**
+
+``` {r}
+pop_cf <- lm(height ~clone*fert+block, data = pop2)
+```
+
+**anova**
+
+``` {r}
+anova(pop_cf)
+```
+Result of anova shows that fertilizer has a large of effect on the height of poplar cuttings seedlings, as clone is having little effect on the height performance of the cuttings seedlings.
+
+**post-hoc**
+
+``` {r}
+summary(TukeyC(pop_cf))
+```
+
+The post-hoc shows the clear difference on the clone performance, with clone B producing having greater effect when fertilizer is added.
+
+### Analysis of Variance for Diameter
+Test of difference with post-hoc to see the effect of the clones and fertilizer on diameter 
+
+#### **Clone**
+
+``` {r}
+popd <- lm(dia ~ block + clone, data = pop2)
+```
+
+**anova**
+
+``` {r}
+anova (popd)
+```
+
+Result of anova shows that the clone variants is having no effect on the diameter development of the seedlings propagated through cuttings. Thus, there is no need for a post-hoc test, as the clone effects are more or less the same.
+
+#### **Fertilizer**
+
+``` {r}
+popdf <- lm(dia~fert_name+block, data = pop2)
+```
+
+**anova**
+
+``` {r}
+anova(popdf)
+```
+
+Result of anova shows that there’s a significant effect of fertilizer on the development of diameter of poplar cuttings. However, we don’t have to perform a post-hoc test because there’s just one degree of freedom for fert. If the test is to be conducted anyways the control is lower.
+
+``` {r}
+summary(TukeyC(popdf, where = fert_name))
+```
+
+#### **Clone and Fertilizer Interaction**
+
+``` {r}
+pop_dcf <- lm(dia ~fert_name*clone+block, data = pop2)
+```
+
+``` {r}
+pop_dcf2 <- lm(dia ~clone+fert_name+block, data = pop2)
+```
+
+**anova**
+
+``` {r}
+anova(pop_dcf)
+```
+Result of anova shows that fertilizer has a large of effect on the diameter development of the poplar cuttings seedlings, as other factors or interaction of factors have no effect.
+
+``` {r}
+anova(pop_dcf2)
+```
+
+**post-hoc**
+
+``` {r}
+summary(TukeyC(pop_dcf, where = fert_name))
+```
+
+The post-hoc shows the clear difference on the clone performance, with clone B producing having greater effect when fertilizer is added.
+
+``` {r}
+summary(TukeyC(pop_dcf2, where = clone))
+```
+
+No difference in the effect of the clones.
+
+# Poplar
+
+## Linear Model for Poplar
+
+``` {r}
+plot(poplar$cutw, poplar$vol)
+```
+
+
+``` {r}
+# Linear model
+lmpop <-lm(vol~cutw, data = poplar)
+
+anova (lmpop)
+```
+
+**checking the distribution of the data.**
+
+``` {r}
+hist(lmpop$residuals)
+```
+
+Checking for homoscedactisity, i.e, the assumption for similar variance for a group being compared.
+
+``` {r}
+plot(lmpop$fitted.values, lmpop$residuals,
+     xlab = 'Fitted Values',
+     ylab = 'Residuals')
+abline(c(0,0), col = 2)
+```
+
+
+Making a **qqplot** (quantile-quantile plot) to check for normal
+distribution
+
+``` {r}
+qqnorm(lmpop$residuals)
+qqline(lmpop$residuals, col = 'red')
+```
+
+Now we can use the predicted values of the linear model as a function to estimate a value when we have the cutting weight available. Let’s use the function which we have To get the value for the function, we extract the intercept and slope.
+
+``` {r}
+##intercept
+intcpt <- coef(lmpop)[1]
+
+## slope
+slp <- coef(lmpop)[2]
+```
+
+##### Creating a simulated value for cutting weights
+
+``` {r}
+simul.cutw <- c(0.1, 2, 4,5,6, 9, 10, 14, 16)
+
+### Applying the model
+simul.vol <- intcpt + (slp * simul.cutw)
+
+###
+simul <- data.frame(simul.cutw, simul.vol)
+```
+
+**Plotting the data the relationship**
+
+``` {r}
+plot(simul$simul.cutw, simul$simul.vol,
+     pch = 16,
+     col = 'red',
+     xlab = 'cutting width',
+     ylab = 'volume',
+     main = 'Cutting width vs volume relationship in Poplar')
+lines(simul$simul.cutw, simul$simul.vol,
+      lwd = 1.1,
+      col = 'blue')
+points(poplar$cutw, poplar$vol,
+       pch = 2,
+       cex = 0.6,
+       col = 'black')
+```
+
+## Spruce Stand Linear Model
+
+**Data exploration**
+
+``` {r}
+summary(spruce2)
+```
+
+
+``` {r}
+## quick visualization
+plot(spruce2$height, spruce2$dbh)
+```
+
+Fitting linear model
+
+``` {r}
+lmspruce <- lm(spruce2$height~spruce2$dbh)
+
+anova(lmspruce)
+```
+
+Checking the distribution of the residuals
+
+``` {r}
+hist(lmspruce$residuals)
+```
+
+
+Checking for homoscedactisity,i.e the assumption for similar variance
+for a group being compared.
+
+``` {r}
+plot(lmspruce$fitted.values, lmspruce$residuals,
+     xlab = 'fitted values',
+     ylab = 'residuals')
+abline(c(0,0), col = 'red')
+```
+
+**QQplot**
+
+``` {r}
+qqnorm(lmspruce$residuals)
+qqline(lmspruce$residuals, col = 'red')
+```
+
+#### Testing the model
+
+``` {r}
+int_spr <-coef(lmspruce)[1]
+slp_spr <- coef(lmspruce)[2]
+
+### Generating random numbers
+sprce_dbh = sample(5:50, replace = TRUE)
+sprce_height = int_spr + (slp_spr * sprce_dbh)
+sprce <- data.frame(sprce_height, sprce_dbh)
+```
+
+``` {r}
+plot(sprce$sprce_height, sprce_dbh,
+     col = 'red')
+lines(sprce$sprce_height, sprce_dbh,
+      col = 'black')
+points(spruce2$height, spruce2$dbh)
+```
+
+[Fertilization Experiment](fertilizer.html) <br>
+
+[Homepage](index.html) <br>
+
+[Thinning Intensity and Frequency Experiment](pct.html) <br>
+
+[Back to Portfolio](https://olamideadu.com)

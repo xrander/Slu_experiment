@@ -1,43 +1,44 @@
+---
+title: "Spacing Experiment - Exp II)"
+author: "Olamide Adu"
+date: "2023-03-25"
+output:
+   prettydoc::html_pretty:
+    theme: Cayman
+    toc: true
+    toc_float: false
+    highlight: github
+    code_theme: zenburn
+    keep_md: true
+---
+
 # Spacing Experiment of Scotch Pine - Exp II
 
-<br> In forestry after the species to be planted has been decided, the
-number of trees to be planted is the next important thing to be
-discussed and this determines the initial stocking density of the
-plantation. According to West (2009), this determines:
+<br> In forestry after the species to be planted has been decided, the number of trees to be planted is the next important thing to be discussed and this determines the initial stocking density of the plantation. According to West (2009), this determines:
 
--   the amount of wood available from the plantation when it is
-    harvested ultimately
+-   the amount of wood available from the plantation when it is harvested ultimately
 
 -   the average sizes of the trees in the stand, and
 
 -   the branch sizes.
 
-The next important thing is how the trees in the forest will be
-spatially arranged. The choice of spacing between trees both within and
-between the rows determine the rectangularity of the initial spacing.
-The rectangulaity is the ratio between-rows to within-rows spacing
-(West, 2007). This generally affects the stand density and subsequent
-tree development.
+The next important thing is how the trees in the forest will be spatially arranged. The choice of spacing between trees both within and between the rows determine the rectangularity of the initial spacing. The rectangulaity is the ratio between-rows to within-rows spacing (West, 2007). This generally affects the stand density and subsequent tree development.
 
 <br>
+
 ![](https://www.orangepippintrees.co.uk/zimages/spacings/vdwarf.gif)
 
-<br> *source: orangepippintrees.co.uk* <br> Numerous experiment have
-been executed to check the effect of spacing on the productivity of a
-stand. Without drawing into conclusion and relying on facts from already
-established truths. I’ll explore the to see the effect of spacing on
-Scotch pine and determine if there are differences between the spacing
-treatments.
+<br> *source: orangepippintrees.co.uk* <br>
 
-This experiment is a long-term experiment to test the effect of four
-different spacing treatments 1m, 1.5m, 2m, and 2.5m across eight plots
-on basal area produced average diameter of stems in the stand. The
-experiment is designed such that two plots are assigned a treatment, in
-this case the plots. The plots are also of varying sizes.
+Numerous experiment have been executed to check the effect of spacing on the productivity of a stand. Without drawing into conclusion and relying on facts from already established truths. I’ll explore the to see the effect of spacing on Scotch pine and determine if there are differences between the spacing treatments.
 
-*The Design of the experiment using R*
+This experiment is a long-term experiment to test the effect of four different spacing treatments 1m, 1.5m, 2m, and 2.5m across eight plots on basal area produced average diameter of stems in the stand. The experiment is designed such that two plots are assigned a treatment, in this case the plots. The plots are also of varying sizes.
 
-``` r
+
+**The Design of the experiment**
+
+
+```r
 plot = c(11:14, 21:24)
 ## plot here denotes the plots number or names
 
@@ -52,6 +53,16 @@ exp1012 <- data.frame(plot, areaha, treatment)
 head(exp1012)
 ```
 
+```
+##   plot areaha treatment
+## 1   11 0.0400       2.5
+## 2   12 0.0324       2.0
+## 3   13 0.0288       1.5
+## 4   14 0.0288       1.0
+## 5   21 0.0400       2.5
+## 6   22 0.0324       2.0
+```
+
     ##   plot areaha treatment
     ## 1   11 0.0400       2.5
     ## 2   12 0.0324       2.0
@@ -60,32 +71,95 @@ head(exp1012)
     ## 5   21 0.0400       2.5
     ## 6   22 0.0324       2.0
 
-``` r
+
+```r
 library(doBy)
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following object is masked from 'package:doBy':
+## 
+##     order_by
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 library(lattice)
 library(ggplot2)
 library(car)
+```
+
+```
+## Loading required package: carData
+```
+
+```
+## 
+## Attaching package: 'car'
+```
+
+```
+## The following object is masked from 'package:dplyr':
+## 
+##     recode
+```
+
+```r
 library(data.table)
+```
+
+```
+## 
+## Attaching package: 'data.table'
+```
+
+```
+## The following objects are masked from 'package:dplyr':
+## 
+##     between, first, last
+```
+
+```r
 library(TukeyC)
 ```
 
 *importing the data*
 
-``` r
+
+```r
 ### importing data
 dbh1012 <- read.table("https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/Lab2/dbhlist_exp1012.txt",
            header = T, sep = "\t", na.strings = "NA", dec = ".", strip.white = TRUE)
 head(dbh1012)
 ```
 
-    ##   plot nr  d1  d2
-    ## 1   11  2 152 159
-    ## 2   11  3 134 126
-    ## 3   11  4 156 171
-    ## 4   11  6 158 160
-    ## 5   11  7  97  90
-    ## 6   11  8 154 159
+```
+##   plot nr  d1  d2
+## 1   11  2 152 159
+## 2   11  3 134 126
+## 3   11  4 156 171
+## 4   11  6 158 160
+## 5   11  7  97  90
+## 6   11  8 154 159
+```
+
 
 The data used for this analysis can be obtained
 [here](https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/Lab2/dbhlist_exp1012.txt).
@@ -98,17 +172,16 @@ The data used for this analysis can be obtained
 
 -   d1: cross caliper diameter measurement 1
 
--   d2: cross caliper diameter measurement 2, 90 degrees to measurement
-    1
+-   d2: cross caliper diameter measurement 2, 90 degrees to measurement 1
 
 ------------------------------------------------------------------------
 
 ## Quick exploration
 
-The data will be investigated to see if there’s anything strange with
-the data
+The data will be investigated to see if there’s anything strange with the data
 
-``` r
+
+```r
 plot(dbh1012$d1, dbh1012$d2,
      xlab = substitute(paste(bold('d1'))),
      ylab = substitute(paste(bold('d2'))),
@@ -120,7 +193,8 @@ legend('topleft',
        pch = c(10,21))
 ```
 
-![](spacing_experiment_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](spacing_experiment_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
 
 The data seems to be alright, we can now proceed with the analysis
 
@@ -138,16 +212,18 @@ We’ll be:
 
 ### Basal Area Estimation
 
-Basal area is the average amount of an area occupied by tree stems,
-defined as the cross-sectional area of all stems in a stand measured at
-breast height (dbh) and express as per unit of land area.The formula of
-dbh is
-*B**A* = *π*(*D**B**H*/2)<sup>2</sup>
-Where: - BA = Basal area
+Basal area is the average amount of an area occupied by tree stems, defined as the cross-sectional area of all stems in a stand measured at breast height (dbh) and express as per unit of land area.The formula of dbh is: <br>
+$$BA = π(DBH/2)$$
+<br>
+
+Where:
+
+- BA = Basal area
 
 -   DBH = diameter at breast height (1.3m above ground)
 
-``` r
+
+```r
 ## average of the two diameter
 dbh1012$dm <- (dbh1012$d1 + dbh1012$d2)/2
 
@@ -164,11 +240,10 @@ dbh1012$ba <- pi * ((dbh1012$dm/2)^2)
 
 -   ba: basal area
 
-The sum of basal area for each plots can be measured now using doBy’s
-`summaryBy` function and the result merge with `site1012` to have a more
-robust data set
+The sum of basal area for each plots can be measured now using doBy’s `summaryBy` function and the result merge with `site1012` to have a more robust data set
 
-``` r
+
+```r
 plotba <-summaryBy(ba~plot, data = dbh1012, FUN = sum)
 
 site1012 <- merge(exp1012, plotba, all = T)
@@ -176,20 +251,23 @@ site1012 <- merge(exp1012, plotba, all = T)
 site1012
 ```
 
-    ##   plot areaha treatment    ba.sum
-    ## 1   11 0.0400       2.5  993838.7
-    ## 2   12 0.0324       2.0 1025256.4
-    ## 3   13 0.0288       1.5  968972.4
-    ## 4   14 0.0288       1.0  963524.9
-    ## 5   21 0.0400       2.5 1043748.0
-    ## 6   22 0.0324       2.0 1045694.8
-    ## 7   23 0.0288       1.5  953649.5
-    ## 8   24 0.0288       1.0  903224.4
+```
+##   plot areaha treatment    ba.sum
+## 1   11 0.0400       2.5  993838.7
+## 2   12 0.0324       2.0 1025256.4
+## 3   13 0.0288       1.5  968972.4
+## 4   14 0.0288       1.0  963524.9
+## 5   21 0.0400       2.5 1043748.0
+## 6   22 0.0324       2.0 1045694.8
+## 7   23 0.0288       1.5  953649.5
+## 8   24 0.0288       1.0  903224.4
+```
 
-Now we can estimate the basal area per hectare and basal area of each
-treatments.
+    
+Now we can estimate the basal area per hectare and basal area of each treatments.
 
-``` r
+
+```r
 ## Estimating the basal area per hectare
 site1012$baha <- (1/site1012$areaha) * site1012$ba.sum
 
@@ -202,17 +280,21 @@ trtmean1012 <- round(summaryBy(baham2~treatment,
 site1012
 ```
 
-    ##   plot areaha treatment    ba.sum     baha baham2
-    ## 1   11 0.0400       2.5  993838.7 24845968  24.85
-    ## 2   12 0.0324       2.0 1025256.4 31643716  31.64
-    ## 3   13 0.0288       1.5  968972.4 33644876  33.64
-    ## 4   14 0.0288       1.0  963524.9 33455726  33.46
-    ## 5   21 0.0400       2.5 1043748.0 26093700  26.09
-    ## 6   22 0.0324       2.0 1045694.8 32274532  32.27
-    ## 7   23 0.0288       1.5  953649.5 33112830  33.11
-    ## 8   24 0.0288       1.0  903224.4 31361958  31.36
+```
+##   plot areaha treatment    ba.sum     baha baham2
+## 1   11 0.0400       2.5  993838.7 24845968  24.85
+## 2   12 0.0324       2.0 1025256.4 31643716  31.64
+## 3   13 0.0288       1.5  968972.4 33644876  33.64
+## 4   14 0.0288       1.0  963524.9 33455726  33.46
+## 5   21 0.0400       2.5 1043748.0 26093700  26.09
+## 6   22 0.0324       2.0 1045694.8 32274532  32.27
+## 7   23 0.0288       1.5  953649.5 33112830  33.11
+## 8   24 0.0288       1.0  903224.4 31361958  31.36
+```
 
-``` r
+    
+
+```r
 barplot(site1012$baham2,
         names.arg = site1012$plot,
         col = c(2,3,4,5),
@@ -226,25 +308,23 @@ legend('right',
        col = c(2,3,4,5))
 ```
 
-![](spacing_experiment_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](spacing_experiment_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 
 ### Stand Density Estimation
 
-Stand density is a quantitative measurement of a forest. It describes
-the number of individuals (trees) on a unit area in either absolute or
-relative terms. To read more on stand density click
-[here](https://www.sciencedirect.com/topics/agricultural-and-biological-sciences/stand-density#:~:text=Stand%20density%20is%20a%20quantitative,Avery%20and%20Burkhart%2C%201994).)
+Stand density is a quantitative measurement of a forest. It describes the number of individuals (trees) on a unit area in either absolute or relative terms. To read more on stand density  click[here](https://www.sciencedirect.com/topics/agricultural-and-biological-sciences/stand-density#:~:text=Stand%20density%20is%20a%20quantitative,Avery%20and%20Burkhart%2C%201994).)
 
-**Estimating the stand density** To calculate the density we need some
-information. - The size of the forest: This is usually expressed in ha
-or m2
+**Estimating the stand density**
+To calculate the density we need some information.
 
--   The size of sample plots: this is important to calculate the total
-    number of plots in the stand.
+-   The size of the forest: This is usually expressed in ha or m2
+
+-   The size of sample plots: this is important to calculate the total number of plots in the stand.
 
 -   The number of trees in a sample plot or the plot density
 
-``` r
+
+```r
 ## To derive the plot density
 plotdens <- summaryBy(nr~plot, data = dbh1012, FUN = length)
 
@@ -269,24 +349,27 @@ legend('right',
        col = c(2,3,4,5))
 ```
 
-![](spacing_experiment_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](spacing_experiment_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
 
-The chart shows there’s a marked difference across plots. Plots with the
-lowest treatment, i.e., spacing have the higher density
+
+The chart shows there’s a marked difference across plots. Plots with the lowest treatment, i.e., spacing have the higher density
 
 ### Deriving Arithmetic Mean Diameter(AMD) and Quadratic Mean Diameter(QMD)
 
-The quadratic mean diameter symbolized as QMD is the square root of the
-summation of the dbh squared of trees divided by the number of trees.
-$$QMD = \sqrt{(\sum d_i^2)/n}$$
-Where d = diameter squared n = number of trees
+The quadratic mean diameter symbolized as QMD is the square root of the summation of the dbh squared of trees divided by the number of trees.
 
-QMD is considered more appropriate than AMD (Arithmetic Mean Diameter)
-for characterizing the group of trees which have been measured. QMD
-assigns greater weight to larger trees, read more
+$$QMD = \sqrt{(\sum d_i^2)/n}$$
+Where:
+
+d = diameter squared
+
+n = number of trees
+
+QMD is considered more appropriate than AMD (Arithmetic Mean Diameter) for characterizing the group of trees which have been measured. QMD assigns greater weight to larger trees, read more
 [here](https://www.fs.usda.gov/pnw/olympia/silv/publications/opt/436_CurtisMarshall2000.pdf)
 
-``` r
+
+```r
 plotdbh <- summaryBy(dm+dd~plot, data = dbh1012, FUN = c(mean, sum))
 
 ## Merging values to site1012
@@ -311,24 +394,27 @@ site1012$qmd <- sqrt(site1012$dd.sum/site1012$nr.length)/10
 
 ### Basal area stand density relationship
 
-``` r
+
+```r
 site1012[,c("baham2", "dens_ha")]
 ```
 
-    ##   baham2 dens_ha
-    ## 1  24.85  1600.0
-    ## 2  31.64  2222.2
-    ## 3  33.64  2847.2
-    ## 4  33.46  3750.0
-    ## 5  26.09  1550.0
-    ## 6  32.27  2469.1
-    ## 7  33.11  2604.2
-    ## 8  31.36  3784.7
+```
+##   baham2 dens_ha
+## 1  24.85  1600.0
+## 2  31.64  2222.2
+## 3  33.64  2847.2
+## 4  33.46  3750.0
+## 5  26.09  1550.0
+## 6  32.27  2469.1
+## 7  33.11  2604.2
+## 8  31.36  3784.7
+```
 
-we create a new table to hold the amd and qmd. We do this to compare the
-values using a barplot.
+we create a new table to hold the amd and qmd. We do this to compare the values using a barplot.
 
-``` r
+
+```r
 amd_qmd <- data.frame(plot = rep(site1012$plot, times = 2),
                       treatment = rep(site1012$treatment, times = 2),
                       diameter = round(c(site1012$amd, site1012$qmd), 1),
@@ -337,25 +423,28 @@ amd_qmd <- data.frame(plot = rep(site1012$plot, times = 2),
 amd_qmd
 ```
 
-    ##    plot treatment diameter measures
-    ## 1    11       2.5     13.7      amd
-    ## 2    12       2.0     13.2      amd
-    ## 3    13       1.5     12.0      amd
-    ## 4    14       1.0     10.1      amd
-    ## 5    21       2.5     14.4      amd
-    ## 6    22       2.0     12.6      amd
-    ## 7    23       1.5     12.4      amd
-    ## 8    24       1.0      9.9      amd
-    ## 9    11       2.5     14.1      qmd
-    ## 10   12       2.0     13.5      qmd
-    ## 11   13       1.5     12.3      qmd
-    ## 12   14       1.0     10.7      qmd
-    ## 13   21       2.5     14.6      qmd
-    ## 14   22       2.0     12.9      qmd
-    ## 15   23       1.5     12.7      qmd
-    ## 16   24       1.0     10.3      qmd
+```
+##    plot treatment diameter measures
+## 1    11       2.5     13.7      amd
+## 2    12       2.0     13.2      amd
+## 3    13       1.5     12.0      amd
+## 4    14       1.0     10.1      amd
+## 5    21       2.5     14.4      amd
+## 6    22       2.0     12.6      amd
+## 7    23       1.5     12.4      amd
+## 8    24       1.0      9.9      amd
+## 9    11       2.5     14.1      qmd
+## 10   12       2.0     13.5      qmd
+## 11   13       1.5     12.3      qmd
+## 12   14       1.0     10.7      qmd
+## 13   21       2.5     14.6      qmd
+## 14   22       2.0     12.9      qmd
+## 15   23       1.5     12.7      qmd
+## 16   24       1.0     10.3      qmd
+```
 
-``` r
+
+```r
 ggplot(data = amd_qmd, aes(x = as.character(plot), y = diameter, fill = measures)) + 
   geom_bar (position = "dodge", stat = "identity") +
   labs(title = "QMD and AMD comparison",
@@ -363,12 +452,13 @@ ggplot(data = amd_qmd, aes(x = as.character(plot), y = diameter, fill = measures
        y = substitute(paste(bold('Diameter (cm)'))))
 ```
 
-![](spacing_experiment_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](spacing_experiment_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
-[Growth Measures Test](growth_experiment.md) <br>
 
-[Homepage](Readme.md) <br>
+[Growth Measures Test](growth_experiment.html) <br>
 
-[Thinning Experiment](Thinning_experiment.md) <br>
+[Homepage](Readme.html) <br>
 
-[Back to portfolio](https://xrander.github.io)
+[Thinning Experiment](Thinning_experiment.html) <br>
+
+[Back to portfolio](https://olamideadu.com)
