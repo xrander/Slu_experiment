@@ -15,9 +15,9 @@
 # install.packages('car') # Remove the comments to load the libraries
 
 ## Loading packages
-library(lattice)
-library(TukeyC)
-library(car)
+#library(lattice)
+#library(TukeyC)
+#library(car)
 
 ## Reading the data to be used
 expfert <- read.table("https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab6/expfert.txt",
@@ -125,7 +125,7 @@ barchart(CAI~treatment|block, data = expfert,
 ### BOXPLOT
 
 bwplot(domheight~treatment, subset=revision==1, data = expfert,
-       col = treatment)
+       col = c(1:4)
 
 bwplot(domheight~treatment, subset=revision==4, data = expfert)
 
