@@ -20,11 +20,11 @@ library(TukeyC)
 library(car)
 
 ## Reading the data to be used
-expfert <- read.table('C:/Users/aduol/Documents/SLU/RSust/SLU project/Data/Lab6/expfert.txt',
+expfert <- read.table("https://raw.githubusercontent.com/xrander/Slu_experiment/master/Data/Lab6/expfert.txt",
                       header = T, sep = "\t", na.strings = "NA",
                       dec = ",", strip.white = T)
 
-poptr <- read.table('C:/Users/aduol/Documents/SLU/RSust/SLU project/Data/Lab6/poplartreatment.txt',
+poptr <- read.table('https://github.com/xrander/Slu_experiment/blob/master/Data/Lab6/poplartreatment.txt',
                     header = T, sep = "\t", na.strings = "NA",
                     dec = ",", strip.white = T)
 
