@@ -10,9 +10,9 @@
 
 ## Library used is the lattice library, tukeyc and car
 ### installing the packages
-install.packages('lattice')
-install.packages('TukeyC')
-install.packages('car')
+# install.packages('lattice')
+# install.packages('TukeyC')
+# install.packages('car') # Remove the comments to load the libraries
 
 ## Loading packages
 library(lattice)
@@ -24,7 +24,7 @@ expfert <- read.table("https://raw.githubusercontent.com/xrander/Slu_experiment/
                       header = T, sep = "\t", na.strings = "NA",
                       dec = ",", strip.white = T)
 
-poptr <- read.table('https://github.com/xrander/Slu_experiment/blob/master/Data/Lab6/poplartreatment.txt',
+poptr <- read.table("https://github.com/xrander/Slu_experiment/blob/master/Data/Lab6/poplartreatment.txt",
                     header = T, sep = "\t", na.strings = "NA",
                     dec = ",", strip.white = T)
 
