@@ -23,79 +23,16 @@ The first experiment will be a clone performance experiment. The data used is th
 This analysis will seek to answer the question: - Is the treatment having an influence - Which clone is performing best
 
 
-```r
+``` r
 library(doBy)
-library(dplyr)
-```
-
-```
-## 
-## Attaching package: 'dplyr'
-```
-
-```
-## The following object is masked from 'package:doBy':
-## 
-##     order_by
-```
-
-```
-## The following objects are masked from 'package:stats':
-## 
-##     filter, lag
-```
-
-```
-## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-```
-
-```r
-library(lattice)
 library(ggplot2)
-library(car)
-```
-
-```
-## Loading required package: carData
-```
-
-```
-## 
-## Attaching package: 'car'
-```
-
-```
-## The following object is masked from 'package:dplyr':
-## 
-##     recode
-```
-
-```r
-library(data.table)
-```
-
-```
-## 
-## Attaching package: 'data.table'
-```
-
-```
-## The following objects are masked from 'package:dplyr':
-## 
-##     between, first, last
-```
-
-```r
-library(TukeyC)
 ```
 
 *Importing the data*
 
 
-```r
-pop <- read.table('https://raw.githubusercontent.com/xrander/SLU-Plantation-Experimentation/master/Data/Lab1/popdata.txt', header = T)
+``` r
+pop <- read.table('Data/Lab1/popdata.txt', header = T)
 
 head(pop)
 ```
@@ -129,7 +66,7 @@ We can create a column now and assign the names to the different values.
 *Creating a column to give name to the values of the fert*
 
 
-```r
+``` r
 pop$fert_value <- ifelse(pop$fert==1, 'fertilized', 'control')
 pop$fert <- as.factor(pop$fert)
 head(pop)
@@ -160,7 +97,7 @@ head(pop)
 The first step of the analysis is visualize the effect of treatment on diameter and height
 
 
-```r
+``` r
 ggplot(pop, aes(dia, height, col = fert_value)) +
   geom_point()+ 
   labs(title = 'Height vs Diameter',
@@ -183,14 +120,14 @@ $$HDr = height/diameter$$
 Where HDr =height diameter ratio
 
 
-```r
+``` r
 pop$hd <- pop$height/pop$dia
 ```
 
 Given the data we can estimate the average height and diameter for the clones and treatments
 
 
-```r
+``` r
 pop_summary <- summaryBy(height + dia ~ fert + clone,
                          data = pop, FUN=mean)
 head(pop_summary)
@@ -210,7 +147,7 @@ head(pop_summary)
 The mean height to diameter of the different treatment as given with the formula above can be estimated.
 
 
-```r
+``` r
 ggplot(pop_summary, aes(clone, height.mean, fill = fert))+
   geom_bar(stat = 'identity',
            position = 'dodge')+
